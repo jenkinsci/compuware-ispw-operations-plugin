@@ -132,6 +132,159 @@
         </tbody>
       </table>
       <br>
+      <strong>BuildAssignment Action:</strong>
+	  <br /> Required:
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">assignmentId</td>
+	        <td valign="top">The ID of the assignment to build</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">level</td>
+	        <td valign="top">Tasks in the assignment at this level will be built</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Optional:
+	  <br />
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">runtimeConfiguration</td>
+	        <td valign="top">The runtime configuration</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mtype</td>
+	        <td valign="top">Components with this name in the release will be built, if specified</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mname</td>
+	        <td valign="top">Component of this type in the release will be built, if specified</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Example:
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td>BuildAssignment</td>
+	      </tr>
+	      <tr>
+	        <td>
+	          <pre>runtimeConfiguration=TPZP<br />assignmentId=PLAY001386<br />mname=TREXX23<br />mtype=COPY<br />level=DEV1</pre>
+	        </td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  <br /><strong>BuildRelease Action:</strong>
+	  <br /> Required:
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">releaseId</td>
+	        <td valign="top">The ID of the release to build</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">assignmentId</td>
+	        <td valign="top">The ID of the assignment to add the impacts to during the build</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">level</td>
+	        <td valign="top">Tasks in the release at this level will be built</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Optional:
+	  <br />
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">runtimeConfiguration</td>
+	        <td valign="top">The runtime configuration</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mtype</td>
+	        <td valign="top">Components with this name in the release will be built, if specified</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mname</td>
+	        <td valign="top">Component of this type in the release will be built, if specified</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Example:
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td>BuildRelease</td>
+	      </tr>
+	      <tr>
+	        <td>
+	          <pre>runtimeConfiguration=TPZP<br />releaseId=TESTREL<br />assignmentId=PLAY001386<br />mname=TREXX23<br />mtype=COPY<br />level=DEV1</pre>
+	        </td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  <br /><strong>BuildTask Action:</strong>
+	  <br /> Required:
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">application</td>
+	        <td valign="top">A task with this application will be built</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">level</td>
+	        <td valign="top">A task at this level will be built</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mname</td>
+	        <td valign="top">A task with this name will be built</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">mtype</td>
+	        <td valign="top">A task with this type will be built</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Optional:
+	  <br />
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td valign="top">runtimeConfiguration</td>
+	        <td valign="top">The runtime configuration</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">taskId</td>
+	        <td valign="top">A task with this task ID will be built. If the task ID is specified then application, level, mname, and mtype are not required</td>
+	      </tr>
+	      <tr>
+	        <td valign="top">assignmentId</td>
+	        <td valign="top">The ID of the assignment to build the task in. This will be looked up if it&rsquo;s not specified</td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  Example:
+	  <br />
+	  <table border="1">
+	    <tbody>
+	      <tr>
+	        <td>BuildTask #1</td>
+	        <td>
+	          <pre>runtimeConfiguration=TPZP<br />application=PLAY<br />level=DEV1<br />mname=TREXX04<br />mtype=COPY<br />assignmentId=PLAY000099</pre>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td valign="top">BuildTask #2</td>
+	        <td valign="top">
+	          <pre>runtimeConfiguration=TPZP<br />taskId=7E38639716C2</pre>
+	        </td>
+	      </tr>
+	    </tbody>
+	  </table>
+	  <br />
       <strong>TaskLoad action:</strong> <br>
       Required:
       <table border="1">

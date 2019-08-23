@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 public class IspwContextPathBean {
+	private String application;
 	private String srid;
 	private String assignmentId;
 	private String releaseId;
@@ -115,5 +116,15 @@ public class IspwContextPathBean {
 	public void setApprover(String approver)
 	{
 		this.approver = StringUtils.trimToEmpty(approver).toUpperCase();
+	}
+	
+	public String getApplication()
+	{
+		return this.application;
+	}
+	
+	public void setApplication(String application)
+	{
+		this.application = application;
 	}
 }

@@ -105,5 +105,14 @@ public class IspwCommand {
 	
 	@IspwAction(clazz = SetOperationAction.class)
 	public static final String SetOperation = "SetOperation"; // POST
+	
+	@IspwAction(clazz = BuildTaskAction.class)
+	public static final String BuildTask = "BuildTask"; // POST
+	
+	@IspwAction(clazz = BuildAssignmentAction.class)
+	public static final String BuildAssignment = "BuildAssignment"; // POST
+	
+	@IspwAction(clazz = BuildReleaseAction.class)
+	public static final String BuildRelease = "BuildRelease"; // POST
 
 }

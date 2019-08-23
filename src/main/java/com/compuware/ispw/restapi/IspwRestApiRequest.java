@@ -19,6 +19,7 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
+import com.compuware.ispw.model.rest.BuildResponse;
 import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskResponse;
 import com.compuware.ispw.restapi.action.IAction;
@@ -369,6 +370,13 @@ public class IspwRestApiRequest extends Builder {
 			logger.println("...ispwRequestBean=" + ispwRequestBean);
 
 		this.url = cesUrl + ispwRequestBean.getContextPath(); // CES URL
+		
+		// Added for the case within BuildTaskAction where some parameters are not required if other parameters are inputed
+		if (this.url.contains("?&")) //$NON-NLS-1$
+		{
+			this.url = this.url.replace("?&", "?"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
 		this.requestBody = ispwRequestBean.getJsonRequest();
 		this.token = cesIspwToken; // CES TOKEN
 
@@ -416,9 +424,19 @@ public class IspwRestApiRequest extends Builder {
 		
 		// polling status if no webhook
 		if (webhookToken == null && !skipWaitingForSet) {
-			if (respObject != null && respObject instanceof TaskResponse) {
+			String setId = StringUtils.EMPTY;
+			if (respObject instanceof TaskResponse)
+			{
 				TaskResponse taskResp = (TaskResponse) respObject;
-				String setId = taskResp.getSetId();
+				setId = taskResp.getSetId();
+			}
+			else if (respObject instanceof BuildResponse)
+			{
+				BuildResponse buildResp = (BuildResponse) respObject;
+				setId = buildResp.getSetId();
+			}
+			if (!setId.equals(StringUtils.EMPTY) && (respObject instanceof TaskResponse || respObject instanceof BuildResponse))
+			{
 
 				HashSet<String> set = new HashSet<String>();
 
