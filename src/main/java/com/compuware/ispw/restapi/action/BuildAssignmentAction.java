@@ -48,7 +48,7 @@ public class BuildAssignmentAction extends SetInfoPostAction
 	@Override
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject)
 	{
-		logger.println("Building tasks in assignment " + ispwContextPathBean.getAssignmentId() + " at level "
+		logger.println("The build process started for assignment " + ispwContextPathBean.getAssignmentId() + " at level "
 				+ ispwContextPathBean.getLevel());
 	}
 

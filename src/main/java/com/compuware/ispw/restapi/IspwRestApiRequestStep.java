@@ -19,8 +19,10 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-
+import com.compuware.ispw.model.rest.BuildResponse;
 import com.compuware.ispw.model.rest.SetInfoResponse;
+import com.compuware.ispw.model.rest.TaskInfo;
+import com.compuware.ispw.model.rest.TaskListResponse;
 import com.compuware.ispw.model.rest.TaskResponse;
 import com.compuware.ispw.restapi.action.IAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
@@ -445,10 +447,20 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			
 			// polling status if no webhook
 			if (webhookToken == null && !step.skipWaitingForSet) {
-				if (respObject != null && respObject instanceof TaskResponse) {
+				String setId = StringUtils.EMPTY;
+				if (respObject instanceof TaskResponse)
+				{
 					TaskResponse taskResp = (TaskResponse) respObject;
-					String setId = taskResp.getSetId();
-
+					setId = taskResp.getSetId();
+				}
+				else if (respObject instanceof BuildResponse)
+				{
+					BuildResponse buildResp = (BuildResponse) respObject;
+					setId = buildResp.getSetId();
+				}
+				if (!setId.equals(StringUtils.EMPTY)
+						&& (respObject instanceof TaskResponse || respObject instanceof BuildResponse))
+				{
 					HashSet<String> set = new HashSet<String>();
 
 					int i = 0;
@@ -510,13 +522,68 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 					if (i == Constants.POLLING_COUNT) {
 						logger.println("Warn - max timeout reached");
 					}
+
+					// Follow with post set execution logging for the task within the BuildResponse model
+					if (respObject instanceof BuildResponse)
+					{
+						setAndTaskInfoLogger(setId, logger, respObject);
+					}
 				}
 			}
 
 			return supplier;
 		}
 
-        private static final long serialVersionUID = 1L;
+        /**
+		 * 
+		 */
+		private void setAndTaskInfoLogger(String setId, PrintStream logger, Object respObject) throws InterruptedException, IOException
+		{
+			Thread.sleep(Constants.POLLING_INTERVAL);
+			HttpRequestExecution poller =
+					HttpRequestExecution
+						.createTaskInfoPoller(setId, step, listener, this);
+				
+			ResponseContentSupplier pollerSupplier = runExec(poller);
+			String pollingJson = pollerSupplier.getContent();
+			
+			JsonProcessor jsonProcessor = new JsonProcessor();
+			TaskListResponse taskListResp =
+					jsonProcessor.parse(pollingJson, TaskListResponse.class);
+			BuildResponse buildResponse = (BuildResponse) respObject;
+			
+			if (taskListResp.getTasks().size() == 1)
+			{
+				logger.println(buildResponse.getTasksBuilt().size() + " task will be built as part of " + setId);
+			}
+			else
+			{
+				logger.println(buildResponse.getTasksBuilt().size() + " tasks will be built as part of " + setId);
+			}
+						
+			List<TaskInfo> tasksBuilt = buildResponse.getTasksBuilt();
+			List<TaskInfo> tasksInSet = taskListResp.getTasks();
+			int numTasksBuilt = tasksBuilt.size();
+
+			for (TaskInfo task : tasksInSet)
+			{
+				logger.println(task.getModuleName() + " has been compiled successfully");
+				tasksBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName())); // remove all successfully built tasks
+			}
+			
+			for (TaskInfo task : tasksBuilt)
+			{
+				logger.println(task.getModuleName() + " did not compile successfully");				
+			}
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt + " generated successfully.");
+			sb.append(" " + tasksBuilt.size() + " of " + numTasksBuilt + " generated with errors.");
+			
+			logger.println(sb);
+		}
+
+		private static final long serialVersionUID = 1L;
 
 		FilePath resolveOutputFile() {
 			String outputFile = step.getOutputFile();

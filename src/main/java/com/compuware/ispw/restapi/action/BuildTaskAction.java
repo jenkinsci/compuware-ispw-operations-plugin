@@ -51,11 +51,11 @@ public class BuildTaskAction extends SetInfoPostAction
 	{
 		if (ispwContextPathBean.getTaskId() != null)
 		{
-			logger.println("building task " + ispwContextPathBean.getTaskId());
+			logger.println("The build process has started for task " + ispwContextPathBean.getTaskId());
 		}
 		else
 		{
-			logger.print("Building task " + ispwContextPathBean.getMname() + " with type " + ispwContextPathBean.getMtype()
+			logger.print("The build process has started for task " + ispwContextPathBean.getMname() + " with type " + ispwContextPathBean.getMtype()
 					+ " at level " + ispwContextPathBean.getLevel());
 			if (ispwContextPathBean.getAssignmentId() != null)
 			{
@@ -73,6 +73,7 @@ public class BuildTaskAction extends SetInfoPostAction
 	public Object endLog(PrintStream logger, IspwRequestBean ispwRequestBean, String responseJson)
 	{
 		BuildResponse buildResp = new JsonProcessor().parse(responseJson, BuildResponse.class);
+		
 		if (ispwRequestBean.getIspwContextPathBean().getTaskId() != null)
 		{
 			logger.println("Set " + buildResp.getSetId() + " created to build task "
@@ -84,6 +85,7 @@ public class BuildTaskAction extends SetInfoPostAction
 					+ ispwRequestBean.getIspwContextPathBean().getMname() + " with type "
 					+ ispwRequestBean.getIspwContextPathBean().getMtype() + " at level "
 					+ ispwRequestBean.getIspwContextPathBean().getLevel());
+			
 			if (ispwRequestBean.getIspwContextPathBean().getAssignmentId() != null)
 			{
 				logger.println(" within assignment " + ispwRequestBean.getIspwContextPathBean().getAssignmentId());
