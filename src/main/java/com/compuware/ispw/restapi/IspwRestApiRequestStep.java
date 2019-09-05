@@ -561,25 +561,35 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				logger.println(buildResponse.getTasksBuilt().size() + " tasks will be built as part of " + setId);
 			}
 						
-			List<TaskInfo> tasksBuilt = buildResponse.getTasksBuilt();
+			// Get the tasks that were built, this variable will later be used to hold tasks that were not built
+			List<TaskInfo> tasksNotBuilt = buildResponse.getTasksBuilt();
 			List<TaskInfo> tasksInSet = taskListResp.getTasks();
-			int numTasksBuilt = tasksBuilt.size();
+			int numTasksBuilt = tasksNotBuilt.size();
 
 			for (TaskInfo task : tasksInSet)
 			{
 				logger.println(task.getModuleName() + " has been compiled successfully");
-				tasksBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName())); // remove all successfully built tasks
+				tasksNotBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName())); // remove all successfully built tasks
 			}
 			
-			for (TaskInfo task : tasksBuilt)
+			for (TaskInfo task : tasksNotBuilt)
 			{
 				logger.println(task.getModuleName() + " did not compile successfully");				
 			}
 			
 			StringBuilder sb = new StringBuilder();
-			sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt + " generated successfully.");
-			sb.append(" " + tasksBuilt.size() + " of " + numTasksBuilt + " generated with errors.");
-			
+			if (!tasksNotBuilt.isEmpty())
+			{
+				sb.append("The build process completed with errors. " + tasksInSet.size() + " of " + numTasksBuilt
+						+ " generated successfully.");
+			}
+			else
+			{
+				sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt
+						+ " generated successfully.");				
+			}
+			sb.append(" " + tasksNotBuilt.size() + " of " + numTasksBuilt + " generated with errors.");
+
 			logger.println(sb);
 		}
 

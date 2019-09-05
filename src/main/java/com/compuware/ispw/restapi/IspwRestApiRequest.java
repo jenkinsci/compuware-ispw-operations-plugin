@@ -552,10 +552,18 @@ public class IspwRestApiRequest extends Builder {
 			{
 				logger.println(task.getModuleName() + " did not compile successfully");
 			}
-
+			
 			StringBuilder sb = new StringBuilder();
-			sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt
-					+ " generated successfully.");
+			if (!tasksNotBuilt.isEmpty())
+			{
+				sb.append("The build process completed with errors. " + tasksInSet.size() + " of " + numTasksBuilt
+						+ " generated successfully.");
+			}
+			else
+			{
+				sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt
+						+ " generated successfully.");				
+			}
 			sb.append(" " + tasksNotBuilt.size() + " of " + numTasksBuilt + " generated with errors.");
 
 			logger.println(sb);
