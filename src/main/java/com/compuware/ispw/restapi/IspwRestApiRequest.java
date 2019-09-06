@@ -442,6 +442,7 @@ public class IspwRestApiRequest extends Builder {
 				HashSet<String> set = new HashSet<String>();
 
 				int i = 0;
+				boolean isSetHeld = false;
 				for (; i < 60; i++) {
 					Thread.sleep(Constants.POLLING_INTERVAL);
 					HttpRequestExecution poller =
@@ -479,6 +480,7 @@ public class IspwRestApiRequest extends Builder {
 								&& SetOperationAction.SET_ACTION_HOLD.equalsIgnoreCase(ispwRequestBean.getIspwContextPathBean().getAction()))
 						{
 							logger.println("Set " + setId + " successfully held");
+							isSetHeld = true;
 							break;
 						}
 						else if (Constants.SET_STATE_HELD.equalsIgnoreCase(setState)
@@ -499,12 +501,13 @@ public class IspwRestApiRequest extends Builder {
 				
 				if (i == 60) {
 					logger.println("Warn - max timeout reached");
+					return true;
 				}
 
 				// Follow with post set execution logging for the tasks within the BuildResponse model
-				if (respObject instanceof BuildResponse)
+				if (respObject instanceof BuildResponse && !isSetHeld)
 				{
-					setAndTaskInfoLogger(setId, launcher, envVars, build, listener, logger, respObject);
+					buildActionTaskInfoLogger(setId, launcher, envVars, build, listener, logger, respObject);
 				}
 			}
 		}
@@ -512,7 +515,7 @@ public class IspwRestApiRequest extends Builder {
 		return true;
 	}
 
-	private void setAndTaskInfoLogger(String setId, Launcher launcher, EnvVars envVars, AbstractBuild<?, ?> build,
+	private void buildActionTaskInfoLogger(String setId, Launcher launcher, EnvVars envVars, AbstractBuild<?, ?> build,
 			BuildListener listener, PrintStream logger, Object respObject) throws InterruptedException, IOException
 	{
 		Thread.sleep(Constants.POLLING_INTERVAL);
@@ -525,27 +528,29 @@ public class IspwRestApiRequest extends Builder {
 
 			JsonProcessor jsonProcessor = new JsonProcessor();
 			TaskListResponse taskListResp = jsonProcessor.parse(pollingJson, TaskListResponse.class);
+			BuildResponse buildResponse = (BuildResponse) respObject;
 
-			if (taskListResp.getTasks().size() == 1)
+			if (buildResponse.getTasksBuilt().size() == 1)
 			{
-				logger.println(taskListResp.getTasks().size() + " task was built as part of " + setId);
+				logger.println(buildResponse.getTasksBuilt().size() + " task will be built as part of " + setId);
 			}
 			else
 			{
-				logger.println(taskListResp.getTasks().size() + " tasks were built as part of " + setId);
+				logger.println(buildResponse.getTasksBuilt().size() + " tasks will be built as part of " + setId);
 			}
 
-			BuildResponse buildResponse = (BuildResponse) respObject;
-			// Get the tasks that were built, this variable will later be used to hold tasks that were not built
-			List<TaskInfo> tasksNotBuilt = buildResponse.getTasksBuilt();
+			List<TaskInfo> tasksBuilt = buildResponse.getTasksBuilt();
+			// Used to hold the difference between tasks built and tasks within a closed set
+			List<TaskInfo> tasksNotBuilt = tasksBuilt;
+			// Get the tasks that were successfully generated (anything leftover in a set is successful)
 			List<TaskInfo> tasksInSet = taskListResp.getTasks();
-			int numTasksBuilt = tasksNotBuilt.size();
+			int numTasksToBeBuilt = tasksBuilt.size();
 
 			for (TaskInfo task : tasksInSet)
 			{
 				logger.println(task.getModuleName() + " has been compiled successfully");
-				tasksNotBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName())); // remove all successfully built
-																								// tasks
+				// Remove all successfully built tasks
+				tasksNotBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName()));
 			}
 
 			for (TaskInfo task : tasksNotBuilt)
@@ -556,15 +561,14 @@ public class IspwRestApiRequest extends Builder {
 			StringBuilder sb = new StringBuilder();
 			if (!tasksNotBuilt.isEmpty())
 			{
-				sb.append("The build process completed with errors. " + tasksInSet.size() + " of " + numTasksBuilt
-						+ " generated successfully.");
+				sb.append("The build process completed with errors. ");
 			}
 			else
 			{
-				sb.append("The build process was successfully completed. " + tasksInSet.size() + " of " + numTasksBuilt
-						+ " generated successfully.");				
+				sb.append("The build process was successfully completed. ");
 			}
-			sb.append(" " + tasksNotBuilt.size() + " of " + numTasksBuilt + " generated with errors.");
+			sb.append(tasksInSet.size() + " of " + numTasksToBeBuilt + " generated successfully. " + tasksNotBuilt.size()
+					+ " of " + numTasksToBeBuilt + " generated with errors.");
 
 			logger.println(sb);
 		}
