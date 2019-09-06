@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
@@ -507,7 +508,7 @@ public class IspwRestApiRequest extends Builder {
 				// Follow with post set execution logging for the tasks within the BuildResponse model
 				if (respObject instanceof BuildResponse && !isSetHeld)
 				{
-					buildActionTaskInfoLogger(setId, launcher, envVars, build, listener, logger, respObject);
+					return buildActionTaskInfoLogger(setId, launcher, envVars, build, listener, logger, respObject);
 				}
 			}
 		}
@@ -515,12 +516,12 @@ public class IspwRestApiRequest extends Builder {
 		return true;
 	}
 
-	private void buildActionTaskInfoLogger(String setId, Launcher launcher, EnvVars envVars, AbstractBuild<?, ?> build,
+	private boolean buildActionTaskInfoLogger(String setId, Launcher launcher, EnvVars envVars, AbstractBuild<?, ?> build,
 			BuildListener listener, PrintStream logger, Object respObject) throws InterruptedException, IOException
 	{
 		Thread.sleep(Constants.POLLING_INTERVAL);
 		HttpRequestExecution poller = HttpRequestExecution.createTaskInfoPoller(setId, this, envVars, build, listener);
-
+		boolean isSuccessful = false;
 		if (launcher.getChannel() != null)
 		{
 			ResponseContentSupplier pollerSupplier = launcher.getChannel().call(poller);
@@ -545,12 +546,17 @@ public class IspwRestApiRequest extends Builder {
 			// Get the tasks that were successfully generated (anything leftover in a set is successful)
 			List<TaskInfo> tasksInSet = taskListResp.getTasks();
 			int numTasksToBeBuilt = tasksBuilt.size();
+			Set<String> uniqueTasksInSet = new HashSet<>();
 
 			for (TaskInfo task : tasksInSet)
 			{
-				logger.println(task.getModuleName() + " has been compiled successfully");
+				if (task.getOperation().equals("G")) //$NON-NLS-1$
+				{
+					logger.println(task.getModuleName() + " has been compiled successfully");
+				}
 				// Remove all successfully built tasks
-				tasksNotBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName()));
+				uniqueTasksInSet.add(task.getTaskId());
+				tasksNotBuilt.removeIf(x -> x.getTaskId().equals(task.getTaskId()));
 			}
 
 			for (TaskInfo task : tasksNotBuilt)
@@ -559,19 +565,23 @@ public class IspwRestApiRequest extends Builder {
 			}
 			
 			StringBuilder sb = new StringBuilder();
+			sb.append(uniqueTasksInSet.size() + " of " + numTasksToBeBuilt + " generated successfully. " + tasksNotBuilt.size()
+					+ " of " + numTasksToBeBuilt + " generated with errors.\n");
+			
 			if (!tasksNotBuilt.isEmpty())
 			{
+				isSuccessful = false;
 				sb.append("The build process completed with errors. ");
 			}
 			else
 			{
+				isSuccessful = true;
 				sb.append("The build process was successfully completed. ");
 			}
-			sb.append(tasksInSet.size() + " of " + numTasksToBeBuilt + " generated successfully. " + tasksNotBuilt.size()
-					+ " of " + numTasksToBeBuilt + " generated with errors.");
-
+			
 			logger.println(sb);
 		}
+		return isSuccessful;
 	}
 
 	@Extension

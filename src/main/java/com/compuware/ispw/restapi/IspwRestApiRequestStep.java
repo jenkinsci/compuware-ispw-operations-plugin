@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
@@ -537,21 +537,19 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			return supplier;
 		}
 
-		private void buildActionTaskInfoLogger(String setId, PrintStream logger, Object respObject) throws InterruptedException, IOException
+		private void buildActionTaskInfoLogger(String setId, PrintStream logger, Object respObject)
+				throws InterruptedException, IOException, RuntimeException
 		{
 			Thread.sleep(Constants.POLLING_INTERVAL);
-			HttpRequestExecution poller =
-					HttpRequestExecution
-						.createTaskInfoPoller(setId, step, listener, this);
-				
+			HttpRequestExecution poller = HttpRequestExecution.createTaskInfoPoller(setId, step, listener, this);
+
 			ResponseContentSupplier pollerSupplier = runExec(poller);
 			String pollingJson = pollerSupplier.getContent();
-			
+
 			JsonProcessor jsonProcessor = new JsonProcessor();
-			TaskListResponse taskListResp =
-					jsonProcessor.parse(pollingJson, TaskListResponse.class);
+			TaskListResponse taskListResp = jsonProcessor.parse(pollingJson, TaskListResponse.class);
 			BuildResponse buildResponse = (BuildResponse) respObject;
-			
+
 			if (buildResponse.getTasksBuilt().size() == 1)
 			{
 				logger.println(buildResponse.getTasksBuilt().size() + " task will be built as part of " + setId);
@@ -567,57 +565,69 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			// Get the tasks that were successfully generated (anything leftover in a set is successful)
 			List<TaskInfo> tasksInSet = taskListResp.getTasks();
 			int numTasksToBeBuilt = tasksBuilt.size();
+			Set<String> uniqueTasksInSet = new HashSet<>();
 
 			for (TaskInfo task : tasksInSet)
 			{
-				logger.println(task.getModuleName() + " has been compiled successfully");
+				if (task.getOperation().equals("G")) //$NON-NLS-1$
+				{
+					logger.println(task.getModuleName() + " has been compiled successfully");
+				}
 				// Remove all successfully built tasks
-				tasksNotBuilt.removeIf(x -> x.getModuleName().equals(task.getModuleName())); // remove all successfully built tasks
+				uniqueTasksInSet.add(task.getTaskId());
+				tasksNotBuilt.removeIf(x -> x.getTaskId().equals(task.getTaskId())); // remove all successfully built
 			}
-			
+
 			for (TaskInfo task : tasksNotBuilt)
 			{
-				logger.println(task.getModuleName() + " did not compile successfully");				
+				logger.println(task.getModuleName() + " did not compile successfully");
 			}
-			
+
 			StringBuilder sb = new StringBuilder();
+			sb.append(uniqueTasksInSet.size() + " of " + numTasksToBeBuilt + " generated successfully. " + tasksNotBuilt.size()
+					+ " of " + numTasksToBeBuilt + " generated with errors.\n");
 			if (!tasksNotBuilt.isEmpty())
 			{
-				sb.append("The build process completed with errors. ");
+				logger.println(sb);
+				throw new RuntimeException("The build process completed with errors.");
 			}
 			else
 			{
 				sb.append("The build process was successfully completed. ");
+				logger.println(sb);
 			}
-			sb.append(tasksInSet.size() + " of " + numTasksToBeBuilt + " generated successfully. " + tasksNotBuilt.size()
-					+ " of " + numTasksToBeBuilt + " generated with errors.");
-
-			logger.println(sb);
 		}
 
 		private static final long serialVersionUID = 1L;
 
-		FilePath resolveOutputFile() {
+		FilePath resolveOutputFile()
+		{
 			String outputFile = step.getOutputFile();
-			if (outputFile == null || outputFile.trim().isEmpty()) {
+			if (outputFile == null || outputFile.trim().isEmpty())
+			{
 				return null;
 			}
 
-			try {
+			try
+			{
 				FilePath workspace = getContext().get(FilePath.class);
-				if (workspace == null) {
-					throw new IllegalStateException("Could not find workspace to save file outputFile: " + outputFile +
-							". You should use it inside a 'node' block");
+				if (workspace == null)
+				{
+					throw new IllegalStateException("Could not find workspace to save file outputFile: " + outputFile
+							+ ". You should use it inside a 'node' block");
 				}
 				return workspace.child(outputFile);
-			} catch (IOException | InterruptedException e) {
+			}
+			catch (IOException | InterruptedException e)
+			{
 				throw new IllegalStateException(e);
 			}
 		}
 
-		public Item getProject() {
+		public Item getProject()
+		{
 			return run.getParent();
 		}
 
-    }
+	}
 }
