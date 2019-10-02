@@ -3,20 +3,6 @@
 	xmlns:c="/lib/credentials" xmlns:cc="/lib/compuware">
 
 	<f:block>
-		<h4 style="margin-bottom: 0px">Git</h4>
-	</f:block>
-
-	<f:entry field="gitRepoUrl" title="Repository URL"
-		help="/plugin/compuware-ispw-operations/help-gitRepoUrl.html">
-		<f:textbox default="${descriptor.gitRepoUrl}" />
-	</f:entry>
-
-	<f:entry title="Credentials" field="gitCredentialsId"
-		help="/plugin/compuware-ispw-operations/help-gitCredentialsId.html">
-		<c:select />
-	</f:entry>
-
-	<f:block>
 		<hr size="1" color="Gainsboro" />
 	</f:block>
 

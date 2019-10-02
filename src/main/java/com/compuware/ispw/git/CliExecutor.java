@@ -75,9 +75,21 @@ public class CliExecutor
 			String gitRepoUrl, String gitCredentialsId, String ref, String refId,
 			String hash) throws InterruptedException, IOException
 	{
+		
+		String host;
+		String port;
+		
 		HostConnection connection = globalConfig.getHostConnection(connectionId);
-		String host = ArgumentUtils.escapeForScript(connection.getHost());
-		String port = ArgumentUtils.escapeForScript(connection.getPort());
+		if (connection != null)
+		{
+			host = ArgumentUtils.escapeForScript(connection.getHost());
+			port = ArgumentUtils.escapeForScript(connection.getPort());
+		}
+		else
+		{
+			throw new AbortException("Unable to connect to the host connection."); //$NON-NLS-1$
+		}
+	
 		String protocol = connection.getProtocol();
 		String codePage = connection.getCodePage();
 		String timeout = ArgumentUtils.escapeForScript(connection.getTimeout());
@@ -100,6 +112,8 @@ public class CliExecutor
 		{
 			logger.println("gitRepoUrl=" + gitRepoUrl + ", gitUserId=" + gitUserId + ", gitPassword=" + gitPassword);
 		}
+		
+		String workspacePath = envVars.get("WORKSPACE"); //$NON-NLS-1$
 
 		ArgumentListBuilder args = new ArgumentListBuilder();
 		// build the list of arguments to pass to the CLI
@@ -153,6 +167,7 @@ public class CliExecutor
 		args.add(GitToIspwConstants.GIT_REPO_URL_PARAM, ArgumentUtils.escapeForScript(gitRepoUrl));
 		args.add(GitToIspwConstants.GIT_REF_PARAM, ref);
 		args.add(GitToIspwConstants.GIT_HASH_PARAM, hash);
+		args.add(GitToIspwConstants.JENKINS_WORKSPACE_PATH_ARG_PARAM, workspacePath);
 
 		workDir.mkdirs();
 		logger.println("Shell script: " + args.toString());
