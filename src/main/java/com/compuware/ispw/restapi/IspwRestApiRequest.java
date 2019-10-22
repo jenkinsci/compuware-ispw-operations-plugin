@@ -1,6 +1,7 @@
 package com.compuware.ispw.restapi;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -9,12 +10,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
@@ -36,6 +40,7 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.compuware.jenkins.common.configuration.HostConnection;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
+
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -48,6 +53,7 @@ import hudson.model.BuildListener;
 import hudson.model.Item;
 import hudson.model.Items;
 import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
@@ -360,7 +366,7 @@ public class IspwRestApiRequest extends Builder {
 			cesIspwHost = host + "-" + port;
 		}
 
-		String cesIspwToken = RestApiUtils.getCesToken(credentialsId);
+		String cesIspwToken = RestApiUtils.getCesToken(credentialsId, build.getParent());
 
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("CES Url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
@@ -412,7 +418,13 @@ public class IspwRestApiRequest extends Builder {
 		HttpRequestExecution exec =
 				HttpRequestExecution.from(this, envVars, build, listener);
 		
-		ResponseContentSupplier supplier = launcher.getChannel().call(exec);
+		VirtualChannel channel = launcher.getChannel();
+		if(channel == null) {
+			logger.println("virtual channel is null, quit");
+			return false;
+		}
+		
+		ResponseContentSupplier supplier = channel.call(exec);
 		
 		String responseJson = supplier.getContent();
 		if (RestApiUtils.isIspwDebugMode())
@@ -449,7 +461,8 @@ public class IspwRestApiRequest extends Builder {
 					HttpRequestExecution poller =
 							HttpRequestExecution.createPoller(setId, this, envVars,
 									build, listener);
-					ResponseContentSupplier pollerSupplier = launcher.getChannel().call(poller);
+					
+					ResponseContentSupplier pollerSupplier = channel.call(poller);
 					String pollingJson = pollerSupplier.getContent();
 
 					JsonProcessor jsonProcessor = new JsonProcessor();
@@ -522,9 +535,11 @@ public class IspwRestApiRequest extends Builder {
 		Thread.sleep(Constants.POLLING_INTERVAL);
 		HttpRequestExecution poller = HttpRequestExecution.createTaskInfoPoller(setId, this, envVars, build, listener);
 		boolean isSuccessful = false;
-		if (launcher.getChannel() != null)
+		
+		VirtualChannel channel = launcher.getChannel();
+		if (channel != null)
 		{
-			ResponseContentSupplier pollerSupplier = launcher.getChannel().call(poller);
+			ResponseContentSupplier pollerSupplier = channel.call(poller);
 			String pollingJson = pollerSupplier.getContent();
 
 			JsonProcessor jsonProcessor = new JsonProcessor();

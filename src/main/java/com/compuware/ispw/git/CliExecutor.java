@@ -176,13 +176,17 @@ public class CliExecutor
 		if (exitValue != 0)
 		{
 			GitInfo newGitInfo = new GitInfo(ref, refId, hash);
-			if (objectQueue != null && !objectQueue.asList().contains(newGitInfo))
+			if (objectQueue != null)
 			{
-				objectQueue.add(newGitInfo);
-			}
+				if (!objectQueue.asList().contains(newGitInfo))
+				{
+					objectQueue.add(newGitInfo);
+				}
 
-			List<GitInfo> gitInfos = objectQueue.asList();
-			logger.println("Current queue - gitInfos = " + gitInfos);
+				List<GitInfo> gitInfos = objectQueue.asList();
+
+				logger.println("Current queue - gitInfos = " + gitInfos);
+			}
 
 			throw new AbortException("Call " + osFile + " exited with value = " + exitValue); //$NON-NLS-1$ //$NON-NLS-2$
 		}

@@ -121,7 +121,7 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			cesIspwHost = host + "-" + port;
 		}
 
-		String cesIspwToken = RestApiUtils.getCesToken(http.getCredentialsId());
+		String cesIspwToken = RestApiUtils.getCesToken(http.getCredentialsId(), build.getParent());
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
 					+ ", ces.ispw.token=" + cesIspwToken);
@@ -171,7 +171,7 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			cesIspwHost = host + "-" + port;
 		}
 
-		String cesIspwToken = RestApiUtils.getCesToken(step.getCredentialsId());
+		String cesIspwToken = RestApiUtils.getCesToken(step.getCredentialsId(), execution.getProject());
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
 					+ ", ces.ispw.token=" + cesIspwToken);
@@ -533,7 +533,7 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			cesIspwHost = host + "-" + port;
 		}
 
-		String cesIspwToken = RestApiUtils.getCesToken(http.getCredentialsId());
+		String cesIspwToken = RestApiUtils.getCesToken(http.getCredentialsId(), build.getParent());
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost + ", ces.ispw.token=" + cesIspwToken);
 
@@ -575,7 +575,7 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			cesIspwHost = host + "-" + port;
 		}
 
-		String cesIspwToken = RestApiUtils.getCesToken(step.getCredentialsId());
+		String cesIspwToken = RestApiUtils.getCesToken(step.getCredentialsId(), execution.getProject());
 		if (RestApiUtils.isIspwDebugMode())
 		{
 			logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost + ", ces.ispw.token=" + cesIspwToken);

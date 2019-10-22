@@ -182,9 +182,9 @@ public class RestApiUtils {
 		return hostConnection;
 	}
 
-	public static String getCesToken(String credentialsId) {
+	public static String getCesToken(String credentialsId, Item item) {
 		List<StringCredentials> creds =
-				filter(lookupCredentials(StringCredentials.class, Jenkins.getInstance(),
+				filter(lookupCredentials(StringCredentials.class, item,
 						ACL.SYSTEM, Collections.<DomainRequirement> emptyList()),
 						withId(StringUtils.trimToEmpty(credentialsId)));
 

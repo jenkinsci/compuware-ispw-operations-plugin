@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import static java.lang.Math.min;
 
 /**
@@ -434,6 +436,7 @@ public final class QueueFile implements Closeable, Iterable<byte[]> {
    *
    * @param dataLength length of data being added
    */
+  @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
   private void expandIfNecessary(long dataLength) throws IOException {
     long elementLength = Element.HEADER_LENGTH + dataLength;
     long remainingBytes = remainingBytes();

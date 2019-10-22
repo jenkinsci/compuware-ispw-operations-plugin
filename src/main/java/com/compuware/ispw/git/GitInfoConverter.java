@@ -6,7 +6,7 @@ import com.squareup.tape2.ObjectQueue.Converter;
 
 public class GitInfoConverter implements Converter<GitInfo>
 {
-	public static String UTF_8 = "UTF-8";
+	public static final String UTF_8 = "UTF-8";
 
 	@Override
 	public GitInfo from(byte[] source) throws IOException

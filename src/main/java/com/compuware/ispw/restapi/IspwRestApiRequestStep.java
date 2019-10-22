@@ -38,6 +38,7 @@ import hudson.Launcher;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
@@ -338,7 +339,9 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			Launcher launcher = getContext().get(Launcher.class);
 			ResponseContentSupplier supplier = null;
 			if (launcher != null) {
-				supplier = launcher.getChannel().call(exec);
+				VirtualChannel channel = launcher.getChannel();
+				if (channel != null)
+					supplier = channel.call(exec);
 			} else {
 				supplier = exec.call();
 			}
@@ -392,7 +395,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				cesIspwHost = host + "-" + port;
 			}
 
-			String cesIspwToken = RestApiUtils.getCesToken(step.credentialsId);
+			String cesIspwToken = RestApiUtils.getCesToken(step.credentialsId, run.getParent());
 
 			if (RestApiUtils.isIspwDebugMode())
 				logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost

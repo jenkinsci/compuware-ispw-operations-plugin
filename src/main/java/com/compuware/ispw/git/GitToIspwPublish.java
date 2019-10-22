@@ -160,12 +160,18 @@ public class GitToIspwPublish extends Builder
 		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
 		logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
 
-		String targetFolder = ArgumentUtils.escapeForScript(build.getWorkspace().getRemote());
-		String topazCliWorkspace = build.getWorkspace().getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
+		FilePath filePath = build.getWorkspace();
+		if(filePath == null) {
+			logger.println("build workspace is null");
+			return false;
+		}
+		
+		String targetFolder = ArgumentUtils.escapeForScript(filePath.getRemote());
+		String topazCliWorkspace = filePath.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
 		logger.println("TopazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
 		logger.println("targetFolder: " + targetFolder);
 
-		FilePath workDir = new FilePath(vChannel, build.getWorkspace().getRemote());
+		FilePath workDir = new FilePath(vChannel, filePath.getRemote());
 
 		for (GitInfo gitInfo : gitInfos)
 		{
