@@ -99,7 +99,8 @@ public abstract class GenericPostAction<T> extends AbstractPostAction {
 					} else {
 
 						//if the context path contains the name, replace the {name} with the true value
-						if(allParams.contains(name)) {
+						if(allParams.contains(name)) 
+						{
 							ReflectUtils.reflectSetter(ispwContextPathBean, name, value);
 							
 							//Reflect getter is necessary in here because some times
@@ -120,6 +121,7 @@ public abstract class GenericPostAction<T> extends AbstractPostAction {
 			ReflectUtils.reflectSetter(postObject, "eventCallbacks", events);
 		}
 
+		path = path.replaceAll(",", "&taskId=");
 		bean.setContextPath(RestApiUtils.cleanContextPath(path));
 
 		JsonProcessor jsonGenerator = new JsonProcessor();
