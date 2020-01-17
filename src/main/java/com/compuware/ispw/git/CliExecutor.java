@@ -61,7 +61,7 @@ public class CliExecutor
 	public boolean execute(String connectionId, String credentialsId, String runtimeConfig,
 			String stream, String app, String ispwLevel, String containerPref, String containerDesc, 
 			String gitRepoUrl, String gitCredentialsId, String ref, String refId,
-			String fromHash, String toHash, boolean isPrintHelpOnly) throws InterruptedException, IOException
+			String fromHash, String toHash) throws InterruptedException, IOException
 	{
 		
 		String host;
@@ -123,17 +123,7 @@ public class CliExecutor
 		// build the list of arguments to pass to the CLI
 
 		args.add(cliScriptFileRemote);
-		
-		if (isPrintHelpOnly)
-		{
-			// operation
-			args.add(GitToIspwConstants.ISPW_OPERATION_PARAM, "syncGitToIspwHelp");
-		}
-		else
-		{
-			// operation
-			args.add(GitToIspwConstants.ISPW_OPERATION_PARAM, "syncGitToIspw");
-		}
+		args.add(GitToIspwConstants.ISPW_OPERATION_PARAM, "syncGitToIspw");
 
 		// host connection
 		args.add(CommonConstants.HOST_PARM, host);
@@ -193,7 +183,6 @@ public class CliExecutor
 		logger.println("Shell script: " + args.toString());
 
 		// invoke the CLI (execute the batch/shell script)
-		
 		int exitValue = launcher.launch().cmds(args).envs(envVars).stdout(logger).pwd(workDir).join();
 
 		String osFile = launcher.isUnix()

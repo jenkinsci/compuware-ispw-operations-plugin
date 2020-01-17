@@ -95,19 +95,32 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 		GitToIspwUtils.trimEnvironmentVariables(envVars);
 
 		Map<String, RefMap> map = GitToIspwUtils.parse(branchMapping);
-		logger.println("map=" + map);
+		logger.println("branch mapping = " + map);
+		
 		String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
+		logger.println("branch name (refId) = " + refId);
+		
 		BranchPatternMatcher matcher = new BranchPatternMatcher(map, logger);
 		RefMap refMap = matcher.match(refId);
+		
+		if (refMap == null)
+		{
+			logger.println(
+					"Cannot find a branch pattern matchs the branch - " + refId + ", please adjust your branch mapping.");
+			return false;
+		}
 
 		// Sync to ISPW
-		boolean success = GitToIspwUtils.callCli(launcher, build, logger, envVars, refMap, this, false);
-
-		if (!success)
+		if (GitToIspwUtils.callCli(launcher, build, logger, envVars, refMap, this))
 		{
-			throw new AbortException("An error occurred while synchronizing source to ISPW");
+			return true;
 		}
-		return true;
+		else
+		{
+			logger.println("An error occurred while synchronizing source to ISPW");
+			return false;
+		}
+
 	}
 
 	@Extension

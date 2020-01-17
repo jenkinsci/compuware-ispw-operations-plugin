@@ -212,9 +212,6 @@ public class GitToIspwUtils
 	 *            the environment variables including ref, refId, fromHash, and toHash
 	 * @param refMap
 	 *            the ref map
-	 * @param publishStep
-	 *            The step that this CLI execution is being called from. The publish step is used to get the information input
-	 *            into the Jenkins UI.
 	 * @param isPrintHelpOnly
 	 *            only print help
 	 * @return a boolean to indicate success
@@ -222,44 +219,32 @@ public class GitToIspwUtils
 	 * @throws IOException the exception
 	 */
 	public static boolean callCli(Launcher launcher, Run<?, ?> build, PrintStream logger, EnvVars envVars, RefMap refMap,
-			IGitToIspwPublish publishStep, boolean isPrintHelpOnly) throws InterruptedException, IOException
+			IGitToIspwPublish publishStep) throws InterruptedException, IOException
 	{
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-		if (launcher == null)
-		{
-			return false;
-		}
-		VirtualChannel vChannel = launcher.getChannel();
+		assert launcher != null : "Jenkins:launcher cannot be null";
 
-		if (vChannel == null)
-		{
-			return false;
-		}
+		VirtualChannel vChannel = launcher.getChannel();
+		assert vChannel != null : "Jenkins:vChannel cannot be null";
 
 		String toHash = envVars.get(GitToIspwConstants.VAR_TO_HASH, null);
 		String fromHash = envVars.get(GitToIspwConstants.VAR_FROM_HASH, null);
 		String ref = envVars.get(GitToIspwConstants.VAR_REF, null);
 		String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
 		
-		if (!isPrintHelpOnly)
-		{
-			if (refMap == null)
-			{
-				logger.println("Please refine your branch mapping to match the branch name or ID in order to find correct refId.");
-				return false;
-			}
-			else
-			{
-				logger.println("mapping refId: " + refId + " to refMap=" + refMap.toString());
-			}
-		}
-		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
+		logger.println(String.format("toHash=%s, fromHash=%s, ref=%s, refId=%s, ref=%s", toHash, fromHash, ref, refId));
 
+		assert refMap != null : String.format(
+				"refMap is null. Failed to mapping refId: %s to refMap. Please refine your branch mapping to match the branch name or ID in order to find correct refId.",
+				refId);
+		logger.println("Mapping refId: " + refId + " to refMap=" + refMap.toString());
+		
+		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
 		String remoteFileSeparator = remoteProperties.getProperty(CommonConstants.FILE_SEPARATOR_PROPERTY_KEY);
 		
 		String workspacePath = envVars.get(Constants.ENV_VAR_WORKSPACE);
-		
 		String topazCliWorkspace = workspacePath + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
+		
 		logger.println("TopazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
 		
 		String osFile = launcher.isUnix()
@@ -288,20 +273,25 @@ public class GitToIspwUtils
 			String containerDesc = StringUtils.EMPTY;
 			String containerPref = StringUtils.EMPTY;
 			
-			if (refMap != null)
-			{
-				ispwLevel = refMap.getIspwLevel();
-				containerDesc = refMap.getContainerDesc();
-				containerPref = refMap.getContainerPref();
-			}
+			//we've assert refMap is not null
+			ispwLevel = refMap.getIspwLevel();
+			containerDesc = refMap.getContainerDesc();
+			containerPref = refMap.getContainerPref();
+			
 			success = cliExecutor.execute(publishStep.getConnectionId(), publishStep.getCredentialsId(),
 					publishStep.getRuntimeConfig(), publishStep.getStream(), publishStep.getApp(), ispwLevel,
 					containerPref, containerDesc, publishStep.getGitRepoUrl(),
-					publishStep.getGitCredentialsId(), ref, refId, fromHash, toHash, isPrintHelpOnly);
+					publishStep.getGitCredentialsId(), ref, refId, fromHash, toHash);
 		}
 		catch (AbortException e)
 		{
 			logger.println(e);
+			
+			if (RestApiUtils.isIspwDebugMode())
+			{
+				e.printStackTrace(logger);
+			}
+			
 			success = false;
 		}
 
@@ -320,6 +310,7 @@ public class GitToIspwUtils
 				logger.println("Failure: Synchronization for push ending with commit " + toHash.trim());
 			}
 		}
+		
 		return success;
 	}
 	

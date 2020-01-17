@@ -19,7 +19,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-
+import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 
 import hudson.AbortException;
@@ -80,8 +80,6 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 		@Override
 		protected Integer run() throws Exception
 		{
-			boolean isPrintHelpOnly = false;
-			
 			PrintStream logger = listener.getLogger();
 
 			EnvVars envVars = getContext().get(hudson.EnvVars.class);
@@ -101,8 +99,10 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 				
 				if (!itrChangeSets.hasNext())
 				{
-					isPrintHelpOnly = true;
+					logger.println("No changed files were detected.");
+					return 0; // should be a success
 				}
+				
 				while (itrChangeSets.hasNext())
 				{
 					ChangeLogSet<? extends Entry> changeLogSets = itrChangeSets.next();
@@ -111,6 +111,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 					{
 						Entry changeLogSet = itrChangeSet.next();
 						logger.println("Commit ID = " + changeLogSet.getCommitId());
+						
 						Collection<? extends AffectedFile> affectedFiles = changeLogSet.getAffectedFiles();
 						for (AffectedFile affectedFile : affectedFiles)
 						{
@@ -124,6 +125,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 					}
 
 					logger.println("ChangedPathSet = " + changedPathSet);
+					
 					if (!changedPathSet.isEmpty())
 					{
 						Set<String> pathSet = changedPathSet;
@@ -131,19 +133,22 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 					}
 					else
 					{
-						throw new AbortException("No changed files were detected.");
+						logger.println("No changed files were detected.");
+						return 0;
 					}
 
-					// provide a list of paths in the var_to_hash, and set var_from_hash to -1 (indicator this is for
+					// provide a list of paths in the var_to_hash, and set var_from_hash to
+					// GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET (indicator this is for
 					// multibranch project)
 					envVars.put(GitToIspwConstants.VAR_TO_HASH, paths);
-					envVars.put(GitToIspwConstants.VAR_FROM_HASH, "-1");
+					envVars.put(GitToIspwConstants.VAR_FROM_HASH, GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET);
 					envVars.put(GitToIspwConstants.VAR_REF, branchName);
 				}
 			}
 	
 			Map<String, RefMap> map = GitToIspwUtils.parse(step.branchMapping);
 			logger.println("map=" + map);
+			
 			String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
 			
 			BranchPatternMatcher matcher = new BranchPatternMatcher(map, logger);
