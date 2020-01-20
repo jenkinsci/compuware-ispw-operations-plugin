@@ -102,13 +102,8 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 		
 		BranchPatternMatcher matcher = new BranchPatternMatcher(map, logger);
 		RefMap refMap = matcher.match(refId);
-		
-		if (refMap == null)
-		{
-			logger.println(
-					"Cannot find a branch pattern matchs the branch - " + refId + ", please adjust your branch mapping.");
-			return false;
-		}
+		RestApiUtils.assertNotNull(logger, refMap,
+				"Cannot find a branch pattern matchs the branch - %s, please adjust your branch mapping.", refId);
 
 		// Sync to ISPW
 		if (GitToIspwUtils.callCli(launcher, build, logger, envVars, refMap, this))
@@ -120,7 +115,6 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 			logger.println("An error occurred while synchronizing source to ISPW");
 			return false;
 		}
-
 	}
 
 	@Extension

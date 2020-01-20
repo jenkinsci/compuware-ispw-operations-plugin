@@ -12,7 +12,7 @@ public class BranchPatternMatcherTest
 	public void testWildcardToRegEx()
 	{
 		String[] wildcards = new String[]{"*", "PROJECT-*", "tags", "tags/**", "heads/**/master", "refs/**", "rep_1/**/b1",
-				"rep_1/**/b2", "**/dev1", "**/master/*", "**/master*"};
+				"rep_1/**/b2", "**/dev1", "**/master", "**/master*"};
 		String[] refIds = new String[]{"rep_1/b1", "rep_1/abc/b1", "b1", "refs/heads/dev1", "master", "/master"};
 		for (String wildcard : wildcards)
 		{

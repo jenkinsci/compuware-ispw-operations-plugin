@@ -18,6 +18,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import com.compuware.ispw.restapi.util.RestApiUtils;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -147,30 +148,32 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 			String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
 			
 			BranchPatternMatcher matcher = new BranchPatternMatcher(map, logger);
-
+			String matchTo = null;
 			RefMap refMap = null;
-			if (refId == null || refId.trim().isEmpty())
+			if (StringUtils.isBlank(refId))
 			{
 				logger.println("Using branch name for branch pattern match: " + branchName);
-				
-				refMap = matcher.match(branchName);
+				matchTo = StringUtils.trimToNull(branchName);
 			}
 			else
 			{
 				logger.println("Using refid for branch pattern match: " + refId);
-				refMap = matcher.match(refId);
+				matchTo = StringUtils.trimToNull(refId);
 			}
+			RestApiUtils.assertNotNull(logger, matchTo, "Cannot match a branchName or refId, both is null or empty");
+			
+			refMap = matcher.match(matchTo);
+			RestApiUtils.assertNotNull(logger, refMap,
+					"Cannot find a branch pattern matchs the branch - %s, please adjust your branch mapping.", matchTo);
 			
 			Launcher launcher = getContext().get(Launcher.class);
-
 			if(GitToIspwUtils.callCli(launcher, run, logger, envVars, refMap, step))
 			{
 				return 0;
 			}
 			else
 			{
-				logger.println("An error occurred while synchronizing source to ISPW");
-				return -1;
+				throw new AbortException("An error occurred while synchronizing source to ISPW");
 			}
 		}
 	}

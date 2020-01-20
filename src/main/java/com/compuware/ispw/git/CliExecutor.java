@@ -63,44 +63,32 @@ public class CliExecutor
 			String gitRepoUrl, String gitCredentialsId, String ref, String refId,
 			String fromHash, String toHash) throws InterruptedException, IOException
 	{
-		
-		String host;
-		String port;
 		String gitUserId = StringUtils.EMPTY;
 		String gitPassword = StringUtils.EMPTY;
 		String userId = StringUtils.EMPTY;
 		String password = StringUtils.EMPTY;
 		
 		HostConnection connection = globalConfig.getHostConnection(connectionId);
-		if (connection != null)
-		{
-			host = ArgumentUtils.escapeForScript(connection.getHost());
-			port = ArgumentUtils.escapeForScript(connection.getPort());
-		}
-		else
-		{
-			throw new AbortException("Unable to connect to the host connection."); //$NON-NLS-1$
-		}
-	
+		RestApiUtils.assertNotNull(logger, connection, "Unable to connect to host connection for connectionId: %s", connectionId);
+		
+		String host = ArgumentUtils.escapeForScript(connection.getHost());
+		String port = ArgumentUtils.escapeForScript(connection.getPort());
+
+		logger.print(String.format("Using host connection: %s:$s", host, port));
+		
 		String protocol = connection.getProtocol();
 		String codePage = connection.getCodePage();
 		String timeout = ArgumentUtils.escapeForScript(connection.getTimeout());
 
 		StandardUsernamePasswordCredentials credentials = globalConfig.getLoginInformation(run.getParent(), credentialsId);
-		if (credentials != null)
+		RestApiUtils.assertNotNull(logger,  credentials, "The host credentials were not able to be obtained.");
+		userId = ArgumentUtils.escapeForScript(credentials.getUsername());
+		password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
+		if (RestApiUtils.isIspwDebugMode())
 		{
-			userId = ArgumentUtils.escapeForScript(credentials.getUsername());
-			password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
-			if (RestApiUtils.isIspwDebugMode())
-			{
-				logger.println("host=" + host + ", port=" + port + ", protocol=" + protocol + ", codePage=" + codePage
-						+ ", timeout=" + timeout + ", userId=" + userId + ", password=" + password + ", containerPref="
-						+ containerPref + ", containerDesc=" + containerDesc);
-			}
-		}
-		else
-		{
-			logger.println("The host credentials were not able to be obtained.");
+			logger.println("host=" + host + ", port=" + port + ", protocol=" + protocol + ", codePage=" + codePage
+					+ ", timeout=" + timeout + ", userId=" + userId + ", password=" + password + ", containerPref="
+					+ containerPref + ", containerDesc=" + containerDesc);
 		}
 
 		StandardUsernamePasswordCredentials gitCredentials = globalConfig.getLoginInformation(run.getParent(),

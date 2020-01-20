@@ -59,13 +59,7 @@ public class BranchPatternMatcher
 	 */
 	public RefMap match(String refId)
 	{
-		String patchedRefId = refId;
-
-		// patch the refId with a forward slash (github case)
-		if (!refId.startsWith("/"))
-		{
-			refId = "/" + refId;
-		}
+		String patchedRefId = refId.startsWith("/") ? refId : "/" + refId;
 		
 		Optional<Pattern> optional = patternMapping.keySet().stream().filter(x -> x.matcher(patchedRefId).find()).findFirst();
 

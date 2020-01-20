@@ -3,7 +3,6 @@ package com.compuware.ispw.restapi.util;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.filter;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,13 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
@@ -29,7 +26,7 @@ import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.ResponseContentSupplier;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
-
+import hudson.AbortException;
 import hudson.model.Item;
 import hudson.security.ACL;
 import hudson.util.ListBoxModel;
@@ -306,6 +303,54 @@ public class RestApiUtils {
 		return Constants.TRUE.equalsIgnoreCase(debugMode);
 	}
 
+	/**
+	 * Assert not null, abort Jenkins job
+	 * 
+	 * @param logger
+	 *            the Jenkins log
+	 * @param object
+	 *            the object to be tested
+	 * @param message
+	 *            the debug message
+	 * @param args
+	 *            the debug message arguments
+	 * 
+	 * @throws AbortException
+	 *             abort exception if null
+	 */
+	public static void assertNotNull(PrintStream logger, Object object, String message, Object... args) throws AbortException
+	{
+		if (object == null)
+		{
+			throw new AbortException(String.format(message, args));
+		}
+		else
+		{
+			if (RestApiUtils.isIspwDebugMode())
+			{
+				logger.println(String.format("%s=%s", object.getClass().getName(), object));
+			}
+		}
+	}
+
+	/**
+	 * Assert not null, if null, abort Jenkins job
+	 * 
+	 * @param logger
+	 *            the Jenkins log
+	 * @param object
+	 *            the object to be tested
+	 * @param message
+	 *            debug message if null
+	 * 
+	 * @throws AbortException
+	 *             abort exception if null
+	 */
+	public static void assertNotNull(PrintStream logger, Object object, String message) throws AbortException
+	{
+		assertNotNull(logger, object, message, StringUtils.EMPTY);
+	}
+	
 	/**
 	 * List all parameters in the contextPath based on pairs of {}
 	 * 

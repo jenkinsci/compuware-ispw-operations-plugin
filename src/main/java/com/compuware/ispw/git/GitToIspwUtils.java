@@ -222,10 +222,10 @@ public class GitToIspwUtils
 			IGitToIspwPublish publishStep) throws InterruptedException, IOException
 	{
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-		assert launcher != null : "Jenkins:launcher cannot be null";
+		RestApiUtils.assertNotNull(logger, globalConfig, "Jenkins:launcher cannot be null");
 
 		VirtualChannel vChannel = launcher.getChannel();
-		assert vChannel != null : "Jenkins:vChannel cannot be null";
+		RestApiUtils.assertNotNull(logger, vChannel, "Jenkins:vChannel cannot be null");
 
 		String toHash = envVars.get(GitToIspwConstants.VAR_TO_HASH, null);
 		String fromHash = envVars.get(GitToIspwConstants.VAR_FROM_HASH, null);
@@ -233,8 +233,7 @@ public class GitToIspwUtils
 		String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
 		
 		logger.println(String.format("toHash=%s, fromHash=%s, ref=%s, refId=%s", toHash, fromHash, ref, refId));
-
-		assert refMap != null : String.format(
+		RestApiUtils.assertNotNull(logger, refMap,
 				"refMap is null. Failed to mapping refId: %s to refMap. Please refine your branch mapping to match the branch name or ID in order to find correct refId.",
 				refId);
 		
