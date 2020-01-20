@@ -7,9 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
@@ -19,10 +17,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.util.RestApiUtils;
-
-import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -168,19 +163,14 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 			
 			Launcher launcher = getContext().get(Launcher.class);
 
-			boolean success = GitToIspwUtils.callCli(launcher, run, logger, envVars, refMap, step, isPrintHelpOnly);
-			
-			if (isPrintHelpOnly)
-			{
-				throw new AbortException("No changed files were detected.");
-			}
-			else if (success)
+			if(GitToIspwUtils.callCli(launcher, run, logger, envVars, refMap, step))
 			{
 				return 0;
 			}
 			else
 			{
-				throw new AbortException("An error occurred while synchronizing source to ISPW");
+				logger.println("An error occurred while synchronizing source to ISPW");
+				return -1;
 			}
 		}
 	}

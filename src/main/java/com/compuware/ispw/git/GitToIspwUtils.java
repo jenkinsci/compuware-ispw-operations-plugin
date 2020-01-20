@@ -232,11 +232,12 @@ public class GitToIspwUtils
 		String ref = envVars.get(GitToIspwConstants.VAR_REF, null);
 		String refId = envVars.get(GitToIspwConstants.VAR_REF_ID, null);
 		
-		logger.println(String.format("toHash=%s, fromHash=%s, ref=%s, refId=%s, ref=%s", toHash, fromHash, ref, refId));
+		logger.println(String.format("toHash=%s, fromHash=%s, ref=%s, refId=%s", toHash, fromHash, ref, refId));
 
 		assert refMap != null : String.format(
 				"refMap is null. Failed to mapping refId: %s to refMap. Please refine your branch mapping to match the branch name or ID in order to find correct refId.",
 				refId);
+		
 		logger.println("Mapping refId: " + refId + " to refMap=" + refMap.toString());
 		
 		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
