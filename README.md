@@ -17,7 +17,7 @@ The following are required to use this plugin:
 -   Compuware CES
 
 ### Additional Information for the Git to ISPW Sync Functionality
--   Refer to the following [guide](https://devops.api.compuware.com/guidelines/ispw_git.html) for more information
+-   Refer to the following [guide](https://devops.api.compuware.com/guidelines/GIT_to_ISPW_Integration_Tutorial.html) for more information
 -   Required: minimum version of Topaz Workbench CLI version 20.01.01 [installed](https://devops.api.compuware.com/tool_configuration/plugins.html#installing-the-topaz-workbench-cli)
 
 ### Installing in a Jenkins Instance
