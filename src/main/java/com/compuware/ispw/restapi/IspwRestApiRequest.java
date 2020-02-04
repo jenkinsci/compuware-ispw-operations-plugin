@@ -36,7 +36,6 @@ import com.compuware.ispw.restapi.util.HttpClientUtil;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
-import com.compuware.jenkins.common.configuration.HostConnection;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import hudson.EnvVars;
@@ -349,22 +348,8 @@ public class IspwRestApiRequest extends Builder {
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("...ispwAction=" + ispwAction + ", httpMode=" + httpMode);
 
-		String cesUrl = StringUtils.EMPTY;
-		String cesIspwHost = StringUtils.EMPTY;
-
-		HostConnection hostConnection = RestApiUtils.getCesUrl(connectionId);
-		if (hostConnection != null) {
-			cesUrl = StringUtils.trimToEmpty(hostConnection.getCesUrl());
-			if(!cesUrl.startsWith("http")) {
-				logger.println("Host connection does NOT contain a valid CES URL. Please re-configure in 'Manage Jenkins | Configure System | Compuware Configurations' section");
-				return false;
-			}
-			
-			
-			String host = StringUtils.trimToEmpty(hostConnection.getHost());
-			String port = StringUtils.trimToEmpty(hostConnection.getPort());
-			cesIspwHost = host + "-" + port;
-		}
+		String cesUrl = RestApiUtils.getCesUrl(connectionId);
+		String cesIspwHost = RestApiUtils.getIspwHostLabel(connectionId);
 
 		String cesIspwToken = RestApiUtils.getCesToken(credentialsId, build.getParent());
 

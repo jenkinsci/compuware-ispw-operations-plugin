@@ -4,6 +4,8 @@ import static com.cloudbees.plugins.credentials.CredentialsMatchers.filter;
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -173,10 +175,58 @@ public class RestApiUtils {
 		return model;
 	}
 	
-	public static HostConnection getCesUrl(String connectionId) {
+	public static HostConnection getHostConnection(String connectionId) {
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
 		HostConnection hostConnection = globalConfig.getHostConnection(connectionId);
 		return hostConnection;
+	}
+	
+	public static String getCesUrl(String connectionId) throws AbortException {
+		
+		HostConnection hostConnection = getHostConnection(connectionId);
+
+		String cesUrl = StringUtils.trimToEmpty(hostConnection.getCesUrl());
+
+		if (!cesUrl.toLowerCase().startsWith("http")) {
+			throw new AbortException(
+					"Host connection does NOT contain a valid CES URL. Please re-configure in 'Manage Jenkins | Configure System | Compuware Configurations' section; CES URL="
+							+ cesUrl);
+		}
+
+		try
+		{
+			URL url = new URL(cesUrl);
+			String protocol = url.getProtocol();
+			String host = url.getHost();
+			int port = url.getPort();
+			
+			if (port <= 0) {
+				if("http".equals(protocol.toLowerCase())) {
+					port = 80;
+				} else if("https".equals(protocol.toLowerCase())) {
+					port = 443;
+				}
+			}
+
+			cesUrl = protocol + "://" + host + ":" + port;
+		} catch (MalformedURLException x) {
+			throw new AbortException(
+					"Host connection does NOT contain a valid CES URL. Please re-configure in 'Manage Jenkins | Configure System | Compuware Configurations' section: "
+							+ x.getMessage() + "; CES URL=" + cesUrl);
+		}
+
+		return cesUrl;
+	}
+	
+	public static String getIspwHostLabel(String connectionId) {
+		HostConnection hostConnection = getHostConnection(connectionId);
+
+		String host = StringUtils.trimToEmpty(hostConnection.getHost());
+		String port = StringUtils.trimToEmpty(hostConnection.getPort());
+
+		String cesIspwHost = host + "-" + port;
+
+		return cesIspwHost;
 	}
 
 	public static String getCesToken(String credentialsId, Item item) {

@@ -31,7 +31,6 @@ import com.compuware.ispw.restapi.action.SetOperationAction;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
-import com.compuware.jenkins.common.configuration.HostConnection;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -379,23 +378,8 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			if(RestApiUtils.isIspwDebugMode())
 				logger.println("ispwAction=" + step.ispwAction + ", httpMode=" + step.httpMode);
 
-			String cesUrl = StringUtils.EMPTY;
-			String cesIspwHost = StringUtils.EMPTY;
-
-			HostConnection hostConnection = RestApiUtils.getCesUrl(step.connectionId);
-			if (hostConnection != null) {
-				cesUrl = StringUtils.trimToEmpty(hostConnection.getCesUrl());
-
-				if(!cesUrl.startsWith("http")) {
-					String errorMsg = "Host connection does NOT contain a valid CES URL. Please re-configure in 'Manage Jenkins | Configure System | Compuware Configurations' section";
-					logger.println(errorMsg);
-					throw new IllegalStateException(new Exception(errorMsg));
-				}
-				
-				String host = StringUtils.trimToEmpty(hostConnection.getHost());
-				String port = StringUtils.trimToEmpty(hostConnection.getPort());
-				cesIspwHost = host + "-" + port;
-			}
+			String cesUrl = RestApiUtils.getCesUrl(step.connectionId);
+			String cesIspwHost = RestApiUtils.getIspwHostLabel(step.connectionId);
 
 			String cesIspwToken = RestApiUtils.getCesToken(step.credentialsId, run.getParent());
 
