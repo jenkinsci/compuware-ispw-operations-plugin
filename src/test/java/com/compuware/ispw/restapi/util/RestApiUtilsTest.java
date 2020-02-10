@@ -2,7 +2,7 @@ package com.compuware.ispw.restapi.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -59,5 +59,16 @@ public class RestApiUtilsTest {
 		logger.info("contextPath=" + contextPath);
 		
 		assertEquals(contextPath, "/ispw/{srid}/assignments/{assignmentId}/tasks/deploy?level=DEV1");
+	}
+	
+	@Test
+	public void testGetVariables()
+	{
+		String contextPath = "/ispw/{srid}/assignments/{assignmentId}/tasks/deploy?level=DEV1&mname={mname}&mtype={mtype}";
+
+		ArrayList<String> variables = RestApiUtils.getVariables(contextPath);
+		logger.info("variables=" + variables);
+
+		assertEquals(variables.size(), 4);
 	}
 }

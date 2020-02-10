@@ -441,6 +441,14 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				logger.println();
 			}
 
+			ArrayList<String> variables = RestApiUtils.getVariables(step.url);
+			if (variables.size() != 0)
+			{
+				String errorMsg = "Action failed, need to define the following: " + variables;
+				logger.println(errorMsg);
+				throw new IllegalStateException(new Exception(errorMsg));
+			}
+			
 			logger.println("Starting ISPW Operations Plugin");
 			action.startLog(logger, ispwRequestBean.getIspwContextPathBean(), ispwRequestBean.getJsonObject());
 

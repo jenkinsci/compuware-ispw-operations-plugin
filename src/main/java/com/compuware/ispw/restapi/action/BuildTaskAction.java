@@ -43,7 +43,13 @@ public class BuildTaskAction extends SetInfoPostAction implements IBuildAction
 	@Override
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken)
 	{
-		return getIspwRequestBean(srid, ispwRequestBody, webhookToken, contextPath);
+		IspwRequestBean bean = getIspwRequestBean(srid, ispwRequestBody, webhookToken, contextPath);
+
+		String contextPath = bean.getContextPath();
+		contextPath = contextPath.replaceAll(",", "&taskId=");
+		bean.setContextPath(contextPath);
+
+		return bean;
 	}
 
 	@SuppressWarnings("nls")

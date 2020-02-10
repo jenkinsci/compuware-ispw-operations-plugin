@@ -402,6 +402,8 @@ public class RestApiUtils {
 		
 		List<String> queryParams = listQueryParams(contextPath);
 		
+		contextPath = contextPath.replace("?&", "?");
+		
 		int index = contextPath.indexOf("?");
 		if (index != -1) {
 			String s1 = contextPath.substring(0, index);
@@ -422,4 +424,26 @@ public class RestApiUtils {
 		return resultPath;
 	}
 	
+	/**
+	 * Find all variables that match variable name
+	 * 
+	 * @param s
+	 *            the string to extract the variables from
+	 * @return array list of variables
+	 */
+	public static ArrayList<String> getVariables(String s)
+	{
+		String regex = "\\{\\w*\\}";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(s);
+
+		ArrayList<String> vars = new ArrayList<String>();
+		while (matcher.find())
+		{
+			vars.add(matcher.group().replace("{", StringUtils.EMPTY).replace("}", StringUtils.EMPTY));
+		}
+
+		return vars;
+	}
+
 }

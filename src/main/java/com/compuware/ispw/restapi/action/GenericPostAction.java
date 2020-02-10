@@ -3,9 +3,7 @@ package com.compuware.ispw.restapi.action;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.compuware.ces.communications.service.data.EventCallback;
 import com.compuware.ces.model.BasicAuthentication;
 import com.compuware.ces.model.HttpHeader;
@@ -121,7 +119,6 @@ public abstract class GenericPostAction<T> extends AbstractPostAction {
 			ReflectUtils.reflectSetter(postObject, "eventCallbacks", events);
 		}
 
-		path = path.replaceAll(",", "&taskId=");
 		bean.setContextPath(RestApiUtils.cleanContextPath(path));
 
 		JsonProcessor jsonGenerator = new JsonProcessor();

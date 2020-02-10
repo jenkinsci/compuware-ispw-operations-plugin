@@ -10,15 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
@@ -42,7 +39,6 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.compuware.jenkins.common.configuration.HostConnection;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
-
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -394,12 +390,6 @@ public class IspwRestApiRequest extends Builder {
 
 		this.url = cesUrl + ispwRequestBean.getContextPath(); // CES URL
 		
-		// Added for the case within BuildTaskAction where some parameters are not required if other parameters are inputed
-		if (this.url.contains("/build?&")) //$NON-NLS-1$
-		{
-			this.url = this.url.replace("/build?&", "/build?"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		
 		this.requestBody = ispwRequestBean.getJsonRequest();
 		this.token = cesIspwToken; // CES TOKEN
 
@@ -420,6 +410,14 @@ public class IspwRestApiRequest extends Builder {
 			logger.println();
 		}
 
+		ArrayList<String> variables = RestApiUtils.getVariables(this.url);
+		if (variables.size() != 0)
+		{
+			String errorMsg = "Action failed, need to define the following: " + variables;
+			logger.println(errorMsg);
+			throw new IllegalStateException(new Exception(errorMsg));
+		}
+		
 		for (Map.Entry<String, String> e : build.getBuildVariables().entrySet()) {
 			envVars.put(e.getKey(), e.getValue());
 			
