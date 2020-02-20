@@ -31,6 +31,7 @@ import com.compuware.ispw.restapi.action.SetOperationAction;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;

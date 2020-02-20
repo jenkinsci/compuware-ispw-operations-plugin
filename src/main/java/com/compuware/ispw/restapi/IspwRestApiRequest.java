@@ -38,6 +38,7 @@ import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -307,14 +308,14 @@ public class IspwRestApiRequest extends Builder {
 		return body;
 	}
 
-	FilePath resolveOutputFile(EnvVars envVars, AbstractBuild<?, ?> build) {
+	FilePath resolveOutputFile(EnvVars envVars, AbstractBuild<?, ?> build) throws AbortException {
 		if (outputFile == null || outputFile.trim().isEmpty()) {
 			return null;
 		}
 		String filePath = envVars.expand(outputFile);
 		FilePath workspace = build.getWorkspace();
 		if (workspace == null) {
-			throw new IllegalStateException("Could not find workspace to save file outputFile: "
+			throw new AbortException("Could not find workspace to save file outputFile: "
 					+ outputFile);
 		}
 		return workspace.child(filePath);
@@ -399,8 +400,7 @@ public class IspwRestApiRequest extends Builder {
 		if (variables.size() != 0)
 		{
 			String errorMsg = "Action failed, need to define the following: " + variables;
-			logger.println(errorMsg);
-			throw new IllegalStateException(new Exception(errorMsg));
+			throw new AbortException(errorMsg);
 		}
 		
 		for (Map.Entry<String, String> e : build.getBuildVariables().entrySet()) {
@@ -477,9 +477,8 @@ public class IspwRestApiRequest extends Builder {
 						}
 						else if (Constants.SET_STATE_FAILED.equalsIgnoreCase(setState))
 						{
-							logger.println("Set ID " + setId + " Failed for action "
-									+ ispwRequestBean.getIspwContextPathBean().getAction());
-							break;
+							throw new AbortException("Set ID " + setId + " Failed for action "
+									+ ispwAction);
 						}
 						else if (Constants.SET_STATE_TERMINATED.equalsIgnoreCase(setState)
 								&& SetOperationAction.SET_ACTION_TERMINATE.equalsIgnoreCase(ispwRequestBean.getIspwContextPathBean().getAction()))

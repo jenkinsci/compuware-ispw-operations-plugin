@@ -13,7 +13,7 @@ import com.compuware.ispw.restapi.WebhookToken;
  * Action to remove one or more tasks from an ISPW release.
  */
 @SuppressWarnings("nls")
-public class RemoveFromReleaseAction implements IAction
+public class RemoveFromReleaseAction extends AbstractPostAction implements IAction
 {
 
 	private PrintStream logger;
@@ -22,7 +22,7 @@ public class RemoveFromReleaseAction implements IAction
 
 	public RemoveFromReleaseAction(PrintStream logger)
 	{
-		this.logger = logger;
+		super(logger);
 	}
 
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken)
@@ -93,12 +93,7 @@ public class RemoveFromReleaseAction implements IAction
 
 		return bean;
 	}
-
-	public PrintStream getLogger()
-	{
-		return logger;
-	}
-
+	
 	@Override
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject)
 	{
@@ -117,9 +112,4 @@ public class RemoveFromReleaseAction implements IAction
 		return taskResp;
 	}
 
-	@Override
-	public HttpMode getHttpMode()
-	{
-		return HttpMode.POST;
-	}
 }

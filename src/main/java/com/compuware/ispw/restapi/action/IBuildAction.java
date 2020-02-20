@@ -23,7 +23,7 @@ import hudson.FilePath;
 /**
  * Interface for actions that run the ISPW build operation.
  */
-public interface IBuildAction
+public interface IBuildAction extends IAction
 {
 	public static String BUILD_PARAM_FILE_NAME = "automaticBuildParams.txt"; //$NON-NLS-1$
 

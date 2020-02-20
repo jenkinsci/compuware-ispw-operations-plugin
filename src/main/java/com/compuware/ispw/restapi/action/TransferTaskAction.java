@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import org.apache.commons.lang3.StringUtils;
 import com.compuware.ispw.model.rest.MultiTaskInfoResponse;
 import com.compuware.ispw.model.rest.TransferTaskInfo;
-import com.compuware.ispw.restapi.HttpMode;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.JsonProcessor;
@@ -17,16 +16,14 @@ import com.compuware.ispw.restapi.util.ReflectUtils;
  * @author Sam Zhou
  *
  */
-public class TransferTaskAction implements IAction
+public class TransferTaskAction extends AbstractPostAction implements IAction
 {
-
-	private PrintStream logger;
 
 	private static final String contextPath = "/ispw/{srid}/assignments/{assignmentId}/tasks/transfer?level={level}&mname={mname}&mtype={mtype}&taskId={taskId}";
 
 	public TransferTaskAction(PrintStream logger)
 	{
-		this.logger = logger;
+		super(logger);
 	}
 
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken)
@@ -108,11 +105,6 @@ public class TransferTaskAction implements IAction
 		return bean;
 	}
 
-	public PrintStream getLogger()
-	{
-		return logger;
-	}
-
 	@Override
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject)
 	{
@@ -131,9 +123,4 @@ public class TransferTaskAction implements IAction
 		return taskResp;
 	}
 	
-	@Override
-	public HttpMode getHttpMode()
-	{
-		return HttpMode.POST;
-	}
 }
