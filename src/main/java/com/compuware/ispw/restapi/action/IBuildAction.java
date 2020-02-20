@@ -6,7 +6,7 @@
  * All Compuware products listed within the materials are trademarks of Compuware Corporation. All other company or product
  * names are trademarks of their respective owners.
  * 
- * Copyright (c) 2019 Compuware Corporation. All rights reserved.
+ * Copyright (c) 2020 Compuware Corporation. All rights reserved.
  */
 package com.compuware.ispw.restapi.action;
 
@@ -91,7 +91,12 @@ public interface IBuildAction
 						}
 						if (buildParms.getTaskIds() != null && !buildParms.getTaskIds().isEmpty())
 						{
-							requestBodyBuilder.append("\ntaskId = " + buildParms.getTaskIds().get(0));
+							requestBodyBuilder.append("\ntaskId = ");
+							for (String taskId : buildParms.getTaskIds())
+							{
+								requestBodyBuilder.append(taskId + ",");
+							}
+							requestBodyBuilder.deleteCharAt(requestBodyBuilder.length() - 1); // remove last comma
 						}
 						requestBodyBuilder.append(ispwRequestBody); // the original request body may still contain webhook event
 																	// information.
