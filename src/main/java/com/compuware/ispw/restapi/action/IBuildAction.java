@@ -10,6 +10,7 @@
  */
 package com.compuware.ispw.restapi.action;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +50,16 @@ public interface IBuildAction extends IAction
 		if (ispwRequestBody != null)
 		{
 			Matcher buildAutomaticallyMatcher = buildAutomaticallyPattern.matcher(ispwRequestBody);
-			if (buildAutomaticallyMatcher.find() && buildParmPath != null)
+			
+			boolean exists = false;
+			try {
+				exists = buildParmPath != null && buildParmPath.exists();
+			} catch (IOException | InterruptedException x) {
+				x.printStackTrace();
+				logger.println("Warn: " + x.getMessage());
+			}
+			
+			if (exists && buildAutomaticallyMatcher.find())
 			{
 				ispwRequestBody = buildAutomaticallyMatcher.replaceAll(StringUtils.EMPTY);
 
@@ -62,10 +72,12 @@ public interface IBuildAction extends IAction
 
 					String jsonString = buildParmPath.readToString();
 					BuildParms buildParms = null;
+					
 					if (jsonString != null && !jsonString.isEmpty())
 					{
 						buildParms = BuildParms.parse(jsonString);
 					}
+					
 					if (buildParms != null)
 					{
 						// Remove any line that is not a comment and contains application, assignmentid, releaseid, taskid,
@@ -106,8 +118,15 @@ public interface IBuildAction extends IAction
 				}
 				catch (Exception e)
 				{
+					//do NOT auto build if has exception
+					ispwRequestBody = StringUtils.EMPTY;
+					
 					e.printStackTrace();
+					logger.println("Warn: " + e.getMessage());
 				}
+			} else {
+				//do NOT auto build if not exist
+				ispwRequestBody = StringUtils.EMPTY;
 			}
 		}
 		if (RestApiUtils.isIspwDebugMode())
