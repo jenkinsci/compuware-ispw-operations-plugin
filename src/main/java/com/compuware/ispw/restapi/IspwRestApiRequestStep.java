@@ -396,7 +396,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				ispwRequestBean = ((IBuildAction) action).getIspwRequestBean(cesIspwHost, step.ispwRequestBody, webhookToken,
 						buildParmPath);
 				
-				if (ispwRequestBean == null)
+				if (ispwRequestBean == null) // in case of NO auto build
 				{
 					return null;
 				}

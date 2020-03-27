@@ -51,82 +51,92 @@ public interface IBuildAction extends IAction
 		{
 			Matcher buildAutomaticallyMatcher = buildAutomaticallyPattern.matcher(ispwRequestBody);
 			
-			boolean exists = false;
-			try {
-				exists = buildParmPath != null && buildParmPath.exists();
-			} catch (IOException | InterruptedException x) {
-				x.printStackTrace();
-				logger.println("Warn: " + x.getMessage());
-			}
-			
-			if (exists && buildAutomaticallyMatcher.find())
+			if (buildAutomaticallyMatcher.find())
 			{
-				ispwRequestBody = buildAutomaticallyMatcher.replaceAll(StringUtils.EMPTY);
-
-				try
-				{
-					// if a line of the body contains "buildautomatically" and "true" case insensitive, and the line is not a
-					// comment.
-					// File parmFile = new File(buildParmPath, BUILD_PARAM_FILE_NAME);
-					logger.println("Build parameters will automatically be retrieved from file " + buildParmPath.toURI());
-
-					String jsonString = buildParmPath.readToString();
-					BuildParms buildParms = null;
-					
-					if (jsonString != null && !jsonString.isEmpty())
-					{
-						buildParms = BuildParms.parse(jsonString);
-					}
-					
-					if (buildParms != null)
-					{
-						// Remove any line that is not a comment and contains application, assignmentid, releaseid, taskid,
-						// mname, mtype, or level. These parms will be replaced with parms from the file.
-						String linesToReplaceRegex = "(?i)(^(?!#)( +)?(application|assignmentid|releaseid|taskid|mname|mtype|level)(.+)?$)"; //$NON-NLS-1$
-						Pattern linesToReplacePattern = Pattern.compile(linesToReplaceRegex,
-								Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-						Matcher linesToReplaceMatcher = linesToReplacePattern.matcher(ispwRequestBody);
-						ispwRequestBody = linesToReplaceMatcher.replaceAll(StringUtils.EMPTY);
-
-						StringBuilder requestBodyBuilder = new StringBuilder();
-						if (buildParms.getContainerId() != null)
-						{
-							requestBodyBuilder.append("assignmentId = " + buildParms.getContainerId());
-						}
-						if (buildParms.getTaskLevel() != null)
-						{
-							requestBodyBuilder.append("\nlevel = " + buildParms.getTaskLevel());
-						}
-						if (buildParms.getReleaseId() != null)
-						{
-							requestBodyBuilder.append("\nreleaseId = " + buildParms.getReleaseId());
-						}
-						if (buildParms.getTaskIds() != null && !buildParms.getTaskIds().isEmpty())
-						{
-							requestBodyBuilder.append("\ntaskId = ");
-							for (String taskId : buildParms.getTaskIds())
-							{
-								requestBodyBuilder.append(taskId + ",");
-							}
-							requestBodyBuilder.deleteCharAt(requestBodyBuilder.length() - 1); // remove last comma
-						}
-						requestBodyBuilder.append(ispwRequestBody); // the original request body may still contain webhook event
-																	// information.
-						ispwRequestBody = requestBodyBuilder.toString();
-					}
-
+				boolean exists = false;
+				try {
+					exists = buildParmPath != null && buildParmPath.exists();
+				} catch (IOException | InterruptedException x) {
+					x.printStackTrace();
+					logger.println("Warn: " + x.getMessage());
 				}
-				catch (Exception e)
+				
+				if(exists)
 				{
-					//do NOT auto build if has exception
+					ispwRequestBody = buildAutomaticallyMatcher.replaceAll(StringUtils.EMPTY);
+
+					try
+					{
+						// if a line of the body contains "buildautomatically" and "true" case insensitive, and the line is not a
+						// comment.
+						// File parmFile = new File(buildParmPath, BUILD_PARAM_FILE_NAME);
+						logger.println("Build parameters will automatically be retrieved from file " + buildParmPath.toURI());
+	
+						String jsonString = buildParmPath.readToString();
+						BuildParms buildParms = null;
+						
+						if (jsonString != null && !jsonString.isEmpty())
+						{
+							buildParms = BuildParms.parse(jsonString);
+						}
+						
+						if (buildParms != null)
+						{
+							// Remove any line that is not a comment and contains application, assignmentid, releaseid, taskid,
+							// mname, mtype, or level. These parms will be replaced with parms from the file.
+							String linesToReplaceRegex = "(?i)(^(?!#)( +)?(application|assignmentid|releaseid|taskid|mname|mtype|level)(.+)?$)"; //$NON-NLS-1$
+							Pattern linesToReplacePattern = Pattern.compile(linesToReplaceRegex,
+									Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+							Matcher linesToReplaceMatcher = linesToReplacePattern.matcher(ispwRequestBody);
+							ispwRequestBody = linesToReplaceMatcher.replaceAll(StringUtils.EMPTY);
+	
+							StringBuilder requestBodyBuilder = new StringBuilder();
+							if (buildParms.getContainerId() != null)
+							{
+								requestBodyBuilder.append("assignmentId = " + buildParms.getContainerId());
+							}
+							if (buildParms.getTaskLevel() != null)
+							{
+								requestBodyBuilder.append("\nlevel = " + buildParms.getTaskLevel());
+							}
+							if (buildParms.getReleaseId() != null)
+							{
+								requestBodyBuilder.append("\nreleaseId = " + buildParms.getReleaseId());
+							}
+							if (buildParms.getTaskIds() != null && !buildParms.getTaskIds().isEmpty())
+							{
+								requestBodyBuilder.append("\ntaskId = ");
+								for (String taskId : buildParms.getTaskIds())
+								{
+									requestBodyBuilder.append(taskId + ",");
+								}
+								requestBodyBuilder.deleteCharAt(requestBodyBuilder.length() - 1); // remove last comma
+							}
+							requestBodyBuilder.append(ispwRequestBody); // the original request body may still contain webhook event
+																		// information.
+							ispwRequestBody = requestBodyBuilder.toString();
+						}
+						
+						logger.println("Done reading automaticBuildParams.txt, delete it.");
+						buildParmPath.delete();
+					}
+					catch (Exception e)
+					{
+						//do NOT auto build if has exception
+						ispwRequestBody = StringUtils.EMPTY;
+						
+						e.printStackTrace();
+						logger.println("skip auto build, exception happens: " + e.getMessage());
+					}
+					
+				}
+				else
+				{
+					//do NOT auto build if file doesn't exist
 					ispwRequestBody = StringUtils.EMPTY;
 					
-					e.printStackTrace();
-					logger.println("Warn: " + e.getMessage());
+					logger.println("skip auto build, automaticBuildParams.txt doesn't exist.");
 				}
-			} else {
-				//do NOT auto build if not exist
-				ispwRequestBody = StringUtils.EMPTY;
 			}
 		}
 		if (RestApiUtils.isIspwDebugMode())

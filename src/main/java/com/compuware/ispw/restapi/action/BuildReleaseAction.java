@@ -11,6 +11,9 @@
 package com.compuware.ispw.restapi.action;
 
 import java.io.PrintStream;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.compuware.ispw.model.rest.BuildResponse;
 import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.IspwContextPathBean;
@@ -72,6 +75,14 @@ public class BuildReleaseAction extends SetInfoPostAction implements IBuildActio
 			FilePath buildParmPath)
 	{
 		ispwRequestBody = getRequestBody(ispwRequestBody, buildParmPath, this.getLogger());
-		return getIspwRequestBean(srid, ispwRequestBody, webhookToken);
+		
+		if (StringUtils.isNotBlank(ispwRequestBody))
+		{
+			return getIspwRequestBean(srid, ispwRequestBody, webhookToken);
+		}
+		else
+		{
+			return null;
+		}
 	}
 }

@@ -366,7 +366,7 @@ public class IspwRestApiRequest extends Builder {
 			ispwRequestBean = ((IBuildAction) action).getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken,
 					buildParmPath);
 			
-			if (ispwRequestBean == null)
+			if (ispwRequestBean == null) // in case of NO auto build
 			{
 				return true;
 			}
