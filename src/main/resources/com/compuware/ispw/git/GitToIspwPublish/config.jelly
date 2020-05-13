@@ -35,6 +35,11 @@
 		<f:textbox default="${descriptor.app}" />
 	</f:entry>
 
+	<f:entry title="YAML Mapping File:" field="ispwConfigPath"
+		help="/plugin/compuware-ispw-operations/help-gitIspwConfigPath.html">
+		<f:textbox default="${descriptor.ispwConfigPath}" />
+	</f:entry>
+
 	<f:block>
 		<hr size="1" color="Gainsboro" />
 	</f:block>

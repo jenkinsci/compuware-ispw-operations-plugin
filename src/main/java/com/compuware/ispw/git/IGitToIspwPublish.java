@@ -49,4 +49,9 @@ public interface IGitToIspwPublish
 	 * @return the app
 	 */
 	public String getApp();
+	
+	/**
+	 * @return the ispwConfig
+	 */
+	public String getIspwConfigPath();
 }

@@ -12,6 +12,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import com.compuware.ispw.git.GitToIspwPublishStep.DescriptorImpl;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -50,6 +51,7 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 	private String runtimeConfig = DescriptorImpl.runtimeConfig;
 	private String stream = DescriptorImpl.stream;
 	private String app = DescriptorImpl.app;
+	private String ispwConfigPath = DescriptorImpl.ispwConfigPath;
 
 	// Branch mapping
 	private String branchMapping = DescriptorImpl.branchMapping;
@@ -126,6 +128,7 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 		public static final String runtimeConfig = StringUtils.EMPTY;
 		public static final String stream = StringUtils.EMPTY;
 		public static final String app = StringUtils.EMPTY;
+		public static final String ispwConfigPath = StringUtils.EMPTY;
 
 		// Branch mapping
 		public static final String branchMapping = GitToIspwConstants.BRANCH_MAPPING_DEFAULT;
@@ -302,4 +305,20 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 		this.branchMapping = branchMapping;
 	}
 
+	/**
+	 * @return the ispwConfigPath
+	 */
+	public String getIspwConfigPath()
+	{
+		return ispwConfigPath;
+	}
+
+	/**
+	 * @param ispwConfigPath the ispwConfigPath to set
+	 */
+	@DataBoundSetter
+	public void setIspwConfigPath(String ispwConfigPath)
+	{
+		this.ispwConfigPath = ispwConfigPath;
+	}
 }
