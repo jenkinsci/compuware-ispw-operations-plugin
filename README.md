@@ -322,11 +322,17 @@ The Compuware site provides a variety of product and support
 information.
 
 # Change Log
+### Version 1.0.6
+
+-   Add support for flexible YAML location for ISPW/GIT integration
+-   Make logs consistent between Jenkins operations and Topaz actions 
+-   Auto clean up a task if the task is in failed status while loading source from GIT into ISPW   
+
 ### Version 1.0.5
 
 -   Add support for building components. The build functionality generates impacted components of one or more selected tasks at the same level in the life cycle. Additionally, the build functionality can generate impacted components of tasks at a selected level within a selected assignment or release container.
--   Add support for syncing between Git and ISPW
--   Add support for CloudBees Folder plugin
+-   Add support for synchronizing between GIT and ISPW
+-   Add support for CloudBees Folder plug-in
 -   Add a 'skip polling' option for pipeline scripts
 
 ### Version 1.0.4
