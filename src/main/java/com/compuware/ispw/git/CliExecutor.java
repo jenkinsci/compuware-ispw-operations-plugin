@@ -61,7 +61,7 @@ public class CliExecutor
 	public boolean execute(String connectionId, String credentialsId, String runtimeConfig,
 			String stream, String app, String ispwLevel, String containerPref, String containerDesc, 
 			String gitRepoUrl, String gitCredentialsId, String ref, String refId,
-			String fromHash, String toHash) throws InterruptedException, IOException
+			String fromHash, String toHash, String ispwConfigPath) throws InterruptedException, IOException
 	{
 		String gitUserId = StringUtils.EMPTY;
 		String gitPassword = StringUtils.EMPTY;
@@ -139,6 +139,10 @@ public class CliExecutor
 		args.add(GitToIspwConstants.ISPW_SERVER_STREAM_PARAM, stream);
 		args.add(GitToIspwConstants.ISPW_SERVER_APP_PARAM, app);
 		args.add(GitToIspwConstants.ISPW_SERVER_CHECKOUT_LEV_PARAM, ispwLevel);
+		
+		if(StringUtils.isNotBlank(ispwConfigPath)) {
+			args.add(GitToIspwConstants.ISPW_CONFIG_PATH, StringUtils.trimToEmpty(ispwConfigPath));
+		}
 		
 		if (StringUtils.isNotBlank(containerPref))
 		{

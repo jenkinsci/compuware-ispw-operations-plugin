@@ -20,6 +20,8 @@ public class GitToIspwConstants
 	public static final String ISPW_SERVER_STREAM_PARAM = "-ispwServerStream"; //$NON-NLS-1$
 	public static final String ISPW_SERVER_APP_PARAM = "-ispwServerApp"; //$NON-NLS-1$
 	public static final String ISPW_SERVER_CHECKOUT_LEV_PARAM = "-ispwCheckoutLevel"; //$NON-NLS-1$
+	
+	public static final String ISPW_CONFIG_PATH = "-ispwConfigPath"; //$NON-NLS-1$
 
 	public static final String GIT_REPO_URL_PARAM = "-gitRepoUrl"; //$NON-NLS-1$
 	public static final String GIT_USERID_PARAM = "-gitUsername"; //$NON-NLS-1$

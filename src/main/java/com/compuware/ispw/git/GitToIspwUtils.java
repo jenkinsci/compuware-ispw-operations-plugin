@@ -281,7 +281,7 @@ public class GitToIspwUtils
 			success = cliExecutor.execute(publishStep.getConnectionId(), publishStep.getCredentialsId(),
 					publishStep.getRuntimeConfig(), publishStep.getStream(), publishStep.getApp(), ispwLevel,
 					containerPref, containerDesc, publishStep.getGitRepoUrl(),
-					publishStep.getGitCredentialsId(), ref, refId, fromHash, toHash);
+					publishStep.getGitCredentialsId(), ref, refId, fromHash, toHash, publishStep.getIspwConfigPath());
 		}
 		catch (AbortException e)
 		{
