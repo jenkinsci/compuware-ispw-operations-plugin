@@ -15,9 +15,6 @@ import com.compuware.ispw.restapi.WebhookToken;
 @SuppressWarnings("nls")
 public class RemoveFromReleaseAction extends AbstractPostAction implements IAction
 {
-
-	private PrintStream logger;
-
 	private static final String CONTEXT_PATH = "/ispw/{srid}/releases/{releaseId}/tasks/remove?level={level}&mname={mname}&mtype={mtype}&taskId={taskId}";
 
 	public RemoveFromReleaseAction(PrintStream logger)

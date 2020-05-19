@@ -120,7 +120,7 @@ public interface IBuildAction extends IAction
 						logger.println("Done reading automaticBuildParams.txt, delete it.");
 						buildParmPath.delete();
 					}
-					catch (Exception e)
+					catch (IOException | InterruptedException e)
 					{
 						//do NOT auto build if has exception
 						ispwRequestBody = StringUtils.EMPTY;
