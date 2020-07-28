@@ -495,6 +495,30 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 
 							if (setState.equals(Constants.SET_STATE_CLOSED) || setState.equals(Constants.SET_STATE_COMPLETE)) {
 								logger.println("ISPW: Action " + step.ispwAction + " completed");
+								
+								if (action instanceof IBuildAction)
+								{
+									IBuildAction buildAction = (IBuildAction) action;
+									BuildParms buildParms = buildAction.getBuildParms();
+									if (buildParms != null)
+									{
+										String taskLevel = buildParms.getTaskLevel();
+										if (StringUtils.isNotBlank(taskLevel))
+										{
+											HttpRequestExecution poller1 = HttpRequestExecution.createPoller(setId, taskLevel,
+													step, listener, this);
+											ResponseContentSupplier pollerSupplier1 = runExec(poller1);
+											String pollingJson1 = pollerSupplier1.getContent();
+
+											JsonProcessor jsonProcessor1 = new JsonProcessor();
+											SetInfoResponse setInfoResp1 = jsonProcessor1.parse(pollingJson1,
+													SetInfoResponse.class);
+											logger.println("tasks="+setInfoResp1.getTasks());
+										}
+									}
+								}
+								
+								
 								break;
 							}
 							else if (Constants.SET_STATE_FAILED.equalsIgnoreCase(setState))

@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import com.compuware.ispw.restapi.BuildParms;
+import com.compuware.ispw.restapi.BuildParmsRequestBody;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.WebhookToken;
 import com.compuware.ispw.restapi.util.RestApiUtils;
@@ -42,11 +43,14 @@ public interface IBuildAction extends IAction
 	 *            the logger.
 	 * @return a String containing the request body that should be used.
 	 */
-	public default String getRequestBody(String ispwRequestBody, FilePath buildParmPath, PrintStream logger)
+	public default BuildParmsRequestBody getRequestBody(String ispwRequestBody, FilePath buildParmPath, PrintStream logger)
 	{
 		String buildAutomaticallyRegex = "(?i)(?m)(^(?!#)(.+)?buildautomatically.+true(.+)?$)"; //$NON-NLS-1$
 		Pattern buildAutomaticallyPattern = Pattern.compile(buildAutomaticallyRegex,
 				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		
+		BuildParmsRequestBody buildParmsRequestBody = null;
+		
 		if (ispwRequestBody != null)
 		{
 			Matcher buildAutomaticallyMatcher = buildAutomaticallyPattern.matcher(ispwRequestBody);
@@ -115,6 +119,8 @@ public interface IBuildAction extends IAction
 							requestBodyBuilder.append(ispwRequestBody); // the original request body may still contain webhook event
 																		// information.
 							ispwRequestBody = requestBodyBuilder.toString();
+							
+							buildParmsRequestBody = new BuildParmsRequestBody(ispwRequestBody, buildParms);
 						}
 						
 						logger.println("Done reading automaticBuildParams.txt.");
@@ -142,10 +148,11 @@ public interface IBuildAction extends IAction
 		{
 			logger.println("Using requestBody :\n{" + ispwRequestBody + "\n}"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		return ispwRequestBody;
+		return buildParmsRequestBody;
 	}
 
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken,
 			FilePath buildParmPath);
 
+	public BuildParms getBuildParms();
 }

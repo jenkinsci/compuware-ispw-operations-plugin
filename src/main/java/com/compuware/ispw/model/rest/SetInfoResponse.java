@@ -1,5 +1,6 @@
 package com.compuware.ispw.model.rest;
 
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,6 +22,8 @@ public class SetInfoResponse
 	private String deployActiveTime;
 	private String message;
 	private String state;
+	
+	private List<TaskInfo> tasks = null;
 	
 	public String getSetid()
 	{
@@ -150,5 +153,23 @@ public class SetInfoResponse
 	public void setState(String state)
 	{
 		this.state = state;
+	}
+
+	public void addTask(TaskInfo task)
+	{
+		tasks.add(task);
+	}
+	
+	public List<TaskInfo> getTasks()
+	{
+		return tasks;
+	}
+
+	/**
+	 * @param tasks the tasks to set
+	 */
+	public void setTasks(List<TaskInfo> tasks)
+	{
+		this.tasks = tasks;
 	}
 }

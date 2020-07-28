@@ -15,8 +15,11 @@
 
 package com.compuware.ispw.model.rest;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.compuware.ces.model.validation.Required;
@@ -67,6 +70,9 @@ public class TaskInfo
 	private String option3;
 	private String option4;
 	private String option5;
+	
+	@XmlElement(name = "loadModules")
+	private List<LoadModule> loadModules = null;
 	
 	public String getApplication()
 	{
@@ -435,5 +441,23 @@ public class TaskInfo
 	public void setOption5(String option5)
 	{
 		this.option5 = option5;
+	}
+
+	/**
+	 * @return the loadModules
+	 */
+	public List<LoadModule> getLoadModules()
+	{
+		return loadModules;
+	}
+	
+	public void addLoadModule(LoadModule loadModule)
+	{
+		if (loadModules == null)
+		{
+			loadModules = new ArrayList<LoadModule>();
+		}
+
+		loadModules.add(loadModule);
 	}
 }

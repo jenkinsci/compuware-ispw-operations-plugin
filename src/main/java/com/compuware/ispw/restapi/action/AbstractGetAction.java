@@ -7,6 +7,7 @@ import com.compuware.ispw.restapi.HttpMode;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.util.ReflectUtils;
+import com.compuware.ispw.restapi.util.RestApiUtils;
 
 /**
  * A generic rest GET ISPW action
@@ -57,7 +58,7 @@ public abstract class AbstractGetAction implements IAction {
 			}
 		}
 
-		bean.setContextPath(path);
+		bean.setContextPath(RestApiUtils.cleanContextPath(path));
 		return bean;
 
 	}

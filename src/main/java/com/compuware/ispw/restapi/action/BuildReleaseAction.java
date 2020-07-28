@@ -7,14 +7,14 @@
  * names are trademarks of their respective owners.
  * 
  * Copyright (c) 2019 Compuware Corporation. All rights reserved.
+ * (c) Copyright 2020 BMC Software, Inc.
  */
 package com.compuware.ispw.restapi.action;
 
 import java.io.PrintStream;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.compuware.ispw.model.rest.BuildResponse;
+import com.compuware.ispw.restapi.BuildParms;
+import com.compuware.ispw.restapi.BuildParmsRequestBody;
 import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
@@ -32,6 +32,8 @@ public class BuildReleaseAction extends SetInfoPostAction implements IBuildActio
 
 	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}/tasks/build?level={level}&assignmentId={assignmentId}"; //$NON-NLS-1$
 
+	private BuildParms buildParms;
+	
 	public static String getDefaultProps()
 	{
 		return RestApiUtils.join(Constants.LINE_SEPARATOR, defaultProps, true);
@@ -82,15 +84,25 @@ public class BuildReleaseAction extends SetInfoPostAction implements IBuildActio
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken,
 			FilePath buildParmPath)
 	{
-		ispwRequestBody = getRequestBody(ispwRequestBody, buildParmPath, this.getLogger());
+		BuildParmsRequestBody buildParmsRequestBody = getRequestBody(ispwRequestBody, buildParmPath, this.getLogger());
 		
-		if (StringUtils.isNotBlank(ispwRequestBody))
+		if (buildParmsRequestBody.hasRequestBody())
 		{
-			return getIspwRequestBean(srid, ispwRequestBody, webhookToken);
+			buildParms = buildParmsRequestBody.getBuildParms();
+			return getIspwRequestBean(srid, buildParmsRequestBody.getRequestBody(), webhookToken);
 		}
 		else
 		{
 			return null;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.compuware.ispw.restapi.action.IBuildAction#getBuildParms()
+	 */
+	@Override
+	public BuildParms getBuildParms()
+	{
+		return buildParms;
 	}
 }
