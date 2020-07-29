@@ -3,6 +3,7 @@ package com.compuware.ispw.restapi;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,8 +20,13 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.parboiled.common.FileUtils;
 import com.compuware.ispw.git.GitToIspwUtils;
+import com.compuware.ispw.model.changeset.LifeCycleLoadModule;
+import com.compuware.ispw.model.changeset.Program;
+import com.compuware.ispw.model.changeset.ProgramList;
 import com.compuware.ispw.model.rest.BuildResponse;
+import com.compuware.ispw.model.rest.LoadModule;
 import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskInfo;
 import com.compuware.ispw.model.rest.TaskListResponse;
@@ -31,7 +37,6 @@ import com.compuware.ispw.restapi.action.SetOperationAction;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
-import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -514,6 +519,57 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 											SetInfoResponse setInfoResp1 = jsonProcessor1.parse(pollingJson1,
 													SetInfoResponse.class);
 											logger.println("tasks="+setInfoResp1.getTasks());
+											
+											ProgramList programList = new ProgramList();
+											
+											String stream = StringUtils.trimToEmpty(setInfoResp1.getStreamName());
+											List<TaskInfo> taskInfos = setInfoResp1.getTasks();
+											if (taskInfos != null && !taskInfos.isEmpty())
+											{
+												for (TaskInfo taskInfo : taskInfos)
+												{
+													String programName = taskInfo.getModuleName();
+													String programType = taskInfo.getModuleType();
+													boolean isImpact = false;
+													String application = StringUtils.trimToEmpty(taskInfo.getApplication());
+													String level = StringUtils.trimToEmpty(taskInfo.getLevel());
+													
+													Program program = new Program();
+													program.setStream(stream);
+													program.setApplication(application);
+													program.setIsImpact(isImpact);
+													program.setLevel(level);
+													program.setProgramLanguage(programType);
+													program.setProgramName(programName);
+													programList.addProgram(program);
+													
+													List<LoadModule> loadModules = taskInfo.getLoadModules();
+													if (loadModules != null && !loadModules.isEmpty())
+													{
+														for (LoadModule loadModule : loadModules)
+														{
+															String loadLibName = loadModule.getLibName();
+															String loadModName = loadModule.getModName();
+															
+															LifeCycleLoadModule lclm = new LifeCycleLoadModule();
+															lclm.setLoadLibName(loadLibName);
+															lclm.setLoadModName(loadModName);
+															program.addLifeCycleLoadModule(lclm);
+														}
+													}
+												}
+												
+												String tttJson = programList.toString();
+												if (step.consoleLogResponseBody)
+												{
+													logger.println("tttJson="+tttJson);
+												}
+												
+												File tttChangeSet = new File(buildDirectory, Constants.TTT_CHANGESET);
+												
+												logger.println("Saving TTT changeset to "+tttChangeSet.toString());
+												FileUtils.writeAllText(tttJson, tttChangeSet, Charset.defaultCharset());
+											}
 										}
 									}
 								}
