@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,12 +17,14 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.parboiled.common.FileUtils;
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.compuware.ispw.git.GitToIspwUtils;
+import com.compuware.ispw.model.changeset.ProgramList;
 import com.compuware.ispw.model.rest.BuildResponse;
 import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskInfo;
@@ -482,6 +485,43 @@ public class IspwRestApiRequest extends Builder {
 						if (setState.equals(Constants.SET_STATE_CLOSED) || setState.equals(Constants.SET_STATE_COMPLETE)
 								|| setState.equals(Constants.SET_STATE_WAITING_APPROVAL)) {
 							logger.println("ISPW: Action " + ispwAction + " completed");
+							
+							/* If the SET is complete, if automatically build, we will try to generate TTT json */
+							if (action instanceof IBuildAction)
+							{
+								IBuildAction buildAction = (IBuildAction) action;
+								BuildParms buildParms = buildAction.getBuildParms();
+								if (buildParms != null)
+								{
+									String taskLevel = buildParms.getTaskLevel();
+									if (StringUtils.isNotBlank(taskLevel))
+									{
+										HttpRequestExecution poller1 = HttpRequestExecution.createPoller(setId, taskLevel, this, envVars,
+												build, listener);
+										ResponseContentSupplier pollerSupplier1 = channel.call(poller1);
+										String pollingJson1 = pollerSupplier1.getContent();
+
+										JsonProcessor jsonProcessor1 = new JsonProcessor();
+										SetInfoResponse setInfoResp1 = jsonProcessor1.parse(pollingJson1,
+												SetInfoResponse.class);
+										logger.println("tasks="+setInfoResp1.getTasks());
+										
+										ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp1);
+											
+										String tttJson = programList.toString();
+										if (consoleLogResponseBody)
+										{
+											logger.println("tttJson="+tttJson);
+										}
+										
+										File tttChangeSet = new File(buildDirectory, Constants.TTT_CHANGESET);
+										
+										logger.println("Saving TTT changeset to "+tttChangeSet.toString());
+										FileUtils.writeAllText(tttJson, tttChangeSet, Charset.defaultCharset());
+									}
+								}
+							}
+							
 							break;
 						}
 						else if (Constants.SET_STATE_FAILED.equalsIgnoreCase(setState))

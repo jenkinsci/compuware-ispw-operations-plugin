@@ -22,11 +22,8 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.parboiled.common.FileUtils;
 import com.compuware.ispw.git.GitToIspwUtils;
-import com.compuware.ispw.model.changeset.LifeCycleLoadModule;
-import com.compuware.ispw.model.changeset.Program;
 import com.compuware.ispw.model.changeset.ProgramList;
 import com.compuware.ispw.model.rest.BuildResponse;
-import com.compuware.ispw.model.rest.LoadModule;
 import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskInfo;
 import com.compuware.ispw.model.rest.TaskListResponse;
@@ -501,6 +498,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 							if (setState.equals(Constants.SET_STATE_CLOSED) || setState.equals(Constants.SET_STATE_COMPLETE)) {
 								logger.println("ISPW: Action " + step.ispwAction + " completed");
 								
+								/* If the SET is complete, if automatically build, we will try to generate TTT json */
 								if (action instanceof IBuildAction)
 								{
 									IBuildAction buildAction = (IBuildAction) action;
@@ -520,56 +518,18 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 													SetInfoResponse.class);
 											logger.println("tasks="+setInfoResp1.getTasks());
 											
-											ProgramList programList = new ProgramList();
-											
-											String stream = StringUtils.trimToEmpty(setInfoResp1.getStreamName());
-											List<TaskInfo> taskInfos = setInfoResp1.getTasks();
-											if (taskInfos != null && !taskInfos.isEmpty())
+											ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp1);
+												
+											String tttJson = programList.toString();
+											if (step.consoleLogResponseBody)
 											{
-												for (TaskInfo taskInfo : taskInfos)
-												{
-													String programName = taskInfo.getModuleName();
-													String programType = taskInfo.getModuleType();
-													boolean isImpact = false;
-													String application = StringUtils.trimToEmpty(taskInfo.getApplication());
-													String level = StringUtils.trimToEmpty(taskInfo.getLevel());
-													
-													Program program = new Program();
-													program.setStream(stream);
-													program.setApplication(application);
-													program.setIsImpact(isImpact);
-													program.setLevel(level);
-													program.setProgramLanguage(programType);
-													program.setProgramName(programName);
-													programList.addProgram(program);
-													
-													List<LoadModule> loadModules = taskInfo.getLoadModules();
-													if (loadModules != null && !loadModules.isEmpty())
-													{
-														for (LoadModule loadModule : loadModules)
-														{
-															String loadLibName = loadModule.getLibName();
-															String loadModName = loadModule.getModName();
-															
-															LifeCycleLoadModule lclm = new LifeCycleLoadModule();
-															lclm.setLoadLibName(loadLibName);
-															lclm.setLoadModName(loadModName);
-															program.addLifeCycleLoadModule(lclm);
-														}
-													}
-												}
-												
-												String tttJson = programList.toString();
-												if (step.consoleLogResponseBody)
-												{
-													logger.println("tttJson="+tttJson);
-												}
-												
-												File tttChangeSet = new File(buildDirectory, Constants.TTT_CHANGESET);
-												
-												logger.println("Saving TTT changeset to "+tttChangeSet.toString());
-												FileUtils.writeAllText(tttJson, tttChangeSet, Charset.defaultCharset());
+												logger.println("tttJson="+tttJson);
 											}
+											
+											File tttChangeSet = new File(buildDirectory, Constants.TTT_CHANGESET);
+											
+											logger.println("Saving TTT changeset to "+tttChangeSet.toString());
+											FileUtils.writeAllText(tttJson, tttChangeSet, Charset.defaultCharset());
 										}
 									}
 								}

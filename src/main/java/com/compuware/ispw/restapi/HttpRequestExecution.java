@@ -96,8 +96,14 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 		return createPoller(setId, null, http, envVars, build, taskListener);
 	}
 	
+	static HttpRequestExecution createPoller(String setId, String level,
+			IspwRestApiRequest http, EnvVars envVars,
+			AbstractBuild<?, ?> build, TaskListener taskListener) throws AbortException {
+		return createPoller(setId, level, http, envVars, build, taskListener);
+	}
+	
 	//create poller for rest api request
-	static HttpRequestExecution createPoller(String setId, WebhookToken webhookToken, IspwRestApiRequest http, EnvVars envVars,
+	static HttpRequestExecution createPoller(String setId, String level, WebhookToken webhookToken, IspwRestApiRequest http, EnvVars envVars,
 			AbstractBuild<?, ?> build, TaskListener taskListener) throws AbortException {
 
 		PrintStream logger = taskListener.getLogger();
@@ -111,9 +117,15 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
 					+ ", ces.ispw.token=" + cesIspwToken);
 
+		String reqBody = "setId=" + setId;
+		if (StringUtils.isNotBlank(level))
+		{
+			reqBody += System.lineSeparator() + "level=" + level;
+		}
+		
 		// no webhook, polling set status
 		IspwRequestBean ispwRequestBean =
-				action.getIspwRequestBean(cesIspwHost, "setId=" + setId, webhookToken);
+				action.getIspwRequestBean(cesIspwHost, reqBody, webhookToken);
 
 		String url = cesUrl + ispwRequestBean.getContextPath(); // CES URL
 		String body = ispwRequestBean.getJsonRequest();

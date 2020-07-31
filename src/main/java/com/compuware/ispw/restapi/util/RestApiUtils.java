@@ -22,7 +22,13 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.ces.model.BasicAuthentication;
 import com.compuware.ces.model.HttpHeader;
+import com.compuware.ispw.model.changeset.LifeCycleLoadModule;
+import com.compuware.ispw.model.changeset.Program;
+import com.compuware.ispw.model.changeset.ProgramList;
+import com.compuware.ispw.model.rest.LoadModule;
 import com.compuware.ispw.model.rest.MessageResponse;
+import com.compuware.ispw.model.rest.SetInfoResponse;
+import com.compuware.ispw.model.rest.TaskInfo;
 import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.ResponseContentSupplier;
@@ -504,4 +510,55 @@ public class RestApiUtils {
 		return vars;
 	}
 
+	/**
+	 * Convert SetInfoResponse object to a ProgramList object
+	 * 
+	 * @param setInfoResp
+	 *            the SetInfoResponse object
+	 * @return a ProgramList object
+	 */
+	public static ProgramList convertSetInfoResp(SetInfoResponse setInfoResp)
+	{
+		ProgramList programList = new ProgramList();
+
+		String stream = StringUtils.trimToEmpty(setInfoResp.getStreamName());
+		List<TaskInfo> taskInfos = setInfoResp.getTasks();
+		if (taskInfos != null && !taskInfos.isEmpty())
+		{
+			for (TaskInfo taskInfo : taskInfos)
+			{
+				String programName = taskInfo.getModuleName();
+				String programType = taskInfo.getModuleType();
+				boolean isImpact = false;
+				String application = StringUtils.trimToEmpty(taskInfo.getApplication());
+				String level = StringUtils.trimToEmpty(taskInfo.getLevel());
+
+				Program program = new Program();
+				program.setStream(stream);
+				program.setApplication(application);
+				program.setIsImpact(isImpact);
+				program.setLevel(level);
+				program.setProgramLanguage(programType);
+				program.setProgramName(programName);
+				programList.addProgram(program);
+
+				List<LoadModule> loadModules = taskInfo.getLoadModules();
+				if (loadModules != null && !loadModules.isEmpty())
+				{
+					for (LoadModule loadModule : loadModules)
+					{
+						String loadLibName = loadModule.getLibName();
+						String loadModName = loadModule.getModName();
+
+						LifeCycleLoadModule lclm = new LifeCycleLoadModule();
+						lclm.setLoadLibName(loadLibName);
+						lclm.setLoadModName(loadModName);
+						program.addLifeCycleLoadModule(lclm);
+					}
+				}
+			}
+		}
+
+		return programList;
+	}
 }
