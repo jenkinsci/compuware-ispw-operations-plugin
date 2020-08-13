@@ -6,12 +6,11 @@
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */
 package com.compuware.ispw.model.changeset;
 
 import java.io.Serializable;
-import org.apache.commons.lang3.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -99,14 +98,14 @@ public class DeployTargetLoadModule implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.componentClass == null) ? 0 : componentClass.hashCode());
-		result = prime * result + ((this.componentType == null) ? 0 : componentType.hashCode());
-		result = prime * result + ((this.deployEnvironment == null) ? 0 : deployEnvironment.hashCode());
-		result = prime * result + ((this.deployType == null) ? 0 : deployType.hashCode());
-		result = prime * result + ((this.loadLibName == null) ? 0 : loadLibName.hashCode());
-		result = prime * result + ((this.loadModName == null) ? 0 : loadModName.hashCode());
-		result = prime * result + ((this.subenvironment == null) ? 0 : subenvironment.hashCode());
-		result = prime * result + ((this.system == null) ? 0 : system.hashCode());
+		result = prime * result + ((componentClass == null) ? 0 : componentClass.hashCode());
+		result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
+		result = prime * result + ((deployEnvironment == null) ? 0 : deployEnvironment.hashCode());
+		result = prime * result + ((deployType == null) ? 0 : deployType.hashCode());
+		result = prime * result + ((loadLibName == null) ? 0 : loadLibName.hashCode());
+		result = prime * result + ((loadModName == null) ? 0 : loadModName.hashCode());
+		result = prime * result + ((subenvironment == null) ? 0 : subenvironment.hashCode());
+		result = prime * result + ((system == null) ? 0 : system.hashCode());
 		return result;
 	}
 
@@ -124,21 +123,102 @@ public class DeployTargetLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof DeployTargetLoadModule))
 		{
 			return false;
 		}
-		DeployTargetLoadModule loadMod = (DeployTargetLoadModule) obj;
-		boolean isEqual = StringUtils.equals(loadMod.loadLibName, this.loadLibName);
-		isEqual = isEqual && StringUtils.equals(loadMod.loadModName, this.loadModName);
-		isEqual = isEqual && StringUtils.equals(loadMod.componentClass, this.componentClass);
-		isEqual = isEqual && StringUtils.equals(loadMod.componentType, this.componentType);
-		isEqual = isEqual && StringUtils.equals(loadMod.deployEnvironment, this.deployEnvironment);
-		isEqual = isEqual && StringUtils.equals(loadMod.deployType, this.deployType);
-		isEqual = isEqual && StringUtils.equals(loadMod.subenvironment, this.subenvironment);
-		isEqual = isEqual && StringUtils.equals(loadMod.system, this.system);
-		return isEqual;
+		DeployTargetLoadModule other = (DeployTargetLoadModule) obj;
+		if (componentClass == null)
+		{
+			if (other.componentClass != null)
+			{
+				return false;
+			}
+		}
+		else if (!componentClass.equals(other.componentClass))
+		{
+			return false;
+		}
+		if (componentType == null)
+		{
+			if (other.componentType != null)
+			{
+				return false;
+			}
+		}
+		else if (!componentType.equals(other.componentType))
+		{
+			return false;
+		}
+		if (deployEnvironment == null)
+		{
+			if (other.deployEnvironment != null)
+			{
+				return false;
+			}
+		}
+		else if (!deployEnvironment.equals(other.deployEnvironment))
+		{
+			return false;
+		}
+		if (deployType == null)
+		{
+			if (other.deployType != null)
+			{
+				return false;
+			}
+		}
+		else if (!deployType.equals(other.deployType))
+		{
+			return false;
+		}
+		if (loadLibName == null)
+		{
+			if (other.loadLibName != null)
+			{
+				return false;
+			}
+		}
+		else if (!loadLibName.equals(other.loadLibName))
+		{
+			return false;
+		}
+		if (loadModName == null)
+		{
+			if (other.loadModName != null)
+			{
+				return false;
+			}
+		}
+		else if (!loadModName.equals(other.loadModName))
+		{
+			return false;
+		}
+		if (subenvironment == null)
+		{
+			if (other.subenvironment != null)
+			{
+				return false;
+			}
+		}
+		else if (!subenvironment.equals(other.subenvironment))
+		{
+			return false;
+		}
+		if (system == null)
+		{
+			if (other.system != null)
+			{
+				return false;
+			}
+		}
+		else if (!system.equals(other.system))
+		{
+			return false;
+		}
+		return true;
 	}
+
 }
 
 /**
@@ -149,5 +229,5 @@ public class DeployTargetLoadModule implements Serializable
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  *
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */

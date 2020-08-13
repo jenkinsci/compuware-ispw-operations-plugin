@@ -6,14 +6,13 @@
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */
 package com.compuware.ispw.model.changeset;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -39,7 +38,7 @@ public class LifeCycleLoadModule implements Serializable
 	private String componentClass;
 	
 	@Expose
-	private List<String> loadLibConcatenation = new ArrayList<>();
+	private List<LevelLoadLib> loadLibConcatenation = null;
 
 	/**
 	 * @return the loadModName
@@ -112,33 +111,51 @@ public class LifeCycleLoadModule implements Serializable
 	/**
 	 * @return a copy of the loadLibConcatenation list
 	 */
-	public List<String> getLoadLibConcatenation()
+	public List<LevelLoadLib> getLoadLibConcatenation()
 	{
-		return new ArrayList<>(loadLibConcatenation);
+		return loadLibConcatenation;
 	}
 
 	/**
-	 * @param loadLibConcatenation the loadLibConcatenation to add
+	 * @param levelLoadLib the loadLibConcatenation to add
 	 */
-	public void addLoadLibConcatenation(String loadLibConcatenation)
+	public void addLoadLibConcatenation(LevelLoadLib levelLoadLib)
 	{
-		this.loadLibConcatenation.add(loadLibConcatenation);
+		if (loadLibConcatenation == null)
+		{
+			loadLibConcatenation = new ArrayList<LevelLoadLib>();
+		}
+		
+		this.loadLibConcatenation.add(levelLoadLib);
 	}
 	
 	/**
-	 * @param loadLibConcatenation the loadLibConcatenation to add
+	 * @param loadLibConcats the loadLibConcatenation to add
 	 */
-	public void addLoadLibConcatenation(List<String> loadLibConcatenation)
+	public void addLoadLibConcatenation(List<LevelLoadLib> loadLibConcats)
 	{
-		this.loadLibConcatenation.addAll(loadLibConcatenation);
+		if (loadLibConcatenation == null)
+		{
+			loadLibConcatenation = new ArrayList<LevelLoadLib>();
+		}
+		
+		this.loadLibConcatenation.addAll(loadLibConcats);
 	}
 
 	/**
 	 * @param loadLibConcatenation the loadLibConcatenation to remove
 	 */
-	public void removeLoadLibConcatenation(String loadLibConcatenation)
+	public void removeLoadLibConcatenation(LevelLoadLib loadLib)
 	{
-		this.loadLibConcatenation.remove(loadLibConcatenation);
+		if (loadLibConcatenation != null)
+		{
+			this.loadLibConcatenation.remove(loadLib);
+
+			if (loadLibConcatenation.isEmpty())
+			{
+				loadLibConcatenation = null;
+			}
+		}
 	}
 	
 	/**
@@ -158,11 +175,11 @@ public class LifeCycleLoadModule implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.loadLibName == null) ? 0 : loadLibName.hashCode());
-		result = prime * result + ((this.loadModName == null) ? 0 : loadModName.hashCode());
-		result = prime * result + ((this.componentType == null) ? 0 : componentType.hashCode());
-		result = prime * result + ((this.componentClass == null) ? 0 : componentClass.hashCode());
-		result = prime * result + ((this.loadLibConcatenation == null) ? 0 : loadLibConcatenation.hashCode());
+		result = prime * result + ((componentClass == null) ? 0 : componentClass.hashCode());
+		result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
+		result = prime * result + ((loadLibConcatenation == null) ? 0 : loadLibConcatenation.hashCode());
+		result = prime * result + ((loadLibName == null) ? 0 : loadLibName.hashCode());
+		result = prime * result + ((loadModName == null) ? 0 : loadModName.hashCode());
 		return result;
 	}
 
@@ -180,18 +197,70 @@ public class LifeCycleLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof LifeCycleLoadModule))
 		{
 			return false;
 		}
-		LifeCycleLoadModule loadMod = (LifeCycleLoadModule) obj;
-		boolean isEqual = StringUtils.equals(loadMod.loadLibName, this.loadLibName);
-		isEqual = isEqual && StringUtils.equals(loadMod.loadModName, this.loadModName);
-		isEqual = isEqual && StringUtils.equals(loadMod.componentType, this.componentType);
-		isEqual = isEqual && StringUtils.equals(loadMod.componentClass, this.componentClass);
-		isEqual = isEqual && loadMod.getLoadLibConcatenation().equals(loadLibConcatenation);
-		return isEqual;
+		LifeCycleLoadModule other = (LifeCycleLoadModule) obj;
+		if (componentClass == null)
+		{
+			if (other.componentClass != null)
+			{
+				return false;
+			}
+		}
+		else if (!componentClass.equals(other.componentClass))
+		{
+			return false;
+		}
+		if (componentType == null)
+		{
+			if (other.componentType != null)
+			{
+				return false;
+			}
+		}
+		else if (!componentType.equals(other.componentType))
+		{
+			return false;
+		}
+		if (loadLibConcatenation == null)
+		{
+			if (other.loadLibConcatenation != null)
+			{
+				return false;
+			}
+		}
+		else if (!loadLibConcatenation.equals(other.loadLibConcatenation))
+		{
+			return false;
+		}
+		if (loadLibName == null)
+		{
+			if (other.loadLibName != null)
+			{
+				return false;
+			}
+		}
+		else if (!loadLibName.equals(other.loadLibName))
+		{
+			return false;
+		}
+		if (loadModName == null)
+		{
+			if (other.loadModName != null)
+			{
+				return false;
+			}
+		}
+		else if (!loadModName.equals(other.loadModName))
+		{
+			return false;
+		}
+		return true;
 	}
+
+
 }
 
 /**
@@ -202,5 +271,5 @@ public class LifeCycleLoadModule implements Serializable
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  *
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */

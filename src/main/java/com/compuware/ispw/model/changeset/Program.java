@@ -6,17 +6,16 @@
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */
 package com.compuware.ispw.model.changeset;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 
 /**
  * Class to encapsulate the information of a changed program.
@@ -48,10 +47,10 @@ public class Program implements Serializable
 	private String level;
 
 	@Expose
-	private List<LifeCycleLoadModule> lifeCycleLoadModules = new ArrayList<>();
+	private List<LifeCycleLoadModule> lifeCycleLoadModules = null;
 
 	@Expose
-	private List<DeployTargetLoadModule> deployTargetLoadModules = new ArrayList<>();
+	private List<DeployTargetLoadModule> deployTargetLoadModules = null;
 
 	/**
 	 * @return the programName
@@ -162,7 +161,7 @@ public class Program implements Serializable
 	 */
 	public List<LifeCycleLoadModule> getLifeCycleLoadModules()
 	{
-		return new ArrayList<>(lifeCycleLoadModules);
+		return lifeCycleLoadModules;
 	}
 
 	/**
@@ -172,6 +171,11 @@ public class Program implements Serializable
 	 */
 	public void addLifeCycleLoadModule(LifeCycleLoadModule loadModule)
 	{
+		if (lifeCycleLoadModules == null)
+		{
+			lifeCycleLoadModules = new ArrayList<LifeCycleLoadModule>();
+		}
+		
 		this.lifeCycleLoadModules.add(loadModule);
 	}
 
@@ -182,7 +186,15 @@ public class Program implements Serializable
 	 */
 	public void removeLifeCycleLoadModule(LifeCycleLoadModule loadModule)
 	{
-		this.lifeCycleLoadModules.remove(loadModule);
+		if (lifeCycleLoadModules != null)
+		{
+			this.lifeCycleLoadModules.remove(loadModule);
+
+			if (lifeCycleLoadModules.isEmpty())
+			{
+				lifeCycleLoadModules = null;
+			}
+		}
 	}
 
 	/**
@@ -192,27 +204,40 @@ public class Program implements Serializable
 	 */
 	public List<DeployTargetLoadModule> getDeployTargetLoadModules()
 	{
-		return new ArrayList<>(deployTargetLoadModules);
+		return deployTargetLoadModules;
 	}
 
 	/**
 	 * Adds the given deploy target load library name to the list
 	 * 
-	 * @param loadLibraryName
+	 * @param deployTargetLoadModule
 	 */
-	public void addDeployTargetLoadModule(DeployTargetLoadModule loadLibraryName)
+	public void addDeployTargetLoadModule(DeployTargetLoadModule deployTargetLoadModule)
 	{
-		deployTargetLoadModules.add(loadLibraryName);
+		if (deployTargetLoadModules == null)
+		{
+			deployTargetLoadModules = new ArrayList<DeployTargetLoadModule>();
+		}
+		
+		deployTargetLoadModules.add(deployTargetLoadModule);
 	}
 
 	/**
 	 * Removes the given deploy target load library name from the list
 	 * 
-	 * @param loadLibraryName
+	 * @param deployTargetLoadModule
 	 */
-	public void removeDeployTargetLoadModule(DeployTargetLoadModule loadLibraryName)
+	public void removeDeployTargetLoadModule(DeployTargetLoadModule deployTargetLoadModule)
 	{
-		deployTargetLoadModules.remove(loadLibraryName);
+		if (deployTargetLoadModules != null)
+		{
+			deployTargetLoadModules.remove(deployTargetLoadModule);
+			
+			if (deployTargetLoadModules.isEmpty())
+			{
+				deployTargetLoadModules = null;
+			}
+		}
 	}
 
 	/**
@@ -232,14 +257,15 @@ public class Program implements Serializable
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.application == null) ? 0 : application.hashCode());
-		result = prime * result + ((this.level == null) ? 0 : level.hashCode());
-		result = prime * result + ((this.programLanguage == null) ? 0 : programLanguage.hashCode());
-		result = prime * result + ((this.programName == null) ? 0 : programName.hashCode());
-		result = prime * result + ((this.stream == null) ? 0 : stream.hashCode());
-		result = prime * result + ((Boolean.TRUE.equals(isImpact)) ? 0 : 1);
-		result = prime * result + (this.lifeCycleLoadModules == null ? 0 : lifeCycleLoadModules.hashCode());
-		result = prime * result + (this.deployTargetLoadModules == null ? 0 : deployTargetLoadModules.hashCode());
+		result = prime * result + ((application == null) ? 0 : application.hashCode());
+		result = prime * result + ((deployTargetLoadModules == null) ? 0 : deployTargetLoadModules.hashCode());
+		result = prime * result + ((isImpact == null) ? 0 : isImpact.hashCode());
+		result = prime * result + ((level == null) ? 0 : level.hashCode());
+		result = prime * result + ((lifeCycleLoadModules == null) ? 0 : lifeCycleLoadModules.hashCode());
+		result = prime * result + ((programLanguage == null) ? 0 : programLanguage.hashCode());
+		result = prime * result + ((programName == null) ? 0 : programName.hashCode());
+		result = prime * result + ((stream == null) ? 0 : stream.hashCode());
+		result = prime * result + ((version == null) ? 0 : version.hashCode());
 		return result;
 	}
 
@@ -257,20 +283,114 @@ public class Program implements Serializable
 		{
 			return false;
 		}
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Program))
 		{
 			return false;
 		}
-		Program program = (Program) obj;
-		boolean isEqual = StringUtils.equals(program.application, this.application);
-		isEqual = isEqual && StringUtils.equals(program.level, this.level);
-		isEqual = isEqual && StringUtils.equals(program.programLanguage, this.programLanguage);
-		isEqual = isEqual && StringUtils.equals(program.programName, this.programName);
-		isEqual = isEqual && StringUtils.equals(program.stream, this.stream);
-		isEqual = isEqual && program.getLifeCycleLoadModules().equals(lifeCycleLoadModules);
-		isEqual = isEqual && program.getDeployTargetLoadModules().equals(deployTargetLoadModules);
-		return isEqual;
+		Program other = (Program) obj;
+		if (application == null)
+		{
+			if (other.application != null)
+			{
+				return false;
+			}
+		}
+		else if (!application.equals(other.application))
+		{
+			return false;
+		}
+		if (deployTargetLoadModules == null)
+		{
+			if (other.deployTargetLoadModules != null)
+			{
+				return false;
+			}
+		}
+		else if (!deployTargetLoadModules.equals(other.deployTargetLoadModules))
+		{
+			return false;
+		}
+		if (isImpact == null)
+		{
+			if (other.isImpact != null)
+			{
+				return false;
+			}
+		}
+		else if (!isImpact.equals(other.isImpact))
+		{
+			return false;
+		}
+		if (level == null)
+		{
+			if (other.level != null)
+			{
+				return false;
+			}
+		}
+		else if (!level.equals(other.level))
+		{
+			return false;
+		}
+		if (lifeCycleLoadModules == null)
+		{
+			if (other.lifeCycleLoadModules != null)
+			{
+				return false;
+			}
+		}
+		else if (!lifeCycleLoadModules.equals(other.lifeCycleLoadModules))
+		{
+			return false;
+		}
+		if (programLanguage == null)
+		{
+			if (other.programLanguage != null)
+			{
+				return false;
+			}
+		}
+		else if (!programLanguage.equals(other.programLanguage))
+		{
+			return false;
+		}
+		if (programName == null)
+		{
+			if (other.programName != null)
+			{
+				return false;
+			}
+		}
+		else if (!programName.equals(other.programName))
+		{
+			return false;
+		}
+		if (stream == null)
+		{
+			if (other.stream != null)
+			{
+				return false;
+			}
+		}
+		else if (!stream.equals(other.stream))
+		{
+			return false;
+		}
+		if (version == null)
+		{
+			if (other.version != null)
+			{
+				return false;
+			}
+		}
+		else if (!version.equals(other.version))
+		{
+			return false;
+		}
+		return true;
 	}
+
+
 }
 /**
  * THESE MATERIALS CONTAIN CONFIDENTIAL INFORMATION AND TRADE SECRETS OF BMC SOFTWARE, INC. YOU SHALL MAINTAIN THE MATERIALS AS
@@ -280,5 +400,5 @@ public class Program implements Serializable
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */

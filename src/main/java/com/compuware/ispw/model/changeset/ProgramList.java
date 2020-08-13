@@ -6,7 +6,7 @@
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc.
  */
 package com.compuware.ispw.model.changeset;
 
@@ -29,7 +29,14 @@ public class ProgramList implements Serializable
 	private String version = "1.0.0"; //$NON-NLS-1$
 
 	@Expose
-	private List<Program> programs = new ArrayList<>();
+	private List<Program> programs = null;
+
+	/**
+	 * Constructor
+	 */
+	public ProgramList()
+	{
+	}
 
 	public String getVersion()
 	{
@@ -43,7 +50,7 @@ public class ProgramList implements Serializable
 	 */
 	public List<Program> getPrograms()
 	{
-		return new ArrayList<>(programs);
+		return programs;
 	}
 
 	/**
@@ -53,6 +60,11 @@ public class ProgramList implements Serializable
 	 */
 	public void addProgram(Program program)
 	{
+		if (programs == null)
+		{
+			programs = new ArrayList<Program>();
+		}
+		
 		this.programs.add(program);
 	}
 
@@ -63,7 +75,15 @@ public class ProgramList implements Serializable
 	 */
 	public void removeProgram(Program program)
 	{
-		this.programs.remove(program);
+		if (programs != null)
+		{
+			this.programs.remove(program);
+
+			if (programs.isEmpty())
+			{
+				programs = null;
+			}
+		}
 	}
 
 	/**
@@ -84,6 +104,7 @@ public class ProgramList implements Serializable
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((programs == null) ? 0 : programs.hashCode());
+		result = prime * result + ((version == null) ? 0 : version.hashCode());
 		return result;
 	}
 
@@ -101,13 +122,36 @@ public class ProgramList implements Serializable
 		{
 			return false;
 		}
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof ProgramList))
 		{
 			return false;
 		}
-		ProgramList programList = (ProgramList) obj;
-		return programList.getPrograms().equals(this.programs);
+		ProgramList other = (ProgramList) obj;
+		if (programs == null)
+		{
+			if (other.programs != null)
+			{
+				return false;
+			}
+		}
+		else if (!programs.equals(other.programs))
+		{
+			return false;
+		}
+		if (version == null)
+		{
+			if (other.version != null)
+			{
+				return false;
+			}
+		}
+		else if (!version.equals(other.version))
+		{
+			return false;
+		}
+		return true;
 	}
+
 }
 
 /**
@@ -118,5 +162,5 @@ public class ProgramList implements Serializable
  * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
  * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
  * 
- * � Copyright 2020 BMC Software, Inc.
+ * (c) Copyright 2020 BMC Software, Inc. 
  */
