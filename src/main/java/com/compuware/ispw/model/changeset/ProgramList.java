@@ -31,20 +31,13 @@ public class ProgramList implements Serializable
 	@Expose
 	private List<Program> programs = null;
 
-	/**
-	 * Constructor
-	 */
-	public ProgramList()
-	{
-	}
-
 	public String getVersion()
 	{
 		return this.version;
 	}
 
 	/**
-	 * Returns a copy of the list of changed programs. Changing this returned list does not change the original.
+	 * Returns the list of changed programs. Changing this returned list will change the original.
 	 * 
 	 * @return the programs
 	 */
@@ -62,7 +55,7 @@ public class ProgramList implements Serializable
 	{
 		if (programs == null)
 		{
-			programs = new ArrayList<Program>();
+			programs = new ArrayList<>();
 		}
 		
 		this.programs.add(program);

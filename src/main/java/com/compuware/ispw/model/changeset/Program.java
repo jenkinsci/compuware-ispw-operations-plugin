@@ -155,7 +155,7 @@ public class Program implements Serializable
 	}
 
 	/**
-	 * Returns a copy of the list of load modules. Changing the returned list will not change the original list.
+	 * Returns the list of load modules. Changing the returned list will change the original list.
 	 * 
 	 * @return the programs
 	 */
@@ -173,7 +173,7 @@ public class Program implements Serializable
 	{
 		if (lifeCycleLoadModules == null)
 		{
-			lifeCycleLoadModules = new ArrayList<LifeCycleLoadModule>();
+			lifeCycleLoadModules = new ArrayList<>();
 		}
 		
 		this.lifeCycleLoadModules.add(loadModule);
@@ -198,7 +198,7 @@ public class Program implements Serializable
 	}
 
 	/**
-	 * Returns a copy of the list of deploy target load libraries. Changing the returned list will not change the original.
+	 * Returns the list of deploy target load libraries. Changing the returned list will change the original.
 	 * 
 	 * @return
 	 */
@@ -216,7 +216,7 @@ public class Program implements Serializable
 	{
 		if (deployTargetLoadModules == null)
 		{
-			deployTargetLoadModules = new ArrayList<DeployTargetLoadModule>();
+			deployTargetLoadModules = new ArrayList<>();
 		}
 		
 		deployTargetLoadModules.add(deployTargetLoadModule);

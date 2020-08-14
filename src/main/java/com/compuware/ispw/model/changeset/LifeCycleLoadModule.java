@@ -109,7 +109,7 @@ public class LifeCycleLoadModule implements Serializable
 	}
 
 	/**
-	 * @return a copy of the loadLibConcatenation list
+	 * @return the loadLibConcatenation list - modifying this list will change the original
 	 */
 	public List<LevelLoadLib> getLoadLibConcatenation()
 	{
@@ -123,7 +123,7 @@ public class LifeCycleLoadModule implements Serializable
 	{
 		if (loadLibConcatenation == null)
 		{
-			loadLibConcatenation = new ArrayList<LevelLoadLib>();
+			loadLibConcatenation = new ArrayList<>();
 		}
 		
 		this.loadLibConcatenation.add(levelLoadLib);
@@ -136,7 +136,7 @@ public class LifeCycleLoadModule implements Serializable
 	{
 		if (loadLibConcatenation == null)
 		{
-			loadLibConcatenation = new ArrayList<LevelLoadLib>();
+			loadLibConcatenation = new ArrayList<>();
 		}
 		
 		this.loadLibConcatenation.addAll(loadLibConcats);
