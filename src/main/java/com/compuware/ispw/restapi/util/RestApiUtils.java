@@ -22,13 +22,18 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.ces.model.BasicAuthentication;
 import com.compuware.ces.model.HttpHeader;
+import com.compuware.ispw.model.changeset.DeployTargetLoadModule;
+import com.compuware.ispw.model.changeset.LevelLoadLib;
 import com.compuware.ispw.model.changeset.LifeCycleLoadModule;
 import com.compuware.ispw.model.changeset.Program;
 import com.compuware.ispw.model.changeset.ProgramList;
-import com.compuware.ispw.model.rest.LoadModule;
 import com.compuware.ispw.model.rest.MessageResponse;
 import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskInfo;
+import com.compuware.ispw.model.ttt.rest.JaxbDeployTargetLoadModule;
+import com.compuware.ispw.model.ttt.rest.JaxbLevelLoadLib;
+import com.compuware.ispw.model.ttt.rest.JaxbLifeCycleLoadModule;
+import com.compuware.ispw.model.ttt.rest.JaxbProgram;
 import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.ResponseContentSupplier;
@@ -521,39 +526,63 @@ public class RestApiUtils {
 	{
 		ProgramList programList = new ProgramList();
 
-		String stream = StringUtils.trimToEmpty(setInfoResp.getStreamName());
 		List<TaskInfo> taskInfos = setInfoResp.getTasks();
 		if (taskInfos != null && !taskInfos.isEmpty())
 		{
 			for (TaskInfo taskInfo : taskInfos)
 			{
-				String programName = taskInfo.getModuleName();
-				String programType = taskInfo.getModuleType();
-				boolean isImpact = false;
-				String application = StringUtils.trimToEmpty(taskInfo.getApplication());
-				String level = StringUtils.trimToEmpty(taskInfo.getLevel());
+				JaxbProgram jaxbProgram = taskInfo.getJaxbProgram();
 
 				Program program = new Program();
-				program.setStream(stream);
-				program.setApplication(application);
-				program.setIsImpact(isImpact);
-				program.setLevel(level);
-				program.setProgramLanguage(programType);
-				program.setProgramName(programName);
+				program.setStream(jaxbProgram.getStream());
+				program.setApplication(jaxbProgram.getApplication());
+				program.setIsImpact(jaxbProgram.getIsImpact());
+				program.setLevel(jaxbProgram.getLevel());
+				program.setProgramLanguage(jaxbProgram.getProgramLanguage());
+				program.setProgramName(jaxbProgram.getProgramName());
 				programList.addProgram(program);
 
-				List<LoadModule> loadModules = taskInfo.getLoadModules();
-				if (loadModules != null && !loadModules.isEmpty())
+				List<JaxbLifeCycleLoadModule> jaxbLifeCycleLoads = jaxbProgram.getLifeCycleLoadModules();
+				if (jaxbLifeCycleLoads != null && !jaxbLifeCycleLoads.isEmpty())
 				{
-					for (LoadModule loadModule : loadModules)
+					for (JaxbLifeCycleLoadModule jaxbLifeCycleLoad : jaxbLifeCycleLoads)
 					{
-						String loadLibName = loadModule.getLibName();
-						String loadModName = loadModule.getModName();
-
 						LifeCycleLoadModule lclm = new LifeCycleLoadModule();
-						lclm.setLoadLibName(loadLibName);
-						lclm.setLoadModName(loadModName);
 						program.addLifeCycleLoadModule(lclm);
+						
+						lclm.setComponentClass(jaxbLifeCycleLoad.getComponentClass());
+						lclm.setComponentType(jaxbLifeCycleLoad.getComponentType());
+						lclm.setLoadLibName(jaxbLifeCycleLoad.getLoadLibName());
+						lclm.setLoadModName(jaxbLifeCycleLoad.getLoadModName());
+						
+						List<JaxbLevelLoadLib> jaxbLevelLoads = jaxbLifeCycleLoad.getLoadLibConcatenation();
+						for (JaxbLevelLoadLib jaxbLevelLoad : jaxbLevelLoads)
+						{
+							LevelLoadLib levelLoadLib = new LevelLoadLib();
+							lclm.addLoadLibConcatenation(levelLoadLib);
+							
+							levelLoadLib.setLevel(jaxbLevelLoad.getLevel());
+							levelLoadLib.setLoadLib(jaxbLevelLoad.getLoadLib());
+						}
+					}
+				}
+				
+				List<JaxbDeployTargetLoadModule> jaxbDeployLoads = jaxbProgram.getDeployTargetLoadModules();
+				if (jaxbDeployLoads != null && !jaxbDeployLoads.isEmpty())
+				{
+					for (JaxbDeployTargetLoadModule jaxbDeployLoad : jaxbDeployLoads)
+					{
+						DeployTargetLoadModule dtlm = new DeployTargetLoadModule();
+						program.addDeployTargetLoadModule(dtlm);
+
+						dtlm.setComponentClass(jaxbDeployLoad.getComponentClass());
+						dtlm.setComponentType(jaxbDeployLoad.getComponentType());
+						dtlm.setDeployEnvironment(jaxbDeployLoad.getDeployEnvironment());
+						dtlm.setDeployType(jaxbDeployLoad.getDeployType());
+						dtlm.setLoadLibName(jaxbDeployLoad.getLoadLibName());
+						dtlm.setLoadModName(jaxbDeployLoad.getLoadModName());
+						dtlm.setSubenvironment(jaxbDeployLoad.getSubenvironment());
+						dtlm.setSystem(jaxbDeployLoad.getSystem());
 					}
 				}
 			}

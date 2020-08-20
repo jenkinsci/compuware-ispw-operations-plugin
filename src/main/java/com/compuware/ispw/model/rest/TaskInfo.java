@@ -10,19 +10,17 @@
 * Compuware Corporation. All other company or product names are trademarks
 * of their respective owners.
 * 
-* Copyright (c) 2017-2019 Compuware Corporation. All rights reserved.
+* Copyright (c) 2017 Compuware Corporation. All rights reserved.
+* (c) Copyright 2017-2020, 2020 BMC Software, Inc.
 ******************************************************************************/
 
 package com.compuware.ispw.model.rest;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import com.compuware.ces.model.validation.Required;
+import com.compuware.ispw.model.ttt.rest.JaxbProgram;
 
 @XmlRootElement(name = "task")
 @XmlAccessorType(XmlAccessType.PROPERTY)
@@ -71,9 +69,8 @@ public class TaskInfo
 	private String option4;
 	private String option5;
 	
-	@XmlElement(name = "loadModules")
-	private List<LoadModule> loadModules = null;
-	
+	private JaxbProgram jaxbProgram = null;
+
 	public String getApplication()
 	{
 		return application;
@@ -443,21 +440,13 @@ public class TaskInfo
 		this.option5 = option5;
 	}
 
-	/**
-	 * @return the loadModules
-	 */
-	public List<LoadModule> getLoadModules()
+	public JaxbProgram getJaxbProgram()
 	{
-		return loadModules;
+		return jaxbProgram;
 	}
-	
-	public void addLoadModule(LoadModule loadModule)
-	{
-		if (loadModules == null)
-		{
-			loadModules = new ArrayList<LoadModule>();
-		}
 
-		loadModules.add(loadModule);
+	public void setJaxbProgram(JaxbProgram jaxbProgram)
+	{
+		this.jaxbProgram = jaxbProgram;
 	}
 }

@@ -8,43 +8,31 @@
  * 
  * (c) Copyright 2020 BMC Software, Inc. 
  */
-package com.compuware.ispw.model.changeset;
+package com.compuware.ispw.model.ttt.rest;
 
 import java.io.Serializable;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Class to encapsulate the information for a deploy load module.
  */
-public class DeployTargetLoadModule implements Serializable
+@XmlRootElement(name = "deployTargetLoadModule")
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class JaxbDeployTargetLoadModule implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	@Expose
 	private String loadModName;
-
-	@Expose
 	private String loadLibName;
-
-	@Expose
 	private String componentType;
-
-	@Expose
 	private String componentClass;
-
-	@Expose
 	private String deployEnvironment;
-
-	@Expose
 	private String subenvironment;
-
-	@Expose
 	private String system;
-
-	@Expose
 	private String deployType;
 
 	/**
@@ -87,7 +75,7 @@ public class DeployTargetLoadModule implements Serializable
 	@Override
 	public String toString()
 	{
-		return gson.toJson(this);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 	/* (non-Javadoc)
@@ -123,11 +111,11 @@ public class DeployTargetLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (!(obj instanceof DeployTargetLoadModule))
+		if (!(obj instanceof JaxbDeployTargetLoadModule))
 		{
 			return false;
 		}
-		DeployTargetLoadModule other = (DeployTargetLoadModule) obj;
+		JaxbDeployTargetLoadModule other = (JaxbDeployTargetLoadModule) obj;
 		if (componentClass == null)
 		{
 			if (other.componentClass != null)

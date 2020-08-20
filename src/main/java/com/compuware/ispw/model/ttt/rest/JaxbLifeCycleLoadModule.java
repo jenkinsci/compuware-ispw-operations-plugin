@@ -8,44 +8,41 @@
  * 
  * (c) Copyright 2020 BMC Software, Inc. 
  */
-package com.compuware.ispw.model.changeset;
+package com.compuware.ispw.model.ttt.rest;
 
 import java.io.Serializable;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Class to encapsulate the information for a deploy load module.
+ * Class to encapsulate the information for a load module.
  */
-public class DeployTargetLoadModule implements Serializable
+@XmlRootElement(name = "lifeCycleLoadModule")
+@XmlAccessorType(XmlAccessType.NONE)
+public class JaxbLifeCycleLoadModule implements Serializable
 {
 	private static final long serialVersionUID = 1L;
-	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	@Expose
+	@XmlElement(name = "loadModName")
 	private String loadModName;
-
-	@Expose
+	
+	@XmlElement(name = "loadLibName")
 	private String loadLibName;
-
-	@Expose
+	
+	@XmlElement(name = "componentType")
 	private String componentType;
-
-	@Expose
+	
+	@XmlElement(name = "componentClass")
 	private String componentClass;
-
-	@Expose
-	private String deployEnvironment;
-
-	@Expose
-	private String subenvironment;
-
-	@Expose
-	private String system;
-
-	@Expose
-	private String deployType;
+	
+	@XmlElement(name = "loadLibConcatenation")
+	private List<JaxbLevelLoadLib> loadLibConcatenation = null;
 
 	/**
 	 * @return the loadModName
@@ -82,12 +79,96 @@ public class DeployTargetLoadModule implements Serializable
 	}
 
 	/**
+	 * @return the componentType
+	 */
+	public String getComponentType()
+	{
+		return componentType;
+	}
+
+	/**
+	 * @param componentType
+	 *            the componentType to set
+	 */
+	public void setComponentType(String componentType)
+	{
+		this.componentType = componentType;
+	}
+
+	/**
+	 * @return the componentClass
+	 */
+	public String getComponentClass()
+	{
+		return componentClass;
+	}
+
+	/**
+	 * @param componentClass
+	 *            the componentClass to set
+	 */
+	public void setComponentClass(String componentClass)
+	{
+		this.componentClass = componentClass;
+	}
+
+	/**
+	 * @return the loadLibConcatenation list - modifying this list will change the original
+	 */
+	public List<JaxbLevelLoadLib> getLoadLibConcatenation()
+	{
+		return loadLibConcatenation;
+	}
+
+	/**
+	 * @param levelLoadLib the loadLibConcatenation to add
+	 */
+	public void addLoadLibConcatenation(JaxbLevelLoadLib levelLoadLib)
+	{
+		if (loadLibConcatenation == null)
+		{
+			loadLibConcatenation = new ArrayList<>();
+		}
+		
+		this.loadLibConcatenation.add(levelLoadLib);
+	}
+	
+	/**
+	 * @param loadLibConcats the loadLibConcatenation to add
+	 */
+	public void addLoadLibConcatenation(List<JaxbLevelLoadLib> loadLibConcats)
+	{
+		if (loadLibConcatenation == null)
+		{
+			loadLibConcatenation = new ArrayList<>();
+		}
+		
+		this.loadLibConcatenation.addAll(loadLibConcats);
+	}
+
+	/**
+	 * @param loadLibConcatenation the loadLibConcatenation to remove
+	 */
+	public void removeLoadLibConcatenation(JaxbLevelLoadLib loadLib)
+	{
+		if (loadLibConcatenation != null)
+		{
+			this.loadLibConcatenation.remove(loadLib);
+
+			if (loadLibConcatenation.isEmpty())
+			{
+				loadLibConcatenation = null;
+			}
+		}
+	}
+	
+	/**
 	 * Returns a json String
 	 */
 	@Override
 	public String toString()
 	{
-		return gson.toJson(this);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 	/* (non-Javadoc)
@@ -100,12 +181,9 @@ public class DeployTargetLoadModule implements Serializable
 		int result = 1;
 		result = prime * result + ((componentClass == null) ? 0 : componentClass.hashCode());
 		result = prime * result + ((componentType == null) ? 0 : componentType.hashCode());
-		result = prime * result + ((deployEnvironment == null) ? 0 : deployEnvironment.hashCode());
-		result = prime * result + ((deployType == null) ? 0 : deployType.hashCode());
+		result = prime * result + ((loadLibConcatenation == null) ? 0 : loadLibConcatenation.hashCode());
 		result = prime * result + ((loadLibName == null) ? 0 : loadLibName.hashCode());
 		result = prime * result + ((loadModName == null) ? 0 : loadModName.hashCode());
-		result = prime * result + ((subenvironment == null) ? 0 : subenvironment.hashCode());
-		result = prime * result + ((system == null) ? 0 : system.hashCode());
 		return result;
 	}
 
@@ -123,11 +201,11 @@ public class DeployTargetLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (!(obj instanceof DeployTargetLoadModule))
+		if (!(obj instanceof JaxbLifeCycleLoadModule))
 		{
 			return false;
 		}
-		DeployTargetLoadModule other = (DeployTargetLoadModule) obj;
+		JaxbLifeCycleLoadModule other = (JaxbLifeCycleLoadModule) obj;
 		if (componentClass == null)
 		{
 			if (other.componentClass != null)
@@ -150,25 +228,14 @@ public class DeployTargetLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (deployEnvironment == null)
+		if (loadLibConcatenation == null)
 		{
-			if (other.deployEnvironment != null)
+			if (other.loadLibConcatenation != null)
 			{
 				return false;
 			}
 		}
-		else if (!deployEnvironment.equals(other.deployEnvironment))
-		{
-			return false;
-		}
-		if (deployType == null)
-		{
-			if (other.deployType != null)
-			{
-				return false;
-			}
-		}
-		else if (!deployType.equals(other.deployType))
+		else if (!loadLibConcatenation.equals(other.loadLibConcatenation))
 		{
 			return false;
 		}
@@ -194,126 +261,9 @@ public class DeployTargetLoadModule implements Serializable
 		{
 			return false;
 		}
-		if (subenvironment == null)
-		{
-			if (other.subenvironment != null)
-			{
-				return false;
-			}
-		}
-		else if (!subenvironment.equals(other.subenvironment))
-		{
-			return false;
-		}
-		if (system == null)
-		{
-			if (other.system != null)
-			{
-				return false;
-			}
-		}
-		else if (!system.equals(other.system))
-		{
-			return false;
-		}
 		return true;
 	}
 
-	/**
-	 * @return the componentType
-	 */
-	public String getComponentType()
-	{
-		return componentType;
-	}
-
-	/**
-	 * @param componentType the componentType to set
-	 */
-	public void setComponentType(String componentType)
-	{
-		this.componentType = componentType;
-	}
-
-	/**
-	 * @return the componentClass
-	 */
-	public String getComponentClass()
-	{
-		return componentClass;
-	}
-
-	/**
-	 * @param componentClass the componentClass to set
-	 */
-	public void setComponentClass(String componentClass)
-	{
-		this.componentClass = componentClass;
-	}
-
-	/**
-	 * @return the deployEnvironment
-	 */
-	public String getDeployEnvironment()
-	{
-		return deployEnvironment;
-	}
-
-	/**
-	 * @param deployEnvironment the deployEnvironment to set
-	 */
-	public void setDeployEnvironment(String deployEnvironment)
-	{
-		this.deployEnvironment = deployEnvironment;
-	}
-
-	/**
-	 * @return the subenvironment
-	 */
-	public String getSubenvironment()
-	{
-		return subenvironment;
-	}
-
-	/**
-	 * @param subenvironment the subenvironment to set
-	 */
-	public void setSubenvironment(String subenvironment)
-	{
-		this.subenvironment = subenvironment;
-	}
-
-	/**
-	 * @return the system
-	 */
-	public String getSystem()
-	{
-		return system;
-	}
-
-	/**
-	 * @param system the system to set
-	 */
-	public void setSystem(String system)
-	{
-		this.system = system;
-	}
-
-	/**
-	 * @return the deployType
-	 */
-	public String getDeployType()
-	{
-		return deployType;
-	}
-
-	/**
-	 * @param deployType the deployType to set
-	 */
-	public void setDeployType(String deployType)
-	{
-		this.deployType = deployType;
-	}
 
 }
 
