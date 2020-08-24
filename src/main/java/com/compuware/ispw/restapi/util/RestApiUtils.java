@@ -590,4 +590,43 @@ public class RestApiUtils {
 
 		return programList;
 	}
+	
+	/**
+	 * Get runtime configuration from request body
+	 * 
+	 * @param ispwRequestBody the request body
+	 * @return runtime configuration
+	 */
+	public static String getRuntimeConfig(String ispwRequestBody)
+	{
+		String runtimeConfig = StringUtils.EMPTY;
+
+		if (StringUtils.isNotBlank(ispwRequestBody))
+		{
+			String[] lines = ispwRequestBody.split("\n");
+			for (String line : lines)
+			{
+				line = StringUtils.trimToEmpty(line);
+
+				if (line.startsWith("#"))
+				{
+					continue;
+				}
+
+				int indexOfEqualSign = line.indexOf("=");
+				if (indexOfEqualSign != -1)
+				{
+					String name = StringUtils.trimToEmpty(line.substring(0, indexOfEqualSign));
+					String value = StringUtils.trimToEmpty(line.substring(indexOfEqualSign + 1, line.length()));
+					if (Constants.REQUEST_BODY_RTCONFIG.equals(name))
+					{
+						runtimeConfig = value;
+						break;
+					}
+				}
+			}
+		}
+
+		return runtimeConfig;
+	}
 }

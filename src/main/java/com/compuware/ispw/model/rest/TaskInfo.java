@@ -18,57 +18,132 @@ package com.compuware.ispw.model.rest;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.compuware.ces.model.validation.Required;
 import com.compuware.ispw.model.ttt.rest.JaxbProgram;
 
 @XmlRootElement(name = "task")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlAccessorType(XmlAccessType.NONE)
 public class TaskInfo
 {
 	@Required
+	@XmlElement(name = "application")
 	private String application;
+	
 	@Required
+	@XmlElement(name = "stream")
 	private String stream;
+	
 	@Required
+	@XmlElement(name = "moduleType")
 	private String moduleType;
+	
 	@Required
+	@XmlElement(name = "moduleName")
 	private String moduleName;
+	
 	@Required
+	@XmlElement(name = "userId")
 	private String userId;
+	
+	@XmlElement(name = "url")
 	private String url;
+	
+	@XmlElement(name = "taskId")
 	private String taskId;
+	
+	@XmlElement(name = "extension")
 	private String extension;
+	
+	@XmlElement(name = "level")
 	private String level;
+	
+	@XmlElement(name = "operation")
 	private String operation;
+	
+	@XmlElement(name = "action")
 	private String action;
+	
+	@XmlElement(name = "dateTime")
 	private String dateTime;
+	
+	@XmlElement(name = "status")
 	private String status;
+	
+	@XmlElement(name = "message")
 	private String message;
+	
+	@XmlElement(name = "set")
 	private String set;
+	
+	@XmlElement(name = "internalVersion")
 	private String internalVersion;
+	
+	@XmlElement(name = "baseVersion")
 	private String baseVersion;
+	
+	@XmlElement(name = "replaceVersion")
 	private String replaceVersion;
+	
+	@XmlElement(name = "environment")
 	private String environment;
+	
+	@XmlElement(name = "clazz")
 	private String clazz;
+	
+	@XmlElement(name = "version")
 	private String version;
+	
+	@XmlElement(name = "alternateName")
 	private String alternateName;
+	
+	@XmlElement(name = "release")
 	private String release;
+	
+	@XmlElement(name = "container")
 	private String container;
+	
+	@XmlElement(name = "flags")
 	private String flags;
+	
+	@XmlElement(name = "currentLevel")
 	private String currentLevel;
+	
+	@XmlElement(name = "startingLevel")
 	private String startingLevel;
+	
+	@XmlElement(name = "generateSequence")
 	private String generateSequence;
+	
+	@XmlElement(name = "sql")
 	private Boolean sql;
+	
+	@XmlElement(name = "ims")
 	private Boolean ims;
+	
+	@XmlElement(name = "cics")
 	private Boolean cics;
+	
+	@XmlElement(name = "program")
 	private Boolean program;
+	
+	@XmlElement(name = "option1")
 	private String option1;
+	
+	@XmlElement(name = "option2")
 	private String option2;
+	
+	@XmlElement(name = "option3")
 	private String option3;
+	
+	@XmlElement(name = "option4")
 	private String option4;
+	
+	@XmlElement(name = "option5")
 	private String option5;
 	
+	@XmlElement(name = "jaxbProgram")
 	private JaxbProgram jaxbProgram = null;
 
 	public String getApplication()

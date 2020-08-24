@@ -13,6 +13,7 @@ package com.compuware.ispw.model.ttt.rest;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -21,18 +22,33 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * Class to encapsulate the information for a deploy load module.
  */
 @XmlRootElement(name = "deployTargetLoadModule")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlAccessorType(XmlAccessType.NONE)
 public class JaxbDeployTargetLoadModule implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
+	@XmlElement(name = "loadModName")
 	private String loadModName;
+	
+	@XmlElement(name = "loadLibName")
 	private String loadLibName;
+	
+	@XmlElement(name = "componentType")
 	private String componentType;
+	
+	@XmlElement(name = "componentClass")
 	private String componentClass;
+	
+	@XmlElement(name = "deployEnvironment")
 	private String deployEnvironment;
+	
+	@XmlElement(name = "subenvironment")
 	private String subenvironment;
+	
+	@XmlElement(name = "system")
 	private String system;
+	
+	@XmlElement(name = "deployType")
 	private String deployType;
 
 	/**

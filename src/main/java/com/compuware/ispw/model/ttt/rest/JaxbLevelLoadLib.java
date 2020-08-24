@@ -13,6 +13,7 @@ package com.compuware.ispw.model.ttt.rest;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -24,12 +25,15 @@ import org.apache.commons.lang.builder.ToStringStyle;
  *
  */
 @XmlRootElement(name = "levelLoadLib")
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlAccessorType(XmlAccessType.NONE)
 public class JaxbLevelLoadLib implements Serializable
 {
 	private static final long serialVersionUID = -5574697020335583072L;
 
+	@XmlElement(name = "level")
 	private String level;
+	
+	@XmlElement(name = "loadLib")
 	private String loadLib;
 
 	/**

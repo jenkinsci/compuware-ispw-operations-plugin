@@ -37,4 +37,6 @@ public class Constants {
 	public static final String ENV_VAR_NODENAME = "NODE_NAME";
 	
 	public static final String TTT_CHANGESET = "changedProgram.json";
+	
+	public static final String REQUEST_BODY_RTCONFIG = "runtimeConfiguration";
 }

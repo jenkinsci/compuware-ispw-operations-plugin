@@ -116,8 +116,8 @@ public interface IBuildAction extends IAction
 								}
 								requestBodyBuilder.deleteCharAt(requestBodyBuilder.length() - 1); // remove last comma
 							}
-							requestBodyBuilder.append(ispwRequestBody); // the original request body may still contain webhook event
-																		// information.
+							requestBodyBuilder.append("\n").append(ispwRequestBody); // the original request body may still contain webhook event
+																		// information and runtime configuration
 							ispwRequestBody = requestBodyBuilder.toString();
 							
 							buildParmsRequestBody = new BuildParmsRequestBody(ispwRequestBody, buildParms);
