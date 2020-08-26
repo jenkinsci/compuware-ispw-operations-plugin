@@ -12,7 +12,6 @@
 package com.compuware.ispw.restapi.action;
 
 import java.io.PrintStream;
-import org.apache.commons.lang3.StringUtils;
 import com.compuware.ispw.model.rest.BuildResponse;
 import com.compuware.ispw.restapi.BuildParms;
 import com.compuware.ispw.restapi.BuildParmsRequestBody;
@@ -96,7 +95,6 @@ public class BuildTaskAction extends SetInfoPostAction implements IBuildAction
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken,
 			FilePath buildParmPath)
 	{
-//		String rtConfig = RestApiUtils.getRuntimeConfig(ispwRequestBody);
 		BuildParmsRequestBody buildParmsRequestBody = getRequestBody(ispwRequestBody, buildParmPath, this.getLogger());
 		
 		if (buildParmsRequestBody.hasRequestBody())
@@ -104,10 +102,6 @@ public class BuildTaskAction extends SetInfoPostAction implements IBuildAction
 			buildParms = buildParmsRequestBody.getBuildParms();
 
 			StringBuilder body = new StringBuilder(buildParmsRequestBody.getRequestBody());
-//			if (StringUtils.isNotBlank(rtConfig))
-//			{
-//				body.append("\n").append(Constants.REQUEST_BODY_RTCONFIG).append("=").append(rtConfig);
-//			}
 			
 			System.out.println("Request body: "+body.toString());
 			
