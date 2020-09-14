@@ -171,8 +171,7 @@ public class CliExecutor
 		args.add(GitToIspwConstants.GIT_USERID_PARAM, gitUserId);
 		args.add(GitToIspwConstants.GIT_PW_PARAM);
 		args.add(gitPassword, true);
-		// Do not escape the gitRepoUrl as it will not be parsed correctly on the CLI side
-		args.add(GitToIspwConstants.GIT_REPO_URL_PARAM, gitRepoUrl);
+		args.add(GitToIspwConstants.GIT_REPO_URL_PARAM, ArgumentUtils.escapeForScript(gitRepoUrl));
 		args.add(GitToIspwConstants.GIT_REF_PARAM, ref);
 		args.add(GitToIspwConstants.GIT_FROM_HASH_PARAM, fromHash);
 		
