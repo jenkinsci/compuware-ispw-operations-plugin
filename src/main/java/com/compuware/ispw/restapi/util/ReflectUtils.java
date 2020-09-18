@@ -36,8 +36,8 @@ public class ReflectUtils {
 				jsonName = xmlElement.name(); // use annotation name if presented
 			}
 
-			logger.info("json.name=" + jsonName + ", type=" + field.getType().getName() + ", value=" + value);
-			if (jsonName.equals(name)) {
+			logger.info("json.name=" + jsonName + ", fieldName=" + fieldName + ", type=" + field.getType().getName() + ", value=" + value);
+			if (jsonName.equals(name) || fieldName.equals(name)) {
 				try {
 					BeanUtils.setProperty(object, fieldName, value);
 				} catch (IllegalAccessException | InvocationTargetException e) {
