@@ -1,0 +1,23 @@
+node {
+    stage('generate and webhook demo') {
+		hook = ispwRegisterWebhook()
+		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GenerateTasksInAssignment', ispwRequestBody: '''assignmentId=PLAY003149
+		level=DEV2
+		runtimeConfiguration=TPZP
+		events.name=Completed
+		events.body=$$setid$$
+		events.httpHeaders=Jenkins-Crumb:no-crumb
+		events.credentials=admin:library
+		'''
+
+		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
+
+		data = ispwWaitForWebhook hook
+		echo "...CES called back with message: ${data}"
+
+		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
+    }
+}
