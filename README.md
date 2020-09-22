@@ -56,7 +56,7 @@ The following are required to use this plugin:
     **Note:** Click **Delete Host Connection** to delete an existing
     connection.
 
--   If you intend to use web hook callback
+-   If you intend to use webhook callback
     -   Jenkins URL in section Jenkins Location must be defined with the
         Jenkins server IP address (not localhost or 127.0.0.1)
     -   If you do NOT want the CES callback to provide Jenkins crumb,
@@ -132,7 +132,7 @@ The following are required to use this plugin:
     parameters, click the question mark for more details. Each of the
     action may have different set of properties, if the job support web
     hook callback, additional event related properties must be provided.
-    The web hook callback only works for pipeline build.
+    The webhook callback only works for pipeline build.
 
 ### Using Pipeline Syntax to Generate Pipeline Script
 
@@ -170,11 +170,11 @@ level=DEV2
 runtimeConfiguration=TPZP'''
 ```
 
-For web hook callback, a sample script is shown below
+For webhook callback, a sample script is shown below
 
 ```
 hook = ispwRegisterWebhook()
-echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+echo "...creating ISPW Jenkins webhook - ${hook.getURL()}"
 
 ispwOperation connectionId: 'e0fbb6eb-b01d-4d55-b18b-2f321c174474', credentialsId: 'f1d2762b-9a40-46ad-a9df-b982147acc85', ispwAction: 'GenerateTasksInAssignment', ispwRequestBody: '''assignmentId=PLAY000313
 level=DEV2
@@ -184,7 +184,7 @@ events.body=Generated
 events.httpHeaders=Jenkins-Crumb:no-crumb
 events.credentials=admin:library'''
 
-echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
+echo "...waiting ISPW Jenkins webhook callback - ${hook.getURL()}"
 
 data = ispwWaitForWebhook hook
 echo "...CES called back with message: ${data}"
@@ -195,10 +195,41 @@ message will be printed within the Jenkins log. 
 
 &nbsp;
 
+The following is another example, that after generate and a webhook callback, an intelligent test case change set for total test is also created. Please note that event body is set to $$setid$$, so, it will be replaced with CES callback, the real set id is going to be used as next query for a set info status. If the level is specified as tttChangeSet, it will produce a TTT change set. 
+
+```
+node {
+    stage('generate and webhook demo') {
+		hook = ispwRegisterWebhook()
+		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GenerateTasksInAssignment', ispwRequestBody: '''assignmentId=PLAY003149
+		level=DEV2
+		runtimeConfiguration=TPZP
+		events.name=Completed
+		events.body=$$setid$$
+		events.httpHeaders=Jenkins-Crumb:no-crumb
+		events.credentials=admin:library
+		'''
+
+		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
+
+		data = ispwWaitForWebhook hook
+		echo "...CES called back with message: ${data}"
+
+		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
+    }
+}
+
+```
+
+&nbsp;
+
 ### Pipeline Build Requirement
 
 In order to use pipeline build, your ISPW, CMSC and CES have to be
-configured properly in order to receive web hook notification. See
+configured properly in order to receive webhook notification. See
 explanation in the following figure.
 
 ![](https://wiki.jenkins.io/download/attachments/138446036/ispwPipelineOpRequirement.png?version=1&modificationDate=1515162494000&api=v2)
@@ -326,6 +357,7 @@ information.
 ## Version 1.0.8
 
  - In development; To be published
+ - Support webhook to produce intelligent test case change set for Build, Generate, Promote, Deploy and Regress
  
 ### Version 1.0.7
 
@@ -349,7 +381,7 @@ information.
 ### Version 1.0.4
 
 -   Add support for extra 10+ actions. See action list above.
--   Skip polling for the set completion if no web hook defined
+-   Skip polling for the set completion if no webhook defined
 
 ### Version 1.0.3
 
