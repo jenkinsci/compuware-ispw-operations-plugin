@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -19,6 +20,8 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.parboiled.common.FileUtils;
+
 import com.compuware.ispw.git.GitToIspwUtils;
 import com.compuware.ispw.model.changeset.ProgramList;
 import com.compuware.ispw.model.rest.BuildResponse;
@@ -26,6 +29,7 @@ import com.compuware.ispw.model.rest.SetInfoResponse;
 import com.compuware.ispw.model.rest.TaskInfo;
 import com.compuware.ispw.model.rest.TaskListResponse;
 import com.compuware.ispw.model.rest.TaskResponse;
+import com.compuware.ispw.restapi.action.GetSetInfoAction;
 import com.compuware.ispw.restapi.action.IAction;
 import com.compuware.ispw.restapi.action.IBuildAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
@@ -465,6 +469,42 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				logger.println("responseJson=" + responseJson);
 
 			Object respObject = action.endLog(logger, ispwRequestBean, responseJson);
+
+			//Ouptut TTT change set if webhook callback and record TTT
+			if(webhookToken != null) {
+				if(action instanceof GetSetInfoAction && respObject instanceof SetInfoResponse) {
+					if(StringUtils.isNotBlank(ispwRequestBean.getIspwContextPathBean().getLevel())) {
+						SetInfoResponse setInfoResp = (SetInfoResponse) respObject;
+						ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
+						
+						String tttJson = programList.toString();
+						if (Boolean.TRUE.equals(step.consoleLogResponseBody))
+						{
+							logger.println("tttJson="+tttJson);
+						}
+
+						if (!saveTttChangeSet(logger, envVars, setInfoResp)) {
+							//try another way to save because workspace is not a choice
+							if (run instanceof WorkflowRun) {
+								WorkflowRun workflowRun = (WorkflowRun) run;
+								File rootDir = workflowRun.getRootDir();
+
+								File tttChangeSet = new File(rootDir, "../../" + Constants.TTT_CHANGESET);
+								if (tttChangeSet.exists()) {
+									logger.println("Deleting the old changed program list at "
+											+ tttChangeSet.getCanonicalPath());
+									tttChangeSet.delete();
+								}
+
+								logger.println("Saving the changed program list to " + tttChangeSet.getCanonicalPath());
+								FileUtils.writeAllText(tttJson, tttChangeSet);
+							}
+						}
+					}
+				}
+				
+				return supplier;
+			}
 			
 			if(Boolean.TRUE.equals(step.skipWaitingForSet))
 			{
@@ -538,23 +578,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 											SetInfoResponse.class);
 									logger.println("tasks="+setInfoResp1.getTasks());
 									
-									ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp1);
-										
-									String tttJson = programList.toString();
-									if (Boolean.TRUE.equals(step.consoleLogResponseBody))
-									{
-										logger.println("tttJson="+tttJson);
-									}
-									
-									FilePath tttChangeSet = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.TTT_CHANGESET);
-									if (tttChangeSet.exists())
-									{
-										logger.println("Deleting the old changed program list at " + tttChangeSet.getRemote());
-										tttChangeSet.delete();
-									}
-									
-									logger.println("Saving the changed program list to "+tttChangeSet.getRemote());
-									tttChangeSet.write(tttJson, Constants.UTF_8);
+									saveTttChangeSet(logger, envVars, setInfoResp1);
 								}
 								
 								break;
@@ -620,6 +644,36 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			return supplier;
 		}
 
+		private boolean saveTttChangeSet(PrintStream logger, EnvVars envVars, SetInfoResponse setInfoResp) {
+			ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
+
+			String tttJson = programList.toString();
+			if (Boolean.TRUE.equals(step.consoleLogResponseBody)) {
+				logger.println("tttJson=" + tttJson);
+			}
+
+			FilePath tttChangeSet = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.TTT_CHANGESET);
+
+			try {
+				if (tttChangeSet != null) {
+					if (tttChangeSet.exists()) {
+						logger.println("Deleting the old changed program list at " + tttChangeSet.getRemote());
+						tttChangeSet.delete();
+					}
+
+					logger.println("Saving the changed program list to " + tttChangeSet.getRemote());
+					tttChangeSet.write(tttJson, Constants.UTF_8);
+
+					return true;
+				} else {
+					return false;
+				}
+			} catch (Exception x) {
+				x.printStackTrace();
+				return false;
+			}
+		}
+		
 		private void buildActionTaskInfoLogger(String setId, PrintStream logger, Object respObject)
 				throws InterruptedException, IOException, RuntimeException
 		{

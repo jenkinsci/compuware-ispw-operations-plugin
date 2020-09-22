@@ -175,6 +175,11 @@ public class GitToIspwUtils
 		try
 		{
 			String workspacePath = envVars.get(Constants.ENV_VAR_WORKSPACE);
+			if(workspacePath == null)
+			{
+				return null;
+			}
+			
 			String nodeName = envVars.get(Constants.ENV_VAR_NODENAME);
 			if (nodeName.contentEquals(Constants.ENV_VAR_MASTER))
 			{
