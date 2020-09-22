@@ -478,19 +478,15 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 					if (StringUtils.isNotBlank(ispwRequestBean.getIspwContextPathBean().getLevel()))
 					{
 						SetInfoResponse setInfoResp = (SetInfoResponse) respObject;
-						ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
-
-						String tttJson = programList.toString();
-						if (Boolean.TRUE.equals(step.consoleLogResponseBody))
-						{
-							logger.println("tttJson=" + tttJson);
-						}
 
 						if (!saveTttChangeSet(logger, envVars, setInfoResp))
 						{
-							// try another way to save because workspace is not a choice
+							// try another way to save because workspace is not available
 							if (run instanceof WorkflowRun)
 							{
+								ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
+								String tttJson = programList.toString();
+								
 								WorkflowRun workflowRun = (WorkflowRun) run;
 								File rootDir = workflowRun.getRootDir();
 
