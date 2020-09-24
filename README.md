@@ -195,7 +195,7 @@ message will be printed within the Jenkins log. 
 
 &nbsp;
 
-The following is another example, that after generate and a webhook callback, an intelligent test case change set for total test is also created. Please note that event body is set to $$setid$$, so, it will be replaced with CES callback, the real set id is going to be used as next query for a set info status. If the level is specified as tttChangeSet, it will produce a TTT change set. 
+The following is another example, that after generate and a webhook callback, an intelligent test case change set for total test is also created. Please note that event body is set to $$setid$$, so, it will be replaced with CES callback, the real set id is going to be used as next query for a set info status. If the level is specified as a none empty string, it will produce a TTT change set. 
 
 ```
 node {
@@ -282,6 +282,58 @@ pipeline {
 
 &nbsp;
 
+### Multibranch Jenkinsfile example with automatic build triggered by webhook callback
+
+```
+node {
+
+    stage('Git to ISPW Synchronization') {
+
+		/* Windows Jenkins test - localhost dev machine */
+		git branch: 'master', credentialsId: 'bitbucket-somebody', 
+		poll: false, url: 'https://bitbucket.host/scm/~somebody/rjk2.git'
+		
+		gitToIspwIntegration app: 'PLAY', 
+		branchMapping: '''master => DEV1, per-commit
+		''', 
+		connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', 
+		credentialsId: 'tso-somebody', 
+		gitCredentialsId: 'bitbucket-somebody', 
+		gitRepoUrl: 'https://bitbucket.host/scm/~somebody/rjk2.git', 
+		runtimeConfig: 'TPZP', 
+		stream: 'PLAY',
+		ispwConfigPath: 'ispwconfig_vm.yml'
+
+    }
+    
+	stage ('Build automatically with webhook TTT change set generate')
+	 {
+		 /* localhost dev machine - build */
+			
+		hook = ispwRegisterWebhook()
+		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+		
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'BuildTask', ispwRequestBody: '''runtimeConfiguration=TPZP
+		buildAutomatically = true
+		events.name=Completed
+		events.body=$$setid$$
+		events.httpHeaders=Jenkins-Crumb:no-crumb
+		events.credentials=admin:library
+		'''
+		
+		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
+		
+		data = ispwWaitForWebhook hook
+		echo "...CES called back with message: ${data}"
+		
+		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
+		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
+		
+	 }
+}
+```
+
+$nbsp;
 
 # Product Assistance
 
