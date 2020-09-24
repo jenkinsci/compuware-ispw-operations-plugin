@@ -200,9 +200,14 @@ The following is another example, that after generate and a webhook callback, an
 ```
 node {
     stage('generate and webhook demo') {
+    	
+    	/* create callback endpoint in jenkins */
+    	
 		hook = ispwRegisterWebhook()
 		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
 
+		/* generate on assignment with notification callback. when the generate is complete, the webhook callback should has a setid payload */
+		
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GenerateTasksInAssignment', ispwRequestBody: '''assignmentId=PLAY003149
 		level=DEV2
 		runtimeConfiguration=TPZP
@@ -214,8 +219,12 @@ node {
 
 		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
 
+		/* waiting for webhook callback from ces, if triggered, the data contains setid */
+		
 		data = ispwWaitForWebhook hook
 		echo "...CES called back with message: ${data}"
+
+		/* construct a reqest body with setid and a none empty level. What value of the level is not important, so the get set action will return load libraries and product TTT change set  */
 
 		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
@@ -289,9 +298,12 @@ node {
 
     stage('Git to ISPW Synchronization') {
 
-		/* Windows Jenkins test - localhost dev machine */
+		/* git repository */
+		
 		git branch: 'master', credentialsId: 'bitbucket-somebody', 
 		poll: false, url: 'https://bitbucket.host/scm/~somebody/rjk2.git'
+		
+		/* synchronize change set to ispw */
 		
 		gitToIspwIntegration app: 'PLAY', 
 		branchMapping: '''master => DEV1, per-commit
@@ -308,10 +320,12 @@ node {
     
 	stage ('Build automatically with webhook TTT change set generate')
 	 {
-		 /* localhost dev machine - build */
+		 /* create webhook callback endpoin on jenkins */
 			
 		hook = ispwRegisterWebhook()
 		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+		
+		/* start automatic build and feed jenkins webhook callback url to CES. Wait for build complete, the expected data returned for the callback is a setid */ 
 		
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'BuildTask', ispwRequestBody: '''runtimeConfiguration=TPZP
 		buildAutomatically = true
@@ -323,8 +337,12 @@ node {
 		
 		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
 		
+		/* when the callback get triggered, the data contains setid */
+		
 		data = ispwWaitForWebhook hook
 		echo "...CES called back with message: ${data}"
+		
+		/* construct a reqest body with setid and a none empty level. What value of the level is not important, so the get set action will return load libraries and product TTT change set  */
 		
 		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
