@@ -224,7 +224,7 @@ node {
 		data = ispwWaitForWebhook hook
 		echo "...CES called back with message: ${data}"
 
-		/* construct a reqest body with setid and a none empty level. What value of the level is not important, so the get set action will return load libraries and product TTT change set  */
+		/* construct a request body with a setid and a none empty level. The value of the level is not important. The get set action will return the load libraries and the product TTT change set */
 
 		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-xdevreg', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"
@@ -320,12 +320,12 @@ node {
     
 	stage ('Build automatically with webhook TTT change set generate')
 	 {
-		 /* create webhook callback endpoin on jenkins */
+		 /* create webhook callback end-point on jenkins */
 			
 		hook = ispwRegisterWebhook()
 		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
 		
-		/* start automatic build and feed jenkins webhook callback url to CES. Wait for build complete, the expected data returned for the callback is a setid */ 
+		/* start automatic build and feed jenkins webhook callback URL to CES then wait for the build to complete. The expected data returned for the callback is a setid */ 
 		
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'BuildTask', ispwRequestBody: '''runtimeConfiguration=TPZP
 		buildAutomatically = true
@@ -337,12 +337,12 @@ node {
 		
 		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
 		
-		/* when the callback get triggered, the data contains setid */
+		/* when the callback get triggered, the data contains a setid */
 		
 		data = ispwWaitForWebhook hook
 		echo "...CES called back with message: ${data}"
 		
-		/* construct a reqest body with setid and a none empty level. What value of the level is not important, so the get set action will return load libraries and product TTT change set  */
+		/* construct a request body with a setid and a none empty level. The value of the level is not important. The get set action will return the load libraries and the product TTT change set */
 		
 		def reqbody = "setId=${data}\nlevel=tttchangeset\n"
 		ispwOperation connectionId: 'e35ab9c9-cf4e-4748-95bc-390312ebcc7e', consoleLogResponseBody: true, credentialsId: 'ces-token-somebody', ispwAction: 'GetSetInfo', ispwRequestBody: "${reqbody}"

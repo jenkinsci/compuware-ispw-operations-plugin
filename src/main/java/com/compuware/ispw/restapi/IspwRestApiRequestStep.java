@@ -473,34 +473,32 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			// Ouptut TTT change set if webhook callback and record TTT
 			if (webhookToken != null)
 			{
-				if (action instanceof GetSetInfoAction && respObject instanceof SetInfoResponse)
+				if ((action instanceof GetSetInfoAction && respObject instanceof SetInfoResponse)
+						&& StringUtils.isNotBlank(ispwRequestBean.getIspwContextPathBean().getLevel()))
 				{
-					if (StringUtils.isNotBlank(ispwRequestBean.getIspwContextPathBean().getLevel()))
+					SetInfoResponse setInfoResp = (SetInfoResponse) respObject;
+
+					if (!saveTttChangeSet(logger, envVars, setInfoResp))
 					{
-						SetInfoResponse setInfoResp = (SetInfoResponse) respObject;
-
-						if (!saveTttChangeSet(logger, envVars, setInfoResp))
+						// try another way to save because workspace is not available
+						if (run instanceof WorkflowRun)
 						{
-							// try another way to save because workspace is not available
-							if (run instanceof WorkflowRun)
+							ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
+							String tttJson = programList.toString();
+							
+							WorkflowRun workflowRun = (WorkflowRun) run;
+							File rootDir = workflowRun.getRootDir();
+
+							File tttChangeSet = new File(rootDir, "../../" + Constants.TTT_CHANGESET); //$NON-NLS-1$
+							if (tttChangeSet.exists())
 							{
-								ProgramList programList = RestApiUtils.convertSetInfoResp(setInfoResp);
-								String tttJson = programList.toString();
-								
-								WorkflowRun workflowRun = (WorkflowRun) run;
-								File rootDir = workflowRun.getRootDir();
-
-								File tttChangeSet = new File(rootDir, "../../" + Constants.TTT_CHANGESET);
-								if (tttChangeSet.exists())
-								{
-									logger.println("Deleting the old changed program list at "
-											+ tttChangeSet.getCanonicalPath());
-									tttChangeSet.delete();
-								}
-
-								logger.println("Saving the changed program list to " + tttChangeSet.getCanonicalPath());
-								FileUtils.writeAllText(tttJson, tttChangeSet);
+								logger.println("Deleting the old changed program list at " //$NON-NLS-1$
+										+ tttChangeSet.getCanonicalPath());
+								tttChangeSet.delete();
 							}
+
+							logger.println("Saving the changed program list to " + tttChangeSet.getCanonicalPath()); //$NON-NLS-1$
+							FileUtils.writeAllText(tttJson, tttChangeSet);
 						}
 					}
 				}
@@ -653,7 +651,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			String tttJson = programList.toString();
 			if (Boolean.TRUE.equals(step.consoleLogResponseBody))
 			{
-				logger.println("tttJson=" + tttJson);
+				logger.println("tttJson=" + tttJson); //$NON-NLS-1$
 			}
 
 			FilePath tttChangeSet = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.TTT_CHANGESET);
@@ -664,11 +662,11 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				{
 					if (tttChangeSet.exists())
 					{
-						logger.println("Deleting the old changed program list at " + tttChangeSet.getRemote());
+						logger.println("Deleting the old changed program list at " + tttChangeSet.getRemote()); //$NON-NLS-1$
 						tttChangeSet.delete();
 					}
 
-					logger.println("Saving the changed program list to " + tttChangeSet.getRemote());
+					logger.println("Saving the changed program list to " + tttChangeSet.getRemote()); //$NON-NLS-1$
 					tttChangeSet.write(tttJson, Constants.UTF_8);
 
 					return true;
