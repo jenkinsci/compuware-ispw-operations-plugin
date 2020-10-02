@@ -64,4 +64,26 @@ public class GitToIspwUtilsTest
 		assertFalse(GitToIspwUtils.isSameRevision(revision1, revision7));		
 	}
 
+	@Test
+	public void testEscapeArgumentWithSpecialCharacter()
+	{
+		String uri = "https://test.user%40compuware.com@evolve.compuware.com/scm/~test.user_compuware.com/ispwgitplaytest.git"; //$NON-NLS-1$
+
+		String escapedUri = GitToIspwUtils.escapeArgument(uri);
+
+		assertNotEquals(uri, escapedUri);
+		assertTrue(escapedUri.contains("%%")); //$NON-NLS-1$
+	}
+
+	@Test
+	public void testEscapeArgumentWIthNoSpecialCharacter()
+	{
+		String uri = "https://test.user40compuware.com@evolve.compuware.com/scm/~test.user_compuware.com/ispwgitplaytest.git"; //$NON-NLS-1$
+
+		String escapedUri = GitToIspwUtils.escapeArgument(uri);
+
+		assertEquals(uri, escapedUri);
+		assertFalse(escapedUri.contains("%%")); //$NON-NLS-1$
+	}
+
 }

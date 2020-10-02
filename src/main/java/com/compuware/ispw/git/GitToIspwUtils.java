@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import org.apache.commons.lang3.StringUtils;
@@ -572,6 +574,31 @@ public class GitToIspwUtils
         }
 		
 		return listChangeLogSet;
+	}
+
+	/**
+	 * Escapes the string argument passed in to conform with CLI standards
+	 * 
+	 * @param args
+	 *            The command argument
+	 * @return The escaped command argument, or the same command argument if no character substitution was done
+	 */
+	@SuppressWarnings("nls")
+	public static String escapeArgument(String args)
+	{
+		Map<String, String> charactersToReplace = new HashMap<>();
+		String escapedArg = args;
+		// Add keys to look for within the arg, that will later be replaced by the value 
+		charactersToReplace.put("%", "%%");
+		Iterator<Entry<String, String>> it = charactersToReplace.entrySet().iterator();
+
+		while (it.hasNext())
+		{
+			Map.Entry<String, String> pair = it.next();
+			escapedArg = args.replaceAll(pair.getKey(), pair.getValue());
+		}
+
+		return escapedArg;
 	}
 
 }
