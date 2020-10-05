@@ -428,6 +428,7 @@ information.
 
  - In development; To be published
  - Support webhook to produce intelligent test case change set for Build, Generate, Promote, Deploy and Regress
+ - Fixed a bug affecting some Bitbucket repository URLs not being saved correctly during a Git to ISPW synchronization
  
 ### Version 1.0.7
 
@@ -460,7 +461,7 @@ information.
     logging.
 -   Fix bad error message when selected host connection doesn't have a
     valid CES URL.
--   Fix a bug in GetReleaseTaskList.
+-   Fixed a bug in GetReleaseTaskList.
 -   Pre-populate help text in request field.
 
 ### Version 1.0.2
