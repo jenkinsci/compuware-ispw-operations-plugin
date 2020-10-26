@@ -28,8 +28,6 @@ import hudson.FilePath;
 public interface IBuildAction extends IAction
 {
 	public static Logger classLogger = Logger.getLogger(IBuildAction.class);
-	public static String BUILD_PARAM_FILE_NAME = "automaticBuildParams.txt"; //$NON-NLS-1$
-
 	/**
 	 * Reads the given request body to find out if the parameters of the build should taken from the request body, or if they
 	 * should be read from a file. If the "buildautomatically" parameter is specified in the given body, the build parameters
@@ -86,7 +84,7 @@ public interface IBuildAction extends IAction
 						
 						if (buildParms != null)
 						{
-							ispwRequestBody = getRequestBodyUsingBuildParms(ispwRequestBody, buildParms);
+							ispwRequestBody = getRequestBodyUsingAutomaticParms(ispwRequestBody, buildParms);
 						}
 						
 						logger.println("Done reading automaticBuildParams.txt.");
@@ -120,7 +118,7 @@ public interface IBuildAction extends IAction
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken,
 			FilePath buildParmPath) throws IOException, InterruptedException;
 	
-	default String getRequestBodyUsingBuildParms(String inputRequestBody, BuildParms buildParms)
+	default String getRequestBodyUsingAutomaticParms(String inputRequestBody, BuildParms buildParms)
 	{
 		String ispwRequestBody = inputRequestBody;
 		// Remove any line that is not a comment and contains application, assignmentid, releaseid, taskid,

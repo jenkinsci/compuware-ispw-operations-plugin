@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.HttpMode;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
@@ -91,7 +92,7 @@ public class IBuildActionTest
 	public void testGetRequestBody_buildAutomaticallyNoFile() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
-		File parmsFile = new File(buildDirectory, IBuildAction.BUILD_PARAM_FILE_NAME);
+		File parmsFile = new File(buildDirectory, Constants.BUILD_PARAM_FILE_NAME);
 		parmsFile.delete();
 		String inputRequestBody = "BUILDautomatically true\n###";
 		BuildAction buildAction = new BuildAction();
@@ -115,7 +116,7 @@ public class IBuildActionTest
 		File buildDirectory = tempFolder.getRoot();
 		String inputRequestBody = "BuildAutomatically = true";
 		BuildAction buildAction = new BuildAction();
-		File parmFile = new File(buildDirectory.getAbsoluteFile(), IBuildAction.BUILD_PARAM_FILE_NAME);
+		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		// file is empty
 		FileUtils.writeStringToFile(parmFile, "");
 		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
@@ -142,7 +143,7 @@ public class IBuildActionTest
 	public void testGetRequestBody_notBuildAutomatically() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
-		File parmFile = new File(buildDirectory.getAbsoluteFile(), IBuildAction.BUILD_PARAM_FILE_NAME);
+		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		parmFile.delete();
 		String inputRequestBody = "# comment";
 		BuildAction buildAction = new BuildAction();
@@ -179,7 +180,7 @@ public class IBuildActionTest
 				+ "events.httpHeaders=Jenkins-Crumb:no-crumb\r\nTASKID=xyz\n\nmname=f\nmtype =hij\r\nlevel = qwerty\nevents.credentials=admin:library";
 		BuildAction buildAction = new BuildAction();
 		
-		File parmFile = new File(buildDirectory.getAbsoluteFile(), IBuildAction.BUILD_PARAM_FILE_NAME);
+		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		FileUtils.writeStringToFile(parmFile,
 				"{\"containerId\":\"PLAY002455\",\"releaseId\":\"RELEASE666\",\"taskLevel\":\"DEV2\",\"taskIds\":[\"7E3A5D04D0C2\",\"7E3A5D04D3A3\"]}");
 		String expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\nreleaseId = RELEASE666\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n\nevents.name=Completed\r\n\nevents.body=Deployed\r\n\n"
@@ -201,7 +202,7 @@ public class IBuildActionTest
 				+ "events.httpHeaders=Jenkins-Crumb:no-crumb\r\nevents.credentials=admin:library";
 		BuildAction buildAction = new BuildAction();
 		
-		File parmFile = new File(buildDirectory.getAbsoluteFile(), IBuildAction.BUILD_PARAM_FILE_NAME);
+		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		FileUtils.writeStringToFile(parmFile,
 				"{\"containerId\":\"PLAY002455\",\"releaseId\":\"RELEASE666\",\"taskLevel\":\"DEV2\",\"taskIds\":[\"7E3A5D04D0C2\",\"7E3A5D04D3A3\"]}");
 		String expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\nreleaseId = RELEASE666\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n\nevents.name=Completed\r\nevents.body=Deployed\r\n"

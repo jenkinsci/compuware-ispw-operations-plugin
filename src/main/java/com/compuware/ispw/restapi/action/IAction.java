@@ -1,10 +1,20 @@
 package com.compuware.ispw.restapi.action;
 
+import java.io.IOException;
 import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.compuware.ispw.restapi.BuildParms;
 import com.compuware.ispw.restapi.HttpMode;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.WebhookToken;
+import com.compuware.ispw.restapi.util.RestApiUtils;
+
+import hudson.FilePath;
 
 /**
  * Common interface for all actions
@@ -14,7 +24,7 @@ import com.compuware.ispw.restapi.WebhookToken;
  */
 @SuppressWarnings("nls")
 public interface IAction {
-	
+
 	public static final String application = "application";
 	public static final String assignmentId = "assignmentId";
 	public static final String assignmentPrefix = "assignmentPrefix";
@@ -70,17 +80,127 @@ public interface IAction {
 	public static final String action = "action";
 	public static final String checkoutFromLevel = "checkoutFromLevel";
 	public static final String checkout = "checkout";
-	public static final String taskName = "taskName"; //TODO: need to update to mname/mtype to be consistent on CES side
+	public static final String taskName = "taskName"; // TODO: need to update to mname/mtype to be consistent on CES side
 	public static final String type = "type";
-	
-	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody,
-			WebhookToken webhookToken);
-	
+
+	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken);
+
 	public PrintStream getLogger();
-	
+
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject);
-	
+
 	public Object endLog(PrintStream logger, IspwRequestBean ispwRequestBean, String responseJson);
-	
+
 	public HttpMode getHttpMode();
+
+	public default String preprocess(String ispwRequestBody, FilePath buildParmPath, PrintStream logger) throws IOException, InterruptedException 
+	{
+		return ispwRequestBody;
+	}
+
+	default String preprocess(String automaticRegex, String ispwRequestBody, FilePath pathToParmFile,
+			PrintStream logger) throws IOException, InterruptedException 
+	{
+		Pattern runAutomaticallyPattern = Pattern.compile(automaticRegex,
+				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		if (ispwRequestBody != null) {
+			Matcher runAutomaticallyMatcher = runAutomaticallyPattern.matcher(ispwRequestBody);
+
+			if (runAutomaticallyMatcher.find()) {
+				boolean exists = false;
+				try {
+					exists = pathToParmFile != null && pathToParmFile.exists();
+				} catch (IOException | InterruptedException x) {
+					x.printStackTrace();
+					logger.println("Warn: " + x.getMessage());
+				}
+
+				if (exists) {
+					ispwRequestBody = runAutomaticallyMatcher.replaceAll(StringUtils.EMPTY);
+
+					try {
+						// if a line of the body contains the regex and "true" case-
+						// insensitive, and the line is not a
+						// comment.
+						// File parmFile = new File(buildParmPath, BUILD_PARAM_FILE_NAME);
+						logger.println(
+								"Build parameters will automatically be retrieved from file " + pathToParmFile.toURI());
+
+						String jsonString = pathToParmFile.readToString();
+						BuildParms buildParms = null;
+
+						if (jsonString != null && !jsonString.isEmpty()) {
+							buildParms = BuildParms.parse(jsonString);
+						}
+
+						if (buildParms != null) {
+							ispwRequestBody = getRequestBodyUsingAutomaticParms(ispwRequestBody, buildParms);
+						}
+
+						logger.println("Done reading automaticBuildParams.txt.");
+					} catch (IOException | InterruptedException e) {
+						// do NOT auto build if has exception
+						ispwRequestBody = StringUtils.EMPTY;
+
+						e.printStackTrace();
+						logger.println(
+								"The tasks could not be built automatically because the following error occurred: "
+										+ e.getMessage());
+						throw e;
+					}
+
+				} else {
+					// do NOT auto build if file doesn't exist
+					ispwRequestBody = StringUtils.EMPTY;
+					logger.println(
+							"The tasks could not be built automatically because the automaticBuildParams.txt file does not exist.");
+				}
+			}
+		}
+		if (RestApiUtils.isIspwDebugMode()) {
+			logger.println("Using requestBody :\n{" + ispwRequestBody + "\n}"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return ispwRequestBody;
+	}
+
+	default String getRequestBodyUsingAutomaticParms(String inputRequestBody, BuildParms buildParms) {
+		String ispwRequestBody = inputRequestBody;
+		// Remove any line that is not a comment and contains application, assignmentid,
+		// releaseid, taskid,
+		// mname, mtype, or level. These parms will be replaced with parms from the
+		// file.
+		String linesToReplaceRegex = "(?i)(^(?!#)( +)?(application|assignmentid|releaseid|taskid|mname|mtype|level)(.+)?$)"; //$NON-NLS-1$
+		Pattern linesToReplacePattern = Pattern.compile(linesToReplaceRegex,
+				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+		Matcher linesToReplaceMatcher = linesToReplacePattern.matcher(ispwRequestBody);
+		ispwRequestBody = linesToReplaceMatcher.replaceAll(StringUtils.EMPTY);
+
+		StringBuilder requestBodyBuilder = new StringBuilder();
+		if (buildParms.getContainerId() != null) {
+			requestBodyBuilder.append("assignmentId = " + buildParms.getContainerId());
+		}
+		if (buildParms.getTaskLevel() != null) {
+			requestBodyBuilder.append("\nlevel = " + buildParms.getTaskLevel());
+		}
+		if (buildParms.getReleaseId() != null) {
+			requestBodyBuilder.append("\nreleaseId = " + buildParms.getReleaseId());
+		}
+		if (buildParms.getTaskIds() != null && !buildParms.getTaskIds().isEmpty()) {
+			requestBodyBuilder.append("\ntaskId = ");
+			for (String taskId : buildParms.getTaskIds()) {
+				requestBodyBuilder.append(taskId + ",");
+			}
+			requestBodyBuilder.deleteCharAt(requestBodyBuilder.length() - 1); // remove last comma
+		}
+		requestBodyBuilder.append("\n").append(ispwRequestBody); // the original request body may still contain webhook
+																	// event
+																	// information and runtime configuration
+		ispwRequestBody = requestBodyBuilder.toString();
+		return ispwRequestBody;
+	}
+
+	public default void postprocess()
+	{
+		
+	}
 }

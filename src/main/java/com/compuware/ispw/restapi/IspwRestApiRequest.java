@@ -364,7 +364,7 @@ public class IspwRestApiRequest extends Builder {
 		IspwRequestBean ispwRequestBean = null;
 		if (action instanceof IBuildAction)
 		{
-			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, IBuildAction.BUILD_PARAM_FILE_NAME);
+			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
 			
 			try 
 			{
@@ -384,6 +384,8 @@ public class IspwRestApiRequest extends Builder {
 		}
 		else
 		{
+			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
+			ispwRequestBody = action.preprocess(ispwRequestBody, buildParmPath, logger);
 			ispwRequestBean = action.getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken);
 		}
 		

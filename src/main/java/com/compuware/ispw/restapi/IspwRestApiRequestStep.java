@@ -396,7 +396,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			IspwRequestBean ispwRequestBean = null;
 			if (action instanceof IBuildAction)
 			{
-				FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, IBuildAction.BUILD_PARAM_FILE_NAME);
+				FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
 				try 
 				{
 					ispwRequestBean = ((IBuildAction) action).getIspwRequestBean(cesIspwHost, step.ispwRequestBody,
@@ -415,7 +415,9 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			}
 			else
 			{
-				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, step.ispwRequestBody, webhookToken);
+				FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
+				String realIspwRequestBody = action.preprocess(step.ispwRequestBody, buildParmPath, logger);
+				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, realIspwRequestBody, webhookToken);
 			}
 
 			if (RestApiUtils.isIspwDebugMode())

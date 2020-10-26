@@ -18,7 +18,8 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import com.compuware.ispw.restapi.action.IBuildAction;
+
+import com.compuware.ispw.restapi.Constants;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -112,7 +113,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 				}
 			}
 			
-			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, IBuildAction.BUILD_PARAM_FILE_NAME);
+			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
         	
 			if (buildParmPath.exists()) {
         		logger.println("Remove the old build parm files." + buildParmPath.getName()); //$NON-NLS-1$
