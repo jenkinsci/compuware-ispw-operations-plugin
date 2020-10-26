@@ -1,5 +1,6 @@
 package com.compuware.ispw.restapi.action;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import com.compuware.ispw.model.rest.TaskResponse;
 import com.compuware.ispw.restapi.Constants;
@@ -8,6 +9,8 @@ import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.WebhookToken;
 import com.compuware.ispw.restapi.util.RestApiUtils;
+
+import hudson.FilePath;
 
 /**
  * Deploy release action
@@ -51,6 +54,13 @@ public class DeployReleaseAction extends SetInfoPostAction {
 		logger.println("ISPW: Set "+taskResp.getSetId()+" - created to deploy Release "+ispwRequestBean.getIspwContextPathBean().getReleaseId());
 		
 		return taskResp;
+	}
+	
+	@Override
+	public String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException
+	{
+		String automaticRegex = "(?i)(?m)(^(?!#)(.+)?deployautomatically.+true(.+)?$)";
+		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
 	}
 
 }

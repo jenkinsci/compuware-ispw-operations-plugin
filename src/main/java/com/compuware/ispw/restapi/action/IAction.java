@@ -93,7 +93,7 @@ public interface IAction {
 
 	public HttpMode getHttpMode();
 
-	public default String preprocess(String ispwRequestBody, FilePath buildParmPath, PrintStream logger) throws IOException, InterruptedException 
+	public default String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException 
 	{
 		return ispwRequestBody;
 	}

@@ -57,10 +57,11 @@ public class DeployAssignmentAction extends SetInfoPostAction {
 
 	}
 	
-	public String preprocess(String ispwRequestBody, FilePath buildParmPath, PrintStream logger) throws IOException, InterruptedException
+	@Override
+	public String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException
 	{
 		String automaticRegex = "(?i)(?m)(^(?!#)(.+)?deployautomatically.+true(.+)?$)";
-		return super.preprocess(automaticRegex, ispwRequestBody, buildParmPath, logger);
+		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
 	}
 
 }
