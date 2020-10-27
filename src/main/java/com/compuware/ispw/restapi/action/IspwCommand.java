@@ -28,6 +28,9 @@ public class IspwCommand {
 	@IspwAction(clazz = DeployAssignmentAction.class)
 	public static final String DeployAssignment = "DeployAssignment"; // POST
 	
+	@IspwAction(clazz = DeployTaskAction.class)
+	public static final String DeployTask = "DeployTask"; // POST
+	
 	@IspwAction(clazz = RegressAssignmentAction.class)
 	public static final String RegressAssignment = "RegressAssignment"; // POST
 	
