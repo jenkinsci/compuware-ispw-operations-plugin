@@ -9,7 +9,7 @@
  * Copyright (c) 2019 Compuware Corporation. All rights reserved.
  * (c) Copyright 2020 BMC Software, Inc.
  */
-package com.compuware.ispw.restapi.action.test;
+package com.compuware.ispw.restapi.action;
 
 import static org.junit.Assert.*;
 import java.io.File;
@@ -30,26 +30,24 @@ import com.compuware.ispw.restapi.HttpMode;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.WebhookToken;
-import com.compuware.ispw.restapi.action.IBuildAction;
-import com.compuware.ispw.restapi.util.RestApiUtilsTest;
 import hudson.FilePath;
 
 /**
  * 
  */
 @SuppressWarnings({"nls", "deprecation"})
-public class IBuildActionTest
+public class IActionTest
 {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
-	private static Logger log = Logger.getLogger(IBuildActionTest.class);
+	private static Logger log = Logger.getLogger(IActionTest.class);
 	PrintStream logger = System.out;
 	
 	@Before
 	public void setUp() throws GitAPIException
 	{
-		System.out.println("IBuildActionTest folder: " + tempFolder.getRoot().getAbsolutePath());
+		System.out.println("IActionTest folder: " + tempFolder.getRoot().getAbsolutePath());
 	}
 	
 	@After
@@ -71,13 +69,14 @@ public class IBuildActionTest
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testGetRequestBody_buildAutomaticallyNoAccess() throws IOException, InterruptedException
+	public void testPreprocess_buildAutomaticallyNoAccess() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		String inputRequestBody = "buildautomatically = true\n###";
 		BuildAction buildAction = new BuildAction();
 		try {
-			String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(buildDirectory), logger);
+			String outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(buildDirectory), logger);
+			assert(false);
 		} catch (IOException | InterruptedException e) {
 			assert(true);
 		}
@@ -89,18 +88,18 @@ public class IBuildActionTest
 	 * @throws IOException 
 	 */
 	@Test
-	public void testGetRequestBody_buildAutomaticallyNoFile() throws IOException, InterruptedException
+	public void testPreprocess_buildAutomaticallyNoFile() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		File parmsFile = new File(buildDirectory, Constants.BUILD_PARAM_FILE_NAME);
 		parmsFile.delete();
 		String inputRequestBody = "BUILDautomatically true\n###";
 		BuildAction buildAction = new BuildAction();
-		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, null, logger);
+		String outputRequestBody = buildAction.preprocess(inputRequestBody, null, logger);
 		String expectedOutput = "";
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 		
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmsFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmsFile), logger);
 		expectedOutput = "";
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 	}
@@ -111,7 +110,7 @@ public class IBuildActionTest
 	 */
 	
 	@Test
-	public void testGetRequestBody_buildAutomaticallyHasFile() throws IOException, InterruptedException
+	public void testPreprocess_buildAutomaticallyHasFile() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		String inputRequestBody = "BuildAutomatically = true";
@@ -119,17 +118,17 @@ public class IBuildActionTest
 		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		// file is empty
 		FileUtils.writeStringToFile(parmFile, "");
-		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		String outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", StringUtils.EMPTY, outputRequestBody);
 		
 		// file contains build parms
 		FileUtils.writeStringToFile(parmFile, "{\"containerId\":\"PLAY002455\",\"releaseId\":\"RELEASE666\",\"taskLevel\":\"DEV2\",\"taskIds\":[\"7E3A5D04D0C2\",\"7E3A5D04D3A3\"]}");
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody,  new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody,  new FilePath(parmFile), logger);
 		String expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\nreleaseId = RELEASE666\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n";
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 		
 		FileUtils.writeStringToFile(parmFile, "{\"containerId\":\"PLAY002455\",\"taskLevel\":\"DEV2\",\"taskIds\":[\"7E3A5D04D0C2\",\"7E3A5D04D3A3\"]}");
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody,  new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody,  new FilePath(parmFile), logger);
 		expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n";
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 	}
@@ -140,30 +139,30 @@ public class IBuildActionTest
 	 * @throws IOException 
 	 */
 	@Test
-	public void testGetRequestBody_notBuildAutomatically() throws IOException, InterruptedException
+	public void testPreprocess_notBuildAutomatically() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		File parmFile = new File(buildDirectory.getAbsoluteFile(), Constants.BUILD_PARAM_FILE_NAME);
 		parmFile.delete();
 		String inputRequestBody = "# comment";
 		BuildAction buildAction = new BuildAction();
-		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		String outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", inputRequestBody, outputRequestBody);
 		
 		inputRequestBody = "# buildautomatically = true \n# comment";
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", inputRequestBody, outputRequestBody);
 		
 		inputRequestBody = "buildautomatically = false \n# comment";
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", inputRequestBody, outputRequestBody);
 		
 		inputRequestBody = null;
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", inputRequestBody, outputRequestBody);
 		
 		inputRequestBody = "";
-		outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", inputRequestBody, outputRequestBody);
 		
 	}
@@ -173,7 +172,7 @@ public class IBuildActionTest
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testGetRequestBody_replacingGivenParms() throws IOException, InterruptedException
+	public void testPreprocess_replacingGivenParms() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		String inputRequestBody = "buildAutomatically=true\nevents.name=Completed\r\napplication = x\nevents.body=Deployed\r\n  assignmentID = y\n releaseid = z\n"
@@ -186,7 +185,7 @@ public class IBuildActionTest
 		String expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\nreleaseId = RELEASE666\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n\nevents.name=Completed\r\n\nevents.body=Deployed\r\n\n"
 				+ "\nevents.httpHeaders=Jenkins-Crumb:no-crumb\r\n\n\n\n\r\n\nevents.credentials=admin:library";
 		
-		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		String outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 	}
 
@@ -195,7 +194,7 @@ public class IBuildActionTest
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testGetRequestBody_containsEventData() throws IOException, InterruptedException
+	public void testPreprocess_containsEventData() throws IOException, InterruptedException
 	{
 		File buildDirectory = tempFolder.getRoot();
 		String inputRequestBody = "buildAutomatically=true\nevents.name=Completed\r\nevents.body=Deployed\r\n"
@@ -207,12 +206,17 @@ public class IBuildActionTest
 				"{\"containerId\":\"PLAY002455\",\"releaseId\":\"RELEASE666\",\"taskLevel\":\"DEV2\",\"taskIds\":[\"7E3A5D04D0C2\",\"7E3A5D04D3A3\"]}");
 		String expectedOutput = "assignmentId = PLAY002455\nlevel = DEV2\nreleaseId = RELEASE666\ntaskId = 7E3A5D04D0C2,7E3A5D04D3A3\n\nevents.name=Completed\r\nevents.body=Deployed\r\n"
 				+ "events.httpHeaders=Jenkins-Crumb:no-crumb\r\nevents.credentials=admin:library";
-		String outputRequestBody = buildAction.getRequestBody(inputRequestBody, new FilePath(parmFile), logger);
+		String outputRequestBody = buildAction.preprocess(inputRequestBody, new FilePath(parmFile), logger);
 		assertEquals("Failure of this test indicates a change in behavior", expectedOutput, outputRequestBody);
 	}
 	
-	private class BuildAction implements IBuildAction
+	private class BuildAction extends SetInfoPostAction
 	{
+		public BuildAction() {
+			super(logger);
+			// TODO Auto-generated constructor stub
+		}
+
 		@Override
 		public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken) {
 			// TODO Auto-generated method stub
@@ -242,12 +246,12 @@ public class IBuildActionTest
 			// TODO Auto-generated method stub
 			return null;
 		}
-
+		
 		@Override
-		public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken,
-				FilePath buildParmPath) {
-			// TODO Auto-generated method stub
-			return null;
+		public String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException
+		{
+			String automaticRegex = "(?i)(?m)(^(?!#)(.+)?buildautomatically.+true(.+)?$)";
+			return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
 		}
 		
 	}

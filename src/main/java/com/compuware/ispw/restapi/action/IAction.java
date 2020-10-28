@@ -1,3 +1,14 @@
+/**
+ * These materials contain confidential information and trade secrets of Compuware Corporation. You shall maintain the materials
+ * as confidential and shall not disclose its contents to any third party except as may be required by law or regulation. Use,
+ * disclosure, or reproduction is prohibited without the prior express written permission of Compuware Corporation.
+ * 
+ * All Compuware products listed within the materials are trademarks of Compuware Corporation. All other company or product
+ * names are trademarks of their respective owners.
+ * 
+ * Copyright (c) 2019 Compuware Corporation. All rights reserved.
+ * (c) Copyright 2020 BMC Software, Inc.
+ */
 package com.compuware.ispw.restapi.action;
 
 import java.io.IOException;
@@ -80,7 +91,8 @@ public interface IAction {
 	public static final String action = "action";
 	public static final String checkoutFromLevel = "checkoutFromLevel";
 	public static final String checkout = "checkout";
-	public static final String taskName = "taskName"; // TODO: need to update to mname/mtype to be consistent on CES side
+	public static final String taskName = "taskName"; // TODO: need to update to mname/mtype to be consistent on CES
+														// side
 	public static final String type = "type";
 
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken);
@@ -93,16 +105,54 @@ public interface IAction {
 
 	public HttpMode getHttpMode();
 
-	public default String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException 
-	{
+	/**
+	 * This method should be overridden to add "automatic" support for an action
+	 * 
+	 * @param ispwRequestBody
+	 *            - the request body entered by the user.
+	 * @param pathToParmFile
+	 *            - The file that contains the build parms. (should be something
+	 *            like "Jenkins\workspace\job-name\")
+	 * @param logger
+	 *            - the logger.
+	 * @return - a String containing the request body that should be used.
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public default String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger)
+			throws IOException, InterruptedException {
 		return ispwRequestBody;
 	}
 
+	/**
+	 * Reads the given request body to find out if the parameters of the build
+	 * should taken from the request body, or if they should be read from a file. If
+	 * the automaticRegex parameter is specified in the given body, the REST API
+	 * parameters will be read from a file in the given pathToParmFile. The given
+	 * request body will not be changed if the automaticRegex parameter is not
+	 * specified.
+	 * 
+	 * @param automaticRegex
+	 *            the regex used to match on the relevant "automatic" string for
+	 *            this action. <br>
+	 * 			(for example
+	 *            <code>(?i)(?m)(^(?!#)(.+)?deployautomatically.+true(.+)?$)</code>)
+	 * @param ispwRequestBody
+	 *            the request body entered by the user.
+	 * @param pathToParmFile
+	 *            The file that contains the build parms. (should be something like
+	 *            "Jenkins\workspace\job-name\")
+	 * @param logger
+	 *            the logger.
+	 * @return a String containing the request body that should be used.
+	 * @throws IOException
+	 *             IO exception
+	 * @throws InterruptedException
+	 *             interrupted exception
+	 */
 	default String preprocess(String automaticRegex, String ispwRequestBody, FilePath pathToParmFile,
-			PrintStream logger) throws IOException, InterruptedException 
-	{
-		Pattern runAutomaticallyPattern = Pattern.compile(automaticRegex,
-				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+			PrintStream logger) throws IOException, InterruptedException {
+		Pattern runAutomaticallyPattern = Pattern.compile(automaticRegex, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		if (ispwRequestBody != null) {
 			Matcher runAutomaticallyMatcher = runAutomaticallyPattern.matcher(ispwRequestBody);
 
@@ -163,6 +213,20 @@ public interface IAction {
 		return ispwRequestBody;
 	}
 
+	/**
+	 * For the case where "buildautomatically" is specified, this method replaces
+	 * any parameters specified in the request body with the parameters in the
+	 * BuildParms object. Any information that does not need to be replaced (i.e.
+	 * comments, event data, runtimeConfiguration...) will still be part of the
+	 * returned request body.
+	 * 
+	 * @param inputRequestBody
+	 *            the input request body that the user provided
+	 * @param buildParms
+	 *            the build parms to use instead of the given request body
+	 * @return a String request body to use instead of what the user specified. This
+	 *         will never be null.
+	 */
 	default String getRequestBodyUsingAutomaticParms(String inputRequestBody, BuildParms buildParms) {
 		String ispwRequestBody = inputRequestBody;
 		// Remove any line that is not a comment and contains application, assignmentid,
@@ -199,8 +263,7 @@ public interface IAction {
 		return ispwRequestBody;
 	}
 
-	public default void postprocess()
-	{
-		
+	public default void postprocess() {
+
 	}
 }

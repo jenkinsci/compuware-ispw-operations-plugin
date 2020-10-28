@@ -702,8 +702,7 @@
         <tbody>
           <tr>
             <td>DeployAssignment</td>
-            <td> <br>
-            </td>
+            <td>DeployRelease</td>
           </tr>
           <tr>
             <td>
@@ -711,6 +710,83 @@
             </td>
             <td>
               <pre>runtimeConfiguration=TPZP<br>releaseId=JKGENRELID<br>level=QA<br>#optional<br>mname=TPROG08<br>mtype=COB<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>DeployAutomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+            </td>
+            <td>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <strong><br>
+        DeployTask action (Ignore 'events' properties if no webhook callback):</strong> <br>
+      Required:
+      <table border="1">
+        <tbody>
+          <tr>
+            <td>runtimeConfiguration</td>
+            <td>see ISPW administrator for valid values</td>
+          </tr>
+          <tr>
+            <td>assignmentId</td>
+            <td>The container for which you intend to deploy tasks.</td>
+          </tr>
+          <tr>
+            <td>level</td>
+            <td>The level that the tasks exist at in the assignment</td>
+          </tr>
+          <tr>
+            <td>taskId</td>
+            <td>The comma-separated list of task IDs for the tasks that need to be deployed</td>
+          </tr>
+        </tbody>
+      </table>
+      Optional:
+      <table border="1">
+        <tbody>
+         <tr>
+            <td>deployAutomatically</td>
+            <td>The request parameters for the deploy will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step</td>
+          </tr>
+          <tr>
+            <td>changeType</td>
+            <td>S for standard, I for incidental, or E for emergency.
+              Default value of S</td>
+          </tr>
+          <tr>
+            <td>executionStatus</td>
+            <td>I for immediate execution or at start date/time, H to
+              create request in hold</td>
+          </tr>
+          <tr>
+            <td>dpenvlst</td>
+            <td>the DPENVLST parameter</td>
+          </tr>
+          <tr>
+            <td>system</td>
+            <td>allows you to specify a specific System for the Deploy</td>
+          </tr>
+        </tbody>
+      </table>
+      Example:
+      <table border="1">
+        <tbody>
+          <tr>
+            <td>DeployTask</td>
+            <td> <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <pre>runtimeConfiguration=TPZP<br>assignmentId=PLAY000313<br>level=QA<br>taskId=7E489457622C,7E4A2CAC742C<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+            </td>
+            <td>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
           </tr>
         </tbody>
