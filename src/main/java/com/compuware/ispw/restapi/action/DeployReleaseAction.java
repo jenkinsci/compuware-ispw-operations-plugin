@@ -8,6 +8,7 @@ import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.WebhookToken;
+import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 
 import hudson.FilePath;
@@ -51,7 +52,15 @@ public class DeployReleaseAction extends SetInfoPostAction {
 	public Object endLog(PrintStream logger, IspwRequestBean ispwRequestBean, String responseJson)
 	{
 		TaskResponse taskResp = new JsonProcessor().parse(responseJson, TaskResponse.class);
-		logger.println("ISPW: Set "+taskResp.getSetId()+" - created to deploy Release "+ispwRequestBean.getIspwContextPathBean().getReleaseId());
+		if (taskResp.getSetId() == null && !taskResp.getMessage().trim().isEmpty())
+		{
+			logger.println("ISPW: " + taskResp.getMessage());
+		}
+		else
+		{
+			logger.println("ISPW: Set " + taskResp.getSetId() + " - created to deploy tasks in release "
+				+ ispwRequestBean.getIspwContextPathBean().getReleaseId());
+		}
 		
 		return taskResp;
 	}
@@ -63,4 +72,9 @@ public class DeployReleaseAction extends SetInfoPostAction {
 		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
 	}
 
+	@Override
+	public Operation getIspwOperation()
+	{
+		return Operation.IMPLEMENT;
+	}
 }

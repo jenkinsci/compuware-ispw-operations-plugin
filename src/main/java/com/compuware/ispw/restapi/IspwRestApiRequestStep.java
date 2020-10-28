@@ -32,8 +32,10 @@ import com.compuware.ispw.model.rest.TaskResponse;
 import com.compuware.ispw.restapi.action.GetSetInfoAction;
 import com.compuware.ispw.restapi.action.IAction;
 import com.compuware.ispw.restapi.action.IBuildAction;
+import com.compuware.ispw.restapi.action.SetInfoPostAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
+import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import hudson.AbortException;
@@ -535,7 +537,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 						&& (respObject instanceof TaskResponse || respObject instanceof BuildResponse))
 				{
 					HashSet<String> set = new HashSet<>();
-
+					SetInfoResponse finalSetInfoResp = null;
 					int i = 0;
 					boolean isSetHeld = false;
 					String setState = "Unknown";
@@ -582,14 +584,16 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 									String pollingJson1 = pollerSupplier1.getContent();
 
 									JsonProcessor jsonProcessor1 = new JsonProcessor();
-									SetInfoResponse setInfoResp1 = jsonProcessor1.parse(pollingJson1,
+									finalSetInfoResp = jsonProcessor1.parse(pollingJson1,
 											SetInfoResponse.class);
-									if (setInfoResp1 != null)
+									if (finalSetInfoResp != null && finalSetInfoResp.getTasks() != null)
 									{
-										logger.println("tasks="+ setInfoResp1.getTasks());
+										StringBuilder taskNames = new StringBuilder();
+										finalSetInfoResp.getTasks().forEach(task -> taskNames.append(task.getModuleName() + ", "));
+										logger.println("ISPW tasks: " + taskNames.substring(0, taskNames.lastIndexOf(",")));
 									}
 									
-									saveTttChangeSet(logger, envVars, setInfoResp1);
+									saveTttChangeSet(logger, envVars, finalSetInfoResp);
 								}
 								
 								break;
@@ -645,9 +649,16 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 					}
 
 					// Follow with post set execution logging for the task within the BuildResponse model
-					if (respObject instanceof BuildResponse && !isSetHeld)
+					if (!isSetHeld)
 					{
-						buildActionTaskInfoLogger(setId, setState, logger, respObject);
+						if (respObject instanceof BuildResponse)
+						{
+							buildActionTaskInfoLogger(setId, setState, logger, respObject);
+						}
+						else if (finalSetInfoResp != null)
+						{
+							logActionResults(finalSetInfoResp, action, logger);
+						}
 					}
 				}
 			}
@@ -767,6 +778,51 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			}
 		}
 
+		/**
+		 * This method logs the results of any other SetInfoPostAction. In order to get
+		 * the full logging, be sure the IAction has the getIspwOperation() method
+		 * implemented.
+		 * 
+		 * @param finalSetInfoResp
+		 *            The SetInfoResponse that was received after the polling was
+		 *            complete
+		 * @param action
+		 *            the IAction that is being run
+		 * @param logger
+		 *            the logger
+		 * @throws AbortException
+		 */
+		private void logActionResults(SetInfoResponse finalSetInfoResp, IAction action, PrintStream logger) throws AbortException
+		{
+			if (action instanceof SetInfoPostAction)
+			{
+				SetInfoPostAction setAction = (SetInfoPostAction) action;
+				Operation operation  = setAction.getIspwOperation();
+				List<TaskInfo> tasksInSet = finalSetInfoResp.getTasks();
+				if (tasksInSet != null)
+				{
+					for (TaskInfo task : tasksInSet)
+					{
+						if (task.getOperation().startsWith(operation.getCode())) //$NON-NLS-1$
+						{
+							logger.println("ISPW: " + task.getModuleName() + " " + operation.getPastTenseDescription() + " successfully");
+						}
+					}
+				}
+				
+				String setState = StringUtils.trimToEmpty(finalSetInfoResp.getState());
+				if (setState.equals(Constants.SET_STATE_CLOSED) || setState.equals(Constants.SET_STATE_COMPLETE)
+						|| setState.equals(Constants.SET_STATE_WAITING_APPROVAL))
+				{
+					logger.println("ISPW: The " + step.getIspwAction() + " process completed.");
+				}
+				else
+				{
+					throw new AbortException("ISPW: Set processing has not completed successfully. Set status is " + setState + "."); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+		
 		private static final long serialVersionUID = 1L;
 
 		FilePath resolveOutputFile()

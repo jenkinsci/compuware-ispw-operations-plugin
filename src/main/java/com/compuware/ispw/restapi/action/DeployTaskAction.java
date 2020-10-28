@@ -19,6 +19,7 @@ import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.WebhookToken;
+import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 
 import hudson.FilePath;
@@ -48,16 +49,29 @@ public class DeployTaskAction extends SetInfoPostAction {
 	@Override
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject)
 	{
-		logger.println("ISPW: Deploying Assignment " + ispwContextPathBean.getAssignmentId()
-		+ " at level " + ispwContextPathBean.getLevel());
+		if (ispwContextPathBean.getTaskId() != null)
+		{
+			logger.println("ISPW: The deploy process has started for task " + ispwContextPathBean.getTaskId());
+		}
+		else
+		{
+			logger.println("ISPW: The deploy process has started for task " + ispwContextPathBean.getAssignmentId());
+		}
 	}
 
 	@Override
 	public Object endLog(PrintStream logger, IspwRequestBean ispwRequestBean, String responseJson)
 	{
 		TaskResponse taskResp = new JsonProcessor().parse(responseJson, TaskResponse.class);
-		logger.println("ISPW: Set "+taskResp.getSetId()+" - created to deploy Assignment "+ispwRequestBean.getIspwContextPathBean().getAssignmentId());
-		
+		if (taskResp.getSetId() == null && !taskResp.getMessage().trim().isEmpty()) 
+		{
+			logger.println("ISPW: " + taskResp.getMessage());
+		} else 
+		{
+			logger.println("ISPW: Set " + taskResp.getSetId() + " - created to deploy tasks "
+					+ ispwRequestBean.getIspwContextPathBean().getTaskId());
+		}
+
 		return taskResp;
 
 	}
@@ -69,4 +83,9 @@ public class DeployTaskAction extends SetInfoPostAction {
 		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
 	}
 
+	@Override
+	public Operation getIspwOperation()
+	{
+		return Operation.IMPLEMENT;
+	}
 }
