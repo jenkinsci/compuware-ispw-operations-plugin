@@ -43,7 +43,13 @@ public class DeployTaskAction extends SetInfoPostAction {
 	@Override
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody,
 			WebhookToken webhookToken) {
-		return getIspwRequestBean(srid, ispwRequestBody, webhookToken, contextPath);
+		IspwRequestBean bean = getIspwRequestBean(srid, ispwRequestBody, webhookToken, contextPath);
+
+		String tempContextPath = bean.getContextPath();
+		tempContextPath = tempContextPath.replaceAll(",", "&taskId=");
+		bean.setContextPath(tempContextPath);
+
+		return bean;
 	}
 
 	@Override
@@ -55,7 +61,7 @@ public class DeployTaskAction extends SetInfoPostAction {
 		}
 		else
 		{
-			logger.println("ISPW: The deploy process has started for task " + ispwContextPathBean.getAssignmentId());
+			logger.println("ISPW: The deploy process has started for tasks in assignment " + ispwContextPathBean.getAssignmentId());
 		}
 	}
 
@@ -80,7 +86,8 @@ public class DeployTaskAction extends SetInfoPostAction {
 	public String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException
 	{
 		String automaticRegex = "(?i)(?m)(^(?!#)(.+)?deployautomatically.+true(.+)?$)";
-		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
+		return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger, getIspwOperation().getDescription(),
+				getIspwOperation().getPastTenseDescription());
 	}
 
 	@Override

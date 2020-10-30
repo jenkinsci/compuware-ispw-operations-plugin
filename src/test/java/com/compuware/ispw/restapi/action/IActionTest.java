@@ -251,7 +251,7 @@ public class IActionTest
 		public String preprocess(String ispwRequestBody, FilePath pathToParmFile, PrintStream logger) throws IOException, InterruptedException
 		{
 			String automaticRegex = "(?i)(?m)(^(?!#)(.+)?buildautomatically.+true(.+)?$)";
-			return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger);
+			return super.preprocess(automaticRegex, ispwRequestBody, pathToParmFile, logger, "test", "test");
 		}
 		
 	}

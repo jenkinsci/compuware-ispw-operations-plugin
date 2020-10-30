@@ -362,10 +362,10 @@ public class IspwRestApiRequest extends Builder {
 					+ ", ces.ispw.token=" + cesIspwToken);
 
 		IspwRequestBean ispwRequestBean = null;
+		FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
+
 		if (action instanceof IBuildAction)
 		{
-			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
-			
 			try 
 			{
 				ispwRequestBean = ((IBuildAction) action).getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken,
@@ -384,7 +384,6 @@ public class IspwRestApiRequest extends Builder {
 		}
 		else
 		{
-			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
 			ispwRequestBody = action.preprocess(ispwRequestBody, buildParmPath, logger);
 			ispwRequestBean = action.getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken);
 		}
@@ -590,14 +589,14 @@ public class IspwRestApiRequest extends Builder {
 					return true;
 				}
 
-				// Follow with post set execution logging for the tasks within the BuildResponse model
+				// Follow with post set execution logging for the tasks
 				if (!isSetHeld)
 				{
-					if (respObject instanceof BuildResponse) 
+					if (respObject instanceof BuildResponse)
 					{
 						return buildActionTaskInfoLogger(setId, setState, launcher, envVars, build, listener, logger,
 								respObject);
-					} 
+					}
 					else if (finalSetInfoResp != null)
 					{
 						logActionResults(finalSetInfoResp, action, logger);
@@ -714,7 +713,7 @@ public class IspwRestApiRequest extends Builder {
 			{
 				for (TaskInfo task : tasksInSet)
 				{
-					if (task.getOperation().startsWith(operation.getCode())) //$NON-NLS-1$
+					if (task.getOperation().startsWith(operation.getCode()))
 					{
 						logger.println("ISPW: " + task.getModuleName() + " " + operation.getPastTenseDescription() + " successfully");
 					}

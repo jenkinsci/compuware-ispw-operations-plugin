@@ -144,6 +144,12 @@ public interface IAction {
 	 *            "Jenkins\workspace\job-name\")
 	 * @param logger
 	 *            the logger.
+	 * @param operation
+	 *            the operation to preprocess. A custom string can be passed in, or <b>utilizing the
+	 *            {@link com.compuware.ispw.restapi.util.Operation#getByDescription(String)} is preferred</b>
+	 * @param pastTenseOp
+	 *            the past tense of the operation used for logging. A custom string can be passed in, or <b>utilizing the
+	 *            {@link com.compuware.ispw.restapi.util.Operation#getPastTenseDescription()} is preferred</b>
 	 * @return a String containing the request body that should be used.
 	 * @throws IOException
 	 *             IO exception
@@ -151,7 +157,7 @@ public interface IAction {
 	 *             interrupted exception
 	 */
 	default String preprocess(String automaticRegex, String ispwRequestBody, FilePath pathToParmFile,
-			PrintStream logger) throws IOException, InterruptedException {
+			PrintStream logger, String operation, String pastTenseOp) throws IOException, InterruptedException {
 		Pattern runAutomaticallyPattern = Pattern.compile(automaticRegex, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		if (ispwRequestBody != null) {
 			Matcher runAutomaticallyMatcher = runAutomaticallyPattern.matcher(ispwRequestBody);
@@ -174,7 +180,7 @@ public interface IAction {
 						// comment.
 						// File parmFile = new File(buildParmPath, BUILD_PARAM_FILE_NAME);
 						logger.println(
-								"Build parameters will automatically be retrieved from file " + pathToParmFile.toURI());
+								operation + " parameters will automatically be retrieved from file " + pathToParmFile.toURI());
 
 						String jsonString = pathToParmFile.readToString();
 						BuildParms buildParms = null;
@@ -194,7 +200,7 @@ public interface IAction {
 
 						e.printStackTrace();
 						logger.println(
-								"The tasks could not be built automatically because the following error occurred: "
+								"The tasks could not be " + pastTenseOp + " automatically because the following error occurred: "
 										+ e.getMessage());
 						throw e;
 					}
@@ -203,7 +209,7 @@ public interface IAction {
 					// do NOT auto build if file doesn't exist
 					ispwRequestBody = StringUtils.EMPTY;
 					logger.println(
-							"The tasks could not be built automatically because the automaticBuildParams.txt file does not exist.");
+							"The tasks could not be " + pastTenseOp + " automatically because the automaticBuildParams.txt file does not exist.");
 				}
 			}
 		}

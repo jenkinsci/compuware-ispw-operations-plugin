@@ -396,9 +396,10 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 						+ ", ces.ispw.token=" + cesIspwToken);
 
 			IspwRequestBean ispwRequestBean = null;
+			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
+
 			if (action instanceof IBuildAction)
 			{
-				FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
 				try 
 				{
 					ispwRequestBean = ((IBuildAction) action).getIspwRequestBean(cesIspwHost, step.ispwRequestBody,
@@ -417,7 +418,6 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 			}
 			else
 			{
-				FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
 				String realIspwRequestBody = action.preprocess(step.ispwRequestBody, buildParmPath, logger);
 				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, realIspwRequestBody, webhookToken);
 			}
@@ -648,7 +648,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 						return supplier;
 					}
 
-					// Follow with post set execution logging for the task within the BuildResponse model
+					// Follow with post set execution logging for the tasks
 					if (!isSetHeld)
 					{
 						if (respObject instanceof BuildResponse)
