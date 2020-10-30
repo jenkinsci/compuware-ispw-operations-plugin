@@ -26,7 +26,7 @@ public abstract class SetInfoPostAction extends GenericPostAction<SetInfo> {
 	
 	/**
 	 * Returns the ISPW Operation enumeration object for this action<br>
-	 * <b><i>May not be implemented for all actions<b><i>
+	 * <b><i>May not be implemented for all actions</i></b>
 	 * 
 	 * @return the Operation
 	 */

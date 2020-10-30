@@ -187,9 +187,11 @@ public class RestApiUtils {
 	}
 	
 	/**
-	 * Get the host connection 
+	 * Get the host connection
+	 * 
 	 * @param connectionId
-	 * @return  The host connection or a null object
+	 *            The connection ID
+	 * @return The host connection or a null object
 	 */
 	public static HostConnection getHostConnection(String connectionId) {
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
