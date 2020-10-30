@@ -146,7 +146,7 @@ public interface IAction {
 	 *            the logger.
 	 * @param operation
 	 *            the operation to preprocess. A custom string can be passed in, or <b>utilizing the
-	 *            {@link com.compuware.ispw.restapi.util.Operation#getByDescription(String)} is preferred</b>
+	 *            {@link com.compuware.ispw.restapi.util.Operation#getDescription()} is preferred</b>
 	 * @param pastTenseOp
 	 *            the past tense of the operation used for logging. A custom string can be passed in, or <b>utilizing the
 	 *            {@link com.compuware.ispw.restapi.util.Operation#getPastTenseDescription()} is preferred</b>
