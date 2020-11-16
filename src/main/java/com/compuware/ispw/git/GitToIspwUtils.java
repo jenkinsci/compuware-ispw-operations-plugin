@@ -318,7 +318,7 @@ public class GitToIspwUtils
 
 		if (!success)
 		{
-			if (fromHash.trim().isEmpty())
+			if (fromHash.trim().isEmpty() || toHash.trim().contentEquals("-2"))
 			{
 				logger.println("Failure: Synchronization failed.");
 			}

@@ -28,6 +28,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
+import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -36,6 +37,7 @@ import hudson.scm.EditType;
 import hudson.scm.ChangeLogSet.AffectedFile;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.util.ListBoxModel;
+import jenkins.branch.BranchIndexingCause;
 import jenkins.model.Jenkins;
 
 /**
@@ -81,6 +83,9 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 		@Override
 		protected Integer run() throws Exception
 		{
+			boolean firstBuild = false;
+			WorkflowRun workflowRun = null;
+			WorkflowRun previousRun = null;
 			PrintStream logger = listener.getLogger();
 
 			EnvVars envVars = getContext().get(hudson.EnvVars.class);
@@ -92,11 +97,13 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 			String branchName = envVars.get("BRANCH_NAME", StringUtils.EMPTY); 
 
 			boolean calculatLog = false;
+			if (run instanceof WorkflowRun)
+			{
+				workflowRun = (WorkflowRun) run;
+				previousRun = workflowRun.getPreviousBuild();
+			}
 			if (run instanceof WorkflowRun && (changeSets == null || changeSets.isEmpty()))
 			{
-				WorkflowRun workflowRun = (WorkflowRun) run;
-				WorkflowRun previousRun = workflowRun.getPreviousBuild();
-				
 				//If we decide only recalculate based on whether the previous build failed, we need to comment out
 				//the following condition
 				if (previousRun != null /*&& !hudson.model.Result.SUCCESS.equals(previousRun.getResult())*/)
@@ -124,7 +131,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 			if ((changeSets != null || calculatLog) && !branchName.isEmpty())
 			{
 				HashSet<String> changedPathSet = new HashSet<String>();
-				String paths;
+				String paths = null;
 				
 				logger.println("Branch name: " + branchName);
 				Iterator<? extends ChangeLogSet<? extends Entry>> itrChangeSets = changeSets.iterator();
@@ -141,8 +148,25 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 				
 				if (!itrChangeSets.hasNext())
 				{
-					logger.println("No changed files were detected.");
-					return 0; // should be a success
+					if (previousRun == null)
+					{
+						List<Cause> causes = run.getCauses();
+						for (int i = 0; i < causes.size(); i++) 
+						{
+							//for the first build, there's no change sets so need to figure out
+							//the changes via another way
+							if (causes.get(i) instanceof BranchIndexingCause)
+							{
+								firstBuild = true;
+								break;
+							}
+						}
+					}
+					else if (!firstBuild)
+					{
+						logger.println("No changed files were detected.");
+						return 0; //return as success
+					}
 				}
 				
 				while (itrChangeSets.hasNext())
@@ -181,16 +205,30 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 					else
 					{
 						logger.println("No changed files were detected.");
-						return 0;
+						return 0; //return as success
 					}
 
-					// provide a list of paths in the var_to_hash, and set var_from_hash to
-					// GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET (indicator this is for
-					// multibranch project)
-					envVars.put(GitToIspwConstants.VAR_TO_HASH, paths);
-					envVars.put(GitToIspwConstants.VAR_FROM_HASH, GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET);
-					envVars.put(GitToIspwConstants.VAR_REF, branchName);
+					if (!firstBuild)
+					{
+						// provide a list of paths in the var_to_hash, and set var_from_hash to
+						// GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET (indicator this is for
+						// multibranch project)
+						envVars.put(GitToIspwConstants.VAR_TO_HASH, paths);
+						envVars.put(GitToIspwConstants.VAR_FROM_HASH, GitToIspwConstants.VAR_FROM_HASH_TYPE_CHANGESET);
+						envVars.put(GitToIspwConstants.VAR_REF, branchName);
+					}
 				}
+			}
+			
+			// Another method to get changes if there's no change set and it's the first build which only does
+			// the branch indexing
+			if (firstBuild)
+			{
+				// -2 indicates the first build of a new branch - can't depend on a change set
+				// so have to do different logic in cli, which checks for the -2.
+				envVars.put(GitToIspwConstants.VAR_TO_HASH, "-2");
+				envVars.put(GitToIspwConstants.VAR_FROM_HASH, "-2");
+				envVars.put(GitToIspwConstants.VAR_REF, branchName);
 			}
 	
 			Map<String, RefMap> map = GitToIspwUtils.parse(step.branchMapping);
@@ -214,11 +252,11 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 				logger.println("Using refid for branch pattern match: " + refId);
 				matchTo = StringUtils.trimToNull(refId);
 			}
-			RestApiUtils.assertNotNull(logger, matchTo, "Cannot match a branchName or refId, both is null or empty");
+			RestApiUtils.assertNotNull(logger, matchTo, "Cannot match on the branch name or refId in the branch mapping. Both are null or empty.");
 			
 			refMap = matcher.match(matchTo);
 			RestApiUtils.assertNotNull(logger, refMap,
-					"Cannot find a branch pattern matchs the branch - %s, please adjust your branch mapping.", matchTo);
+					"Cannot find a branch pattern that matches the branch %s.  Please adjust your branch mapping.", matchTo);
 			
 			Launcher launcher = getContext().get(Launcher.class);
 			if(GitToIspwUtils.callCli(launcher, run, logger, envVars, refMap, step))

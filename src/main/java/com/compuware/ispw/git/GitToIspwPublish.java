@@ -12,7 +12,6 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import com.compuware.ispw.git.GitToIspwPublishStep.DescriptorImpl;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -105,8 +104,26 @@ public class GitToIspwPublish extends Builder implements IGitToIspwPublish
 		BranchPatternMatcher matcher = new BranchPatternMatcher(map, logger);
 		RefMap refMap = matcher.match(refId);
 		RestApiUtils.assertNotNull(logger, refMap,
-				"Cannot find a branch pattern matchs the branch - %s, please adjust your branch mapping.", refId);
+				"Cannot find a branch pattern that matches the branch %s. Please adjust your branch mapping.", refId);
 
+		if (build instanceof AbstractBuild)
+		{
+			//Test to determine if there was a from hash which may not be the case for a new branch first build.
+			//If "from hash" is all zeros and "to hash" is good, then do the special case of setting fromHash to -2 which
+			//will handle the Diffs differently in the CLI.
+			String fromHash = envVars.get(GitToIspwConstants.VAR_FROM_HASH, null);
+			String toHash = envVars.get(GitToIspwConstants.VAR_TO_HASH, null);
+			if (fromHash != null && toHash != null)
+			{
+				toHash = toHash.replace("0", StringUtils.EMPTY);
+				fromHash = fromHash.replace("0", StringUtils.EMPTY);
+				if (fromHash.isEmpty() && !toHash.isEmpty())
+				{
+					envVars.put(GitToIspwConstants.VAR_FROM_HASH, "-2");
+				}
+			}
+		}
+		
 		// Sync to ISPW
 		if (GitToIspwUtils.callCli(launcher, build, logger, envVars, refMap, this))
 		{
