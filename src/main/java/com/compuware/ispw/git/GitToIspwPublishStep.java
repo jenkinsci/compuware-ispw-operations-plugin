@@ -162,7 +162,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 							}
 						}
 					}
-					else if (!firstBuild)
+					if (!firstBuild)
 					{
 						logger.println("No changed files were detected.");
 						return 0; //return as success
