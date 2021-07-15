@@ -736,10 +736,22 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 				List<TaskInfo> tasksInSet = taskListResp.getTasks();
 				int numTasksToBeBuilt = tasksBuilt.size();
 				Set<String> uniqueTasksInSet = new HashSet<>();
+				
+				//Retrieve the AssignmentId from the response and add it to the TaskInfo from the set
+				for(TaskInfo task :  tasksBuilt)
+				{
+					for(TaskInfo task2 :  tasksInSet)
+					{
+						if(task.getTaskId().equals(task2.getTaskId()))
+						{
+							//Replace the TaskInfo object with the one from the build response
+							task2.setAssignmentId(task.getAssignmentId());
+						}
+					}
+				}
 
 				if (!tasksInSet.isEmpty()) 
 				{
-					
 					// audit trail is available
 					for (TaskInfo task : tasksInSet) 
 					{
@@ -748,8 +760,8 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 						// doesn't work
 						if (task.getOperation().startsWith("G")) //$NON-NLS-1$
 						{
-							logger.println(
-									"ISPW: Set " + setId + " - " + task.getModuleName() + " generated successfully"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							logger.println("ISPW: Set " + setId + " - " + "The generate request completed successfully for " + 
+									task.getModuleName() + " in " + task.getAssignmentId() + "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						}
 						// Remove all successfully built tasks
 						uniqueTasksInSet.add(task.getTaskId());
@@ -760,7 +772,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 					for (TaskInfo task : tasksNotBuilt) 
 					{
 						logger.println(
-								"ISPW: Set " + setId + " - " + task.getModuleName() + " did not generate successfully"); //$NON-NLS-1$ //$NON-NLS-2$ 
+								"ISPW: Set " + setId + " - " + task.getModuleName() + " in " +  task.getAssignmentId()  +" did not generate successfully"); //$NON-NLS-1$ //$NON-NLS-2$ 
 					}
 
 					StringBuilder sb = new StringBuilder();
