@@ -148,6 +148,9 @@ public class TaskInfo
 	
 	@XmlElement(name = "assignmentId")
 	private String assignmentId;
+	
+	@XmlElement(name = "genstat")
+	private String genstat;
 
 	public String getAssignmentId()
 	{
@@ -536,5 +539,15 @@ public class TaskInfo
 	public void setJaxbProgram(JaxbProgram jaxbProgram)
 	{
 		this.jaxbProgram = jaxbProgram;
+	}
+	
+	public String getGenstat()
+	{
+		return genstat;
+	}
+
+	public void setGenstat(String genstat)
+	{
+		this.genstat = genstat;
 	}
 }
