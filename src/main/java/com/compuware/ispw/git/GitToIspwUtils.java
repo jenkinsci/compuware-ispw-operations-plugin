@@ -183,7 +183,7 @@ public class GitToIspwUtils
 			}
 			
 			String nodeName = envVars.get(Constants.ENV_VAR_NODENAME);
-			if (nodeName.contentEquals(Constants.ENV_VAR_MASTER))
+			if (nodeName.contentEquals(Constants.ENV_VAR_MASTER) || nodeName.contentEquals(Constants.ENV_VAR_BUILT_IN_NODE))
 			{
 				FilePath wsPath = new FilePath(new File(workspacePath));
 				filePath = new FilePath(wsPath, fileName);
