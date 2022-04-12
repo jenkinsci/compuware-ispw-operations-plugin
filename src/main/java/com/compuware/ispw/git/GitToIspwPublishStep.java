@@ -316,6 +316,8 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 		public ListBoxModel doFillGitCredentialsIdItems(@AncestorInPath Jenkins context,
 				@QueryParameter String gitCredentialsId, @AncestorInPath Item project)
 		{
+			// Checking Permission for admin user
+			Jenkins.get().checkPermission(Jenkins.ADMINISTER);
 			return GitToIspwUtils.buildStandardCredentialsIdItems(context, gitCredentialsId, project);
 		}
 
@@ -323,12 +325,16 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
 				@AncestorInPath Item project)
 		{
+			// Checking Permission for admin user
+			Jenkins.get().checkPermission(Jenkins.ADMINISTER);
 			return RestApiUtils.buildConnectionIdItems(context, connectionId, project);
 		}
 
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
 				@AncestorInPath Item project)
 		{
+			// Checking Permission for admin user
+			Jenkins.get().checkPermission(Jenkins.ADMINISTER);
 			return GitToIspwUtils.buildStandardCredentialsIdItems(context, credentialsId, project);
 		}
 
