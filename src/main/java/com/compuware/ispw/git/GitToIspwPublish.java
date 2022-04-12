@@ -1,6 +1,7 @@
 /**
- * 
- */
+*  Copyright (c) 2020 Compuware Corporation. All rights reserved.
+* (c) Copyright 2020,2021-2022 BMC Software, Inc.
+*/
 package com.compuware.ispw.git;
 
 import java.io.IOException;
