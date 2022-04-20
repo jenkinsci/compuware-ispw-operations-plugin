@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.security.KeyStoreException;
 import java.security.cert.CertificateEncodingException;
-
 import org.apache.commons.lang.StringUtils;
-
 import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
@@ -109,10 +107,12 @@ public class CliExecutor
 			password = ArgumentUtils.escapeForScript(standardUsernamePasswordCredentials.getPassword().getPlainText());
 		}
 		else if (credentials instanceof StandardCertificateCredentials) {
-			try {
+			try 
+			{
 				StandardCertificateCredentials certificateCredentials = (StandardCertificateCredentials) credentials;				
 				certificateStr = new CpwrGlobalConfiguration().getCertificateString(certificateCredentials);				
-			} catch (KeyStoreException | CertificateEncodingException e) {
+			} 
+			catch (KeyStoreException | CertificateEncodingException e) {
 				throw new AbortException(String.format("Unable to add certificate credentials: %s", e.getMessage())); //$NON-NLS-1$
 			}
 		}
@@ -154,10 +154,13 @@ public class CliExecutor
 		// host connection
 		args.add(CommonConstants.HOST_PARM, host);
 		args.add(CommonConstants.PORT_PARM, port);
-		if (certificateStr != null) {
+		if (certificateStr != null)
+		{
 			args.add(CommonConstants.CERT_PARM);
 			args.add(certificateStr, true);
-		} else {
+		} 
+		else
+		{
 			args.add(CommonConstants.USERID_PARM, userId);
 			args.add(CommonConstants.PW_PARM);
 			args.add(password, true);
