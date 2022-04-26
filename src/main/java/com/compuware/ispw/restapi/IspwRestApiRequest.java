@@ -833,15 +833,25 @@ public class IspwRestApiRequest extends Builder {
 		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
 				@AncestorInPath Item project)
 		{
-			// Checking Permission for admin user
-			Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+			if(project == null) {
+				//Checking Permission for admin user
+				Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+			}
+			else {
+				project.checkPermission(Item.CONFIGURE);				
+			}
 			return RestApiUtils.buildConnectionIdItems(context,  connectionId, project);
 		}
 		
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
 				@AncestorInPath Item project) {
-			// Checking Permission for admin user
-			Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+			if(project == null) {
+				//Checking Permission for admin user
+				Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+			}
+			else {
+				project.checkPermission(Item.CONFIGURE);				
+			}
 			return RestApiUtils.buildCredentialsIdItems(context, credentialsId, project);
 		}
 		
