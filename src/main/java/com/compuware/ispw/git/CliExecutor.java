@@ -6,14 +6,17 @@
 * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
 * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
 *
-* (c) Copyright 2020-21 BMC Software, Inc.
+* (c) Copyright 2020-22 BMC Software, Inc.
 */
 
 package com.compuware.ispw.git;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.KeyStoreException;
+import java.security.cert.CertificateEncodingException;
 import org.apache.commons.lang.StringUtils;
+import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.compuware.ispw.restapi.util.RestApiUtils;
@@ -97,15 +100,25 @@ public class CliExecutor
 		StandardCredentials credentials = globalConfig.getLoginCredentials(run.getParent(), credentialsId);
 		RestApiUtils.assertNotNull(logger,  credentials, "The host credentials were not able to be obtained.");
 		userId = ArgumentUtils.escapeForScript(globalConfig.getCredentialsUser(credentials));
-
+		String certificateStr = null;
 		if (credentials instanceof StandardUsernamePasswordCredentials)
 		{
 			StandardUsernamePasswordCredentials standardUsernamePasswordCredentials = (StandardUsernamePasswordCredentials) credentials;
 			password = ArgumentUtils.escapeForScript(standardUsernamePasswordCredentials.getPassword().getPlainText());
 		}
+		else if (credentials instanceof StandardCertificateCredentials) {
+			try 
+			{
+				StandardCertificateCredentials certificateCredentials = (StandardCertificateCredentials) credentials;				
+				certificateStr = new CpwrGlobalConfiguration().getCertificateString(certificateCredentials);				
+			} 
+			catch (KeyStoreException | CertificateEncodingException e) {
+				throw new AbortException(String.format("Unable to add certificate credentials: %s", e.getMessage())); //$NON-NLS-1$
+			}
+		}
 		else
 		{
-			throw new AbortException("The host credentials were not able to be obtained. Only the standard username and password host credentials is supported.");
+			throw new AbortException("The host credentials were not able to be obtained.");
 		}
 		
 		if (RestApiUtils.isIspwDebugMode())
@@ -141,9 +154,17 @@ public class CliExecutor
 		// host connection
 		args.add(CommonConstants.HOST_PARM, host);
 		args.add(CommonConstants.PORT_PARM, port);
-		args.add(CommonConstants.USERID_PARM, userId);
-		args.add(CommonConstants.PW_PARM);
-		args.add(password, true);
+		if (certificateStr != null)
+		{
+			args.add(CommonConstants.CERT_PARM);
+			args.add(certificateStr, true);
+		} 
+		else
+		{
+			args.add(CommonConstants.USERID_PARM, userId);
+			args.add(CommonConstants.PW_PARM);
+			args.add(password, true);
+		}
 
 		if (StringUtils.isNotBlank(protocol))
 		{
@@ -235,8 +256,6 @@ public class CliExecutor
 		}
 		
 		workDir.mkdirs();
-		logger.println("Shell script: " + args.toString());
-
 
 		// invoke the CLI (execute the batch/shell script)
 		int exitValue = launcher.launch().cmds(args).envs(envVars).stdout(logger).pwd(workDir).join();
