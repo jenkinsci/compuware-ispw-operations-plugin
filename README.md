@@ -432,6 +432,11 @@ information.
 
 # Change Log
 
+## Version 1.0.10
+
+ 🚀 Improvements
+- Support for removal of JAXB and Java 11 requirement (JENKINS-68457).
+
 ## Version 1.0.9
 
  🚀 New features and improvements
