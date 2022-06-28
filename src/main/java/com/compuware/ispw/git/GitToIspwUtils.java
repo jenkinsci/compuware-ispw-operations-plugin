@@ -25,13 +25,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.gitclient.GitClient;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
+
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
@@ -40,6 +44,7 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.utils.CommonConstants;
 import com.google.common.collect.Iterables;
+
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -68,26 +73,36 @@ public class GitToIspwUtils
 
 	public static ListBoxModel buildStandardCredentialsIdItems(@AncestorInPath Jenkins context,
 			@QueryParameter String credentialsId, @AncestorInPath Item project)
-	{
-		List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
-				StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM, Collections.<DomainRequirement> emptyList());
+	{		
+		List<StandardCredentials> credentials = CredentialsProvider.lookupCredentials(StandardCredentials.class,
+				project, ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
 
 		StandardListBoxModel model = new StandardListBoxModel();
 
 		model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
 
-		for (StandardUsernamePasswordCredentials c : creds)
-		{
+		for (StandardCredentials credential : credentials) {
 			boolean isSelected = false;
 
-			if (credentialsId != null)
-			{
-				isSelected = credentialsId.matches(c.getId());
+			if (credentialsId != null) {
+				isSelected = credentialsId.matches(credential.getId());
 			}
 
-			String description = Util.fixEmptyAndTrim(c.getDescription());
-			model.add(new Option(c.getUsername() + (description != null ? " (" + description + ")" : StringUtils.EMPTY), //$NON-NLS-1$ //$NON-NLS-2$
-					c.getId(), isSelected));
+			String description = Util.fixEmptyAndTrim(credential.getDescription());
+
+			if (credential instanceof StandardUsernamePasswordCredentials) {
+				StandardUsernamePasswordCredentials standardUsernamePasswordCredentials = (StandardUsernamePasswordCredentials) credential;
+				model.add(new Option(
+						standardUsernamePasswordCredentials.getUsername()
+								+ (description != null ? " (" + description + ")" : StringUtils.EMPTY),
+						standardUsernamePasswordCredentials.getId(), isSelected));
+			} else if (credential instanceof StandardCertificateCredentials) {
+				StandardCertificateCredentials certificateCredentials = (StandardCertificateCredentials) credential;
+				model.add(new Option(
+						certificateCredentials.getId()
+								+ (description != null ? " (" + description + ")" : StringUtils.EMPTY),
+						certificateCredentials.getId(), isSelected));
+			}
 		}
 
 		return model;
