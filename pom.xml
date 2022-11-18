@@ -49,7 +49,7 @@
 	<licenses>
 		<license>
 			<name>LICENSE AGREEMENT FOR BMC CONNECTOR</name>
-			<url>https://github.com/jenkinsci/compuware-ispw-operations-plugin/blob/master/LICENSE</url>
+			<url>https://github.com/jenkinsci/compuware-ispw-operations-plugin/blob/master/LICENSE.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
