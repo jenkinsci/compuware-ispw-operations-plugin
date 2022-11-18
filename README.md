@@ -1,9 +1,10 @@
+# BMC Compuware ISPW Operations
+
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-ispw-operations.svg)](https://plugins.jenkins.io/compuware-ispw-operations/) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-ispw-operations-plugin.svg?label=release)](https://plugins.jenkins.io/compuware-ispw-operations/#releases) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-ispw-operations.svg?color=blue)](https://plugins.jenkins.io/compuware-ispw-operations)
+
 # Overview
 
-The Compuware ISPW Operations plugin allows Jenkins users to execute
-ISPW operations, such as Generate, Promote, Deploy or Regress on the
-mainframe. Users can seamlessly integrate ISPW build process with
-Jenkins. 
+The BMC Compuware ISPW Operations plugin allows Jenkins users to execute ISPW operations, such as Generate, Promote, Deploy or Regress on the mainframe. Users can seamlessly integrate ISPW build process with Jenkins. 
 
 ### Prerequisites
 
@@ -13,8 +14,12 @@ The following are required to use this plugin:
 -   Jenkins Credentials plugin
 -   Jenkins Plain Credentials plugin
 -   Compuware Common Configuration plugin - latest
--   Compuware mainframe ISPW
--   Compuware CES
+-   BMC Compuware mainframe ISPW
+-   BMC Compuware CES
+
+#### See also
+* [License](LICENSE)
+* [Change Log](CHANGELOG.md)
 
 ### Additional Information for the Git to ISPW Sync Functionality
 -   Refer to the following [guide](https://devops.api.compuware.com/guidelines/ispw/GIT_to_ISPW_Integration_Tutorial.html) for more information
@@ -22,11 +27,9 @@ The following are required to use this plugin:
 
 ### Installing in a Jenkins Instance
 
--   Install the Compuware ISPW Operations plugin according to the
+-   Install the BMC Compuware ISPW Operations plugin according to the
     Jenkins instructions for installing plugins. Dependent plugins will
-    automatically be installed.
-
-  
+    automatically be installed.  
 
 ### Configuring Host Connections and CES Tokens
 
@@ -48,7 +51,7 @@ The following are required to use this plugin:
         before timing out.
 
     -   In the **CES URL** field, enter the CES server URL. The default
-        is empty. It is not required for other Compuware plugins but is
+        is empty. It is not required for other BMC Compuware plugins but is
         required to use this plugin. Please do NOT attach any context
         path, it should be in the format:
         [http://host:port](http://hostport/).
@@ -78,7 +81,7 @@ The following are required to use this plugin:
 
 :new: **Important**
       
-Starting with v1.09, the ISPW Jenkins Operational plugin can support certificates to connect with ISPW . 
+Starting with v1.09, the ISPW Jenkins Operations plugin can support certificates to connect with ISPW. 
 For information about using certificates with Jenkins, see <https://www.jenkins.io/doc/book/using/using-credentials/>
 
 ---  
@@ -86,7 +89,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
 ### Executing ISPW Operations
 
 -   On the **Configuration** page of the job or project,
-    select **Execute a Compuware ISPW Operation** from
+    select **Execute a BMC Compuware ISPW Operation** from
     the **Build** section.
 
 -   From the **Host connection** list, select the host connection to be
@@ -98,6 +101,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
     the CES host for the ISPW. Alternatively, click **Add** to add
     secret text as token using the Plain Credentials plugin. Refer to
     the Jenkins documentation for the Plain Credentials plugin.
+    
 -   In the **Action** section to define what ISPW operation to perform
     -   AddTask
     -   BuildAssignment
@@ -136,6 +140,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
     -   SetOperation
     -   TaskLoad
     -   TransferTask
+    
 -   In the **Request** section, please specify additional request
     parameters, click the question mark for more details. Each of the
     action may have different set of properties, if the job support web
@@ -155,7 +160,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
         section. The **Snippet Generator** appears.
 
 2.  From the **Sample Step** list, select **ispwOperation: Perform a
-    Compuware ISPW Rest API request and return a JSON object**.
+    BMC Compuware ISPW Rest API request and return a JSON object**.
 
 3.  From the **Host connection** list, select the host connection that
     contains a valid CES URL.
@@ -168,7 +173,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
     the specific action, click question mark help for more detail for
     each action
 7.  Click **Generate Pipeline Script**. The Groovy script to invoke the
-    Compuware ISPW Operations plugin appears. The script can be added to
+    BMC Compuware ISPW Operations plugin appears. The script can be added to
     the Pipeline section when configuring a Pipeline job. A sample
     script is shown below:
 
@@ -203,7 +208,7 @@ message will be printed within the Jenkins log. 
 
 &nbsp;
 
-The following is another example, that after generate and a webhook callback, an intelligent test case change set for total test is also created. Please note that event body is set to $$setid$$, so, it will be replaced with CES callback, the real set id is going to be used as next query for a set info status. If the level is specified as a none empty string, it will produce a TTT change set. 
+The following is another example, that after generate and a webhook callback, an intelligent test case change set for total test is also created. Please note that event body is set to **setid**, so it will be replaced with CES callback, the real set id is going to be used as next query for a set info status. If the level is specified as a none empty string, it will produce a TTT change set. 
 
 ```
 node {
@@ -359,35 +364,21 @@ node {
 }
 ```
 
-$nbsp;
-
 # Product Assistance
 
-Compuware provides assistance for customers with its documentation, the
-FrontLine support web site, and telephone customer support.
+BMC Compuware provides assistance for customers with its documentation and the
+ support web site.
 
-## FrontLine Support Web Site
+## BMC Compuware Support Center
 
-You can access online information for Compuware products via our
-FrontLine support site
-at [https://go.compuware.com](https://go.compuware.com/).
-FrontLine provides access to critical information about your Compuware
-products. You can review frequently asked questions, read or download
-documentation, access product fixes, or e-mail your questions or
-comments. The first time you access FrontLine, you must register and
-obtain a password. Registration is free.
-
-Compuware also offers User Communities, online forums to collaborate,
-network, and exchange best practices with other Compuware solution users
-worldwide. Go to <http://groups.compuware.com/> to join.
+You can access online information for BMC products via our Support Center site at [https://support.bmc.com](https://support.bmc.com/). Support Center provides access to critical information about your BMC products. You can review frequently asked questions, read or download documentation, access product fixes, or e-mail your questions or comments. The first time you access Support Center, you must register and obtain a password. Registration is free.
 
 ## Contacting Customer Support
 
-At Compuware, we strive to make our products and documentation the best
+At BMC Compuware, we strive to make our products and documentation the best
 in the industry. Feedback from our customers helps us maintain our
 quality standards. If you need support services, please obtain the
-following information before calling Compuware's 24-hour telephone
-support:
+following information :
 
 -   The name, release number, and build number of your product. This
     information is displayed in the About dialog box.
@@ -408,96 +399,10 @@ support:
 -   The exact application, licensing, or operating system error
     messages, if any.
 
-You can contact Compuware in one of the following ways:
-
-### Phone
-
--   USA and Canada: 1-800-538-7822 or 1-313-227-5444.
--   All other countries: Contact your local Compuware office. Contact
-    information is available
-    at [https://go.compuware.com](https://go.compuware.com/).
-
 ### Web
 
-You can report issues via FrontLine.
-
-**Note:** Please report all high-priority issues by phone.
+You can report issues via BMC Support Center: [https://support.bmc.com](https://support.bmc.com/).
 
 ## Corporate Web Site
 
-To access Compuware's site on the Web, go
-to [https://www.compuware.com](https://www.compuware.com/).
-The Compuware site provides a variety of product and support
-information.
-
-# Change Log
-
-## Version 1.0.10
-
- 🚀 Improvements
-- Support for removal of JAXB and Java 11 requirement (JENKINS-68457).
-
-## Version 1.0.9
-
- 🚀 New features and improvements
-- Support for built-in node names and labels as part of the Jenkins terminology cleanup work.
-- Added the ability to pass a certificate to the Topaz Workbench CLI.
-- Fixed security vulnerabilities.
-
-## Version 1.0.8
-
- - Support webhook to produce intelligent test case change set for Build, Generate, Promote, Deploy and Regress
- - Fixed a bug affecting some Bitbucket repository URLs not being saved correctly during a Git to ISPW synchronization
- - Assure CES connection not null while performing any ISPW actions
- - Added support to automatically generate and deploy components synchronized through the Git to ISPW integration
- 
-### Version 1.0.7
-
- - Support intelligent test case execution
- - Enforce valid level check for Git/ISPW sync 
-
-### Version 1.0.6
-
--   Add support for flexible YAML location for ISPW/GIT integration
--   Make logs consistent between Jenkins operations and Topaz actions 
--   Auto clean up a task if the task is in failed status while loading source from GIT into ISPW
--   Build process re-runnable for a failed ispw/git synchronization
-
-### Version 1.0.5
-
--   Add support for building components. The build functionality generates impacted components of one or more selected tasks at the same level in the life cycle. Additionally, the build functionality can generate impacted components of tasks at a selected level within a selected assignment or release container.
--   Add support for synchronizing between GIT and ISPW
--   Add support for CloudBees Folder plug-in
--   Add a 'skip polling' option for pipeline scripts
-
-### Version 1.0.4
-
--   Add support for extra 10+ actions. See action list above.
--   Skip polling for the set completion if no webhook defined
-
-### Version 1.0.3
-
--   Add support for retrieving the list of tasks for a given ISPW Set.
--   Changes to the logging to be more consistent with other plugins
-    logging.
--   Fix bad error message when selected host connection doesn't have a
-    valid CES URL.
--   Fixed a bug in GetReleaseTaskList.
--   Pre-populate help text in request field.
-
-### Version 1.0.2
-
--   The plugin now integrates with the [Compuware Common
-    Configuration](https://plugins.jenkins.io/compuware-common-configuration) plugin
-    which allows the Host Connection configurations to be defined
-    centrally for other Compuware Jenkins plugins instead of needing to
-    be specified in each Jenkins project's configuration.  Host
-    Connection configuration is now defined in the Jenkins/Manage
-    Jenkins/Configure System screen. 
--   Jenkins console logs produced by the plugin have been streamlined to
-    improve readability.
--   Support for the Jenkins Pipeline Syntax.
--   Support Credentials secret text to store CES token.
--   Support most ISPW build operations.
--   Provide Docker script to build Docker image for CES server and
-    Docker image for Jenkins with Compuware plugins pre-installed.
+To access BMC site on the Web, go to [https://www.bmc.com/](https://www.bmc.com/). The BMC site provides a variety of product and support information.
