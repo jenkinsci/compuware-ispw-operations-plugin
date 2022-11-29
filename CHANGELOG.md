@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.11 and later versions
+- Changes are no longer tracked in this file; they are now tracked in [GitHub releases](https://github.com/jenkinsci/compuware-ispw-operations-plugin/releases) instead.
+
 ## 1.0.10
 
  🚀 Improvements
