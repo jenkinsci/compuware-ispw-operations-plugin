@@ -20,8 +20,6 @@ public class Assignment
 	private String tag;
 	private String projectNumber;
 	private String subAppl;
-	private String sandboxJoinAtLevel;
-	
 
 	public String getOwner()
 	{
@@ -131,15 +129,5 @@ public class Assignment
 	public void setSubAppl(String subAppl)
 	{
 		this.subAppl = subAppl;
-	}
-
-	public String getSandboxJoinAtLevel()
-	{
-		return sandboxJoinAtLevel;
-	}
-
-	public void setSandboxJoinAtLevel(String sandboxJoinAtLevel)
-	{
-		this.sandboxJoinAtLevel = sandboxJoinAtLevel;
 	}
 }

@@ -18,6 +18,7 @@ public class AssignmentInfo
 	private String owner;
 	private String assignmentPrefix;
 	private String sandbox;
+	private String sandboxJoinAtLevel;
 	
 	/* used for response - confirm with CES team
 	@XmlElements({
@@ -168,4 +169,16 @@ public class AssignmentInfo
 	{
 		this.sandbox = sandbox;
 	}
+
+	public String getSandboxJoinAtLevel()
+	{
+		return sandboxJoinAtLevel;
+	}
+
+	public void setSandboxJoinAtLevel(String sandboxJoinAtLevel)
+	{
+		this.sandboxJoinAtLevel = sandboxJoinAtLevel;
+	}
+	
+	
 }
