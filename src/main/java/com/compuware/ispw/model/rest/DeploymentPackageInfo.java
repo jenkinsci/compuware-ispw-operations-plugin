@@ -140,5 +140,4 @@ public class DeploymentPackageInfo
 	{
 		this.deploymentItems.add(deploymentItem);
 	}
-	
 }
