@@ -34,7 +34,6 @@ public class DeploymentPackageInfo
 	private String endDate;
 	private String implementationDate;
 	private String activeDate;
-	private String activeTime;
 	private List<DeploymentPackageItem> deploymentItems = new ArrayList<DeploymentPackageItem>();
 
 	public String getPackageId()
@@ -141,14 +140,5 @@ public class DeploymentPackageInfo
 	{
 		this.deploymentItems.add(deploymentItem);
 	}
-
-	public String getActiveTime()
-	{
-		return activeTime;
-	}
-
-	public void setActiveTime(String activeTime)
-	{
-		this.activeTime = activeTime;
-	}
+	
 }
