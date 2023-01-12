@@ -325,7 +325,7 @@ public class GitToIspwUtils
 			containerPref = refMap.getContainerPref();
 			
 			success = cliExecutor.execute(publishStep.getConnectionId(), publishStep.getCredentialsId(),
-					publishStep.getRuntimeConfig(), publishStep.getStream(), publishStep.getApp(), ispwLevel,
+					publishStep.getRuntimeConfig(), publishStep.getStream(), publishStep.getApp(), publishStep.getSubAppl(), ispwLevel,
 					containerPref, containerDesc, publishStep.getGitRepoUrl(),
 					publishStep.getGitCredentialsId(), ref, refId, fromHash, toHash, publishStep.getIspwConfigPath());
 		}

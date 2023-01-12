@@ -34,6 +34,11 @@
 		help="/plugin/compuware-ispw-operations/help-gitIspwApplication.html">
 		<f:textbox default="${descriptor.app}" />
 	</f:entry>
+	
+	<f:entry title="Sub Application" field="subAppl"
+		help="/plugin/compuware-ispw-operations/help-gitIspwSubApplication.html">
+		<f:textbox default="${descriptor.subAppl}" />
+	</f:entry>
 
 	<f:entry title="YAML Mapping File:" field="ispwConfigPath"
 		help="/plugin/compuware-ispw-operations/help-gitIspwConfigPath.html">

@@ -51,6 +51,11 @@ public interface IGitToIspwPublish
 	public String getApp();
 	
 	/**
+	 * @return the subAppl
+	 */
+	public String getSubAppl();
+	
+	/**
 	 * @return the ispwConfig
 	 */
 	public String getIspwConfigPath();

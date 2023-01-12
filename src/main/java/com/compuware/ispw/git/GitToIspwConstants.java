@@ -18,6 +18,7 @@ public class GitToIspwConstants
 	public static final String ISPW_SERVER_CONFIG_PARAM = "-ispwServerConfig"; //$NON-NLS-1$
 	public static final String ISPW_SERVER_STREAM_PARAM = "-ispwServerStream"; //$NON-NLS-1$
 	public static final String ISPW_SERVER_APP_PARAM = "-ispwServerApp"; //$NON-NLS-1$
+	public static final String ISPW_SERVER_SUB_APPL_PARAM = "-ispwServerSubAppl"; //$NON-NLS-1$
 	public static final String ISPW_SERVER_CHECKOUT_LEV_PARAM = "-ispwCheckoutLevel"; //$NON-NLS-1$
 	
 	public static final String ISPW_CONFIG_PATH = "-ispwConfigPath"; //$NON-NLS-1$

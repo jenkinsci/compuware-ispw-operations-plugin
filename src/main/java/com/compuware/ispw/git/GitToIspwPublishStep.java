@@ -62,6 +62,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 	private String runtimeConfig = DescriptorImpl.runtimeConfig;
 	private String stream = DescriptorImpl.stream;
 	private String app = DescriptorImpl.app;
+	private String subAppl = DescriptorImpl.subAppl;
 	private String ispwConfigPath = DescriptorImpl.ispwConfigPath;
 
 	// Branch mapping
@@ -290,6 +291,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 		public static final String runtimeConfig = StringUtils.EMPTY;
 		public static final String stream = StringUtils.EMPTY;
 		public static final String app = StringUtils.EMPTY;
+		public static final String subAppl = StringUtils.EMPTY;
 		public static final String ispwConfigPath = StringUtils.EMPTY;
 
 		// Branch mapping
@@ -488,6 +490,23 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 	public void setApp(String app)
 	{
 		this.app = app;
+	}	
+
+	/**
+	 * @return the subAppl
+	 */	
+	public String getSubAppl()
+	{
+		return subAppl;
+	}
+
+	/**
+	 * @param subAppl the subAppl to set
+	 */
+	@DataBoundSetter
+	public void setSubAppl(String subAppl)
+	{
+		this.subAppl = subAppl;
 	}
 
 	/**
