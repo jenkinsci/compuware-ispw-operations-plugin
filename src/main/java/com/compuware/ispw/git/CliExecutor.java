@@ -184,7 +184,10 @@ public class CliExecutor
 		// ispw
 		args.add(GitToIspwConstants.ISPW_SERVER_STREAM_PARAM, stream);
 		args.add(GitToIspwConstants.ISPW_SERVER_APP_PARAM, app);
-		args.add(GitToIspwConstants.ISPW_SERVER_SUB_APPL_PARAM, subAppl);
+		if (StringUtils.isNotBlank(subAppl))
+		{
+			args.add(GitToIspwConstants.ISPW_SERVER_SUB_APPL_PARAM, subAppl);
+		}
 		args.add(GitToIspwConstants.ISPW_SERVER_CHECKOUT_LEV_PARAM, ispwLevel);
 		
 		if(StringUtils.isNotBlank(ispwConfigPath)) {
