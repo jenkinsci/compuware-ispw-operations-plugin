@@ -18,7 +18,7 @@ The following are required to use this plugin:
 -   BMC Compuware CES
 
 #### See also
-* [License](LICENSE.txt)
+* [License](LICENSE)
 * [Change Log](CHANGELOG.md)
 
 ### Additional Information for the Git to ISPW Sync Functionality
