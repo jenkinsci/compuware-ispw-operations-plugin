@@ -3,7 +3,7 @@
 <!-- 
 
 bypass all HttpRequestGlobalConfig fields
-fetch from Compuware commons configuration
+fetch from BMC AMI Commons Configuration
 
  -->
 </j:jelly>

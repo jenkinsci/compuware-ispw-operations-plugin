@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-  This plugin sends a Compuware ISPW REST API operation to a CES server with some parameters
+  This plugin sends a BMC AMI DevX Code Pipeline REST API operation to a CES server with some parameters
 </div>

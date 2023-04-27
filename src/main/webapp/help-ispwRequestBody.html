@@ -118,7 +118,7 @@
           </tr>
           <tr>
             <td valign="top">generateAutomatically<br></td>
-            <td valing="top">The request parameters for the generate will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step<br></td>
+            <td valing="top">The request parameters for the generate will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step<br></td>
           </tr>
           <tr>
             <td valign="top">subAppl<br></td>
@@ -172,7 +172,7 @@
         </tr>
         <tr>
 	        <td valign="top">buildAutomatically</td>
-	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
+	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
         </tr>
 	    </tbody>
 	  </table>
@@ -229,7 +229,7 @@
         </tr>
         <tr>
 	        <td valign="top">buildAutomatically</td>
-	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
+	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
         </tr>
 	    </tbody>
 	  </table>
@@ -290,7 +290,7 @@
         </tr>
         <tr>
 	        <td valign="top">buildAutomatically</td>
-	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
+	        <td valign="top">Set to true if the request parameters for the build will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step and is mutually exclusive with any other properties. If other properties are specified, the properties will be overridden.</td>
         </tr>
         <tr>
 	        <td valign="top">subAppl</td>
@@ -546,11 +546,11 @@
                 <tbody>
                   <tr>
                     <td>stream</td>
-                    <td>ISPW stream name</td>
+                    <td>Code Pipeline stream name</td>
                   </tr>
                   <tr>
                     <td>application</td>
-                    <td>ISPW application name</td>
+                    <td>Code Pipeline application name</td>
                   </tr>
                   <tr>
                     <td>defaultPath</td>
@@ -587,7 +587,7 @@
                   </tr>
                   <tr>
                     <td>subAppl</td>
-                    <td>ISPW sub application name</td>
+                    <td>Code Pipeline sub application name</td>
                   </tr>
                    <tr>
                     <td>sandboxJoinAtLevel</td>
@@ -614,11 +614,11 @@
                 <tbody>
                   <tr>
                     <td>stream</td>
-                    <td>ISPW stream name</td>
+                    <td>Code Pipeline stream name</td>
                   </tr>
                   <tr>
                     <td>application</td>
-                    <td>ISPW application name</td>
+                    <td>Code Pipeline application name</td>
                   </tr>
                   <tr>
                     <td>description</td>
@@ -674,7 +674,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId (DeployAsignment) or releaseId
@@ -721,7 +721,7 @@
           </tr>
           <tr>
             <td>deployAutomatically</td>
-            <td>The request parameters for the deploy will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step</td>
+            <td>The request parameters for the deploy will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step</td>
           </tr>
         </tbody>
       </table>
@@ -742,10 +742,10 @@
           </tr>
           <tr>
             <td>
-              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>DeployAutomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to Code Pipeline Integration step<br>DeployAutomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
             <td>
-              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to Code Pipeline Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
           </tr>
         </tbody>
@@ -758,7 +758,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId</td>
@@ -779,7 +779,7 @@
         <tbody>
          <tr>
             <td>deployAutomatically</td>
-            <td>The request parameters for the deploy will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step</td>
+            <td>The request parameters for the deploy will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step</td>
           </tr>
           <tr>
             <td>changeType</td>
@@ -814,7 +814,7 @@
               <pre>runtimeConfiguration=TPZP<br>assignmentId=PLAY000313<br>level=QA<br>taskId=7E489457622C,7E4A2CAC742C<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
             <td>
-              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to Code Pipeline Integration step<br>deployautomatically=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
           </tr>
         </tbody>
@@ -827,7 +827,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId</td>
@@ -848,7 +848,7 @@
         <tbody>
          <tr>
             <td>generateAutomatically</td>
-            <td>The request parameters for the generate will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to ISPW Integration step</td>
+            <td>The request parameters for the generate will come from a file written to the Jenkins build directory. This option is only valid when used in combination with a Git to Code Pipeline Integration step</td>
           </tr>
           <tr>
             <td>changeType</td>
@@ -863,8 +863,8 @@
           <tr>
             <td>autoDeploy</td>
             <td>generates can be set up to automatically Deploy as well
-              by an option set up by the ISPW. The default is to not use
-              Auto Deploy. If the Auto Deploy option is set-up through ISPW, 
+              by an option set up by the Code Pipeline. The default is to not use
+              Auto Deploy. If the Auto Deploy option is set-up through Code Pipeline, 
               then you may use this option to automatically deploy instead of using
               the deployAutomatically option within the DeployTask/DeployAssignment/DeployRelease actions</td>
           </tr>
@@ -883,7 +883,7 @@
               <pre>runtimeConfiguration=TPZP<br>assignmentId=PLAY000313<br>level=QA<br>taskId=7E489457622C,7E4A2CAC742C<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
             <td>
-              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to ISPW Integration step<br>generateautomatically=true<br>autoDeploy=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
+              <pre>runtimeConfiguration=TPZP<br>#optional if using a Git to Code Pipeline Integration step<br>generateautomatically=true<br>autoDeploy=true<br>#optional if use webhook callback in pipeline<br>events.name=Completed<br>events.body=Deployed<br>events.httpHeaders=Jenkins-Crumb:no-crumb<br>events.credentials=admin:library</pre>
             </td>
           </tr>
         </tbody>
@@ -896,7 +896,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId (GenerateTasksInAssignment) or releaseId
@@ -926,8 +926,8 @@
           <tr>
             <td>autoDeploy</td>
             <td>generates can be set up to automatically Deploy as well
-              by an option set up by the ISPW. The default is to not use
-              Auto Deploy. If the Auto Deploy option is set-up through ISPW, 
+              by an option set up by the Code Pipeline. The default is to not use
+              Auto Deploy. If the Auto Deploy option is set-up through Code Pipeline, 
               then you may use this option to automatically deploy instead of using
               the deployAutomatically option within the DeployTask/DeployAssignment/DeployRelease actions</td>
           </tr>
@@ -993,7 +993,7 @@
           <tr>
             <td valign="top">application<br>
             </td>
-            <td valign="top">The ISPW application ID.&nbsp; Trailing
+            <td valign="top">The Code Pipeline application ID.&nbsp; Trailing
               wildcards are supported, i.e. FOO*<br>
             </td>
           </tr>
@@ -1064,7 +1064,7 @@
           <tr>
             <td valign="top">stream<br>
             </td>
-            <td valign="top">The ISPW stream name. Trailing wildcards
+            <td valign="top">The Code Pipeline stream name. Trailing wildcards
               are supported, i.e. BAR*<br>
             </td>
           </tr>
@@ -1196,7 +1196,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId (PromoteAssignment) or releaseId
@@ -1242,7 +1242,7 @@
           <tr>
             <td>autoDeploy</td>
             <td>promotes can be set up to automatically Deploy as well
-              by an option set up by the ISPW. The default is to not use
+              by an option set up by the Code Pipeline. The default is to not use
               Auto Deploy</td>
           </tr>
         </tbody>
@@ -1272,7 +1272,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId (FallbackAssignment) or releaseId
@@ -1324,7 +1324,7 @@
         <tbody>
           <tr>
             <td>runtimeConfiguration</td>
-            <td>see ISPW administrator for valid values</td>
+            <td>see Code Pipeline administrator for valid values</td>
           </tr>
           <tr>
             <td>assignmentId (RegressAsignment) or releaseId
@@ -1510,7 +1510,7 @@
           <tr>
             <td valign="top">environment<br>
             </td>
-            <td valign="top">ISPW environment for this version (such as
+            <td valign="top">Code Pipeline environment for this version (such as
               OUTS, TEST, HOLD, or PROD). Trailing wildcards are
               supported, i.e. PRO* </td>
           </tr>

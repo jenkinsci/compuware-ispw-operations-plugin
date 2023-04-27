@@ -27,9 +27,9 @@
 	<artifactId>compuware-ispw-operations</artifactId>
 	<version>2.1.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<name>BMC Compuware ISPW Operations Plugin</name>
+	<name>BMC AMI DevX Code Pipeline Operations Plugin</name>
 	<url>https://github.com/jenkinsci/compuware-ispw-operations-plugin</url>
-	<description>The BMC Compuware ISPW Operations plugin allows Jenkins users to execute ISPW operations, such as Generate, Promote, Deploy or Regress on the mainframe. See the release notes for changes and compatibility https://github.com/jenkinsci/compuware-ispw-operations-plugin.</description>
+	<description>The BMC AMI DevX Code Pipeline Operations plugin allows Jenkins users to execute Code Pipeline operations such as Generate, Promote, Deploy or Regress on the mainframe. See the release notes for changes and compatibility https://github.com/jenkinsci/compuware-ispw-operations-plugin.</description>
 
 	<developers>
 		<developer>

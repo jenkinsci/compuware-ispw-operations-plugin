@@ -1,10 +1,10 @@
-# BMC Compuware ISPW Operations
+# BMC AMI DevX Code Pipeline Operations
 
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-ispw-operations.svg)](https://plugins.jenkins.io/compuware-ispw-operations/) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-ispw-operations-plugin.svg?label=release)](https://plugins.jenkins.io/compuware-ispw-operations/#releases) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-ispw-operations.svg?color=blue)](https://plugins.jenkins.io/compuware-ispw-operations)
 
 # Overview
 
-The BMC Compuware ISPW Operations plugin allows Jenkins users to execute ISPW operations, such as Generate, Promote, Deploy or Regress on the mainframe. Users can seamlessly integrate ISPW build process with Jenkins. 
+The BMC AMI DevX Code Pipeline Operations plugin allows Jenkins users to execute Code Pipeline operations, such as Generate, Promote, Deploy or Regress on the mainframe. Users can seamlessly integrate Code Pipeline build process with Jenkins. 
 
 ### Prerequisites
 
@@ -13,21 +13,21 @@ The following are required to use this plugin:
 -   Jenkins
 -   Jenkins Credentials plugin
 -   Jenkins Plain Credentials plugin
--   Compuware Common Configuration plugin - latest
--   BMC Compuware mainframe ISPW
--   BMC Compuware CES
+-   BMC AMI Common Configuration plugin - latest
+-   BMC AMI DevX Code Pipeline Mainframe
+-   BMC AMI Common Enterprise Services (CES)
 
 #### See also
 * [License](LICENSE)
 * [Change Log](CHANGELOG.md)
 
-### Additional Information for the Git to ISPW Sync Functionality
+### Additional Information for the Git to Code Pipeline Sync Functionality
 -   Refer to the following [guide](https://devops.api.compuware.com/guidelines/ispw/GIT_to_ISPW_Integration_Tutorial.html) for more information
--   Required: minimum version of Topaz Workbench CLI version 20.01.01 [installed](https://devops.api.compuware.com/tool_configuration/plugins.html#installing-the-topaz-workbench-cli)
+-   Required: minimum version of BMC Workbench CLI version 20.01.01 [installed](https://devops.api.compuware.com/tool_configuration/plugins.html#installing-the-topaz-workbench-cli)
 
 ### Installing in a Jenkins Instance
 
--   Install the BMC Compuware ISPW Operations plugin according to the
+-   Install the BMC AMI DevX Code Pipeline Operations plugin according to the
     Jenkins instructions for installing plugins. Dependent plugins will
     automatically be installed.  
 
@@ -51,7 +51,7 @@ The following are required to use this plugin:
         before timing out.
 
     -   In the **CES URL** field, enter the CES server URL. The default
-        is empty. It is not required for other BMC Compuware plugins but is
+        is empty. It is not required for other BMC AMI plugins but is
         required to use this plugin. Please do NOT attach any context
         path, it should be in the format:
         [http://host:port](http://hostport/).
@@ -81,15 +81,15 @@ The following are required to use this plugin:
 
 :new: **Important**
       
-Starting with v1.09, the ISPW Jenkins Operations plugin can support certificates to connect with ISPW. 
+Starting with v1.09, the Code Pipeline Jenkins Operations plugin can support certificates to connect with Code Pipeline. 
 For information about using certificates with Jenkins, see <https://www.jenkins.io/doc/book/using/using-credentials/>
 
 ---  
 
-### Executing ISPW Operations
+### Executing Code Pipeline Operations
 
 -   On the **Configuration** page of the job or project,
-    select **Execute a BMC Compuware ISPW Operation** from
+    select **Execute a BMC AMI DevX Code Pipeline Operation** from
     the **Build** section.
 
 -   From the **Host connection** list, select the host connection to be
@@ -98,11 +98,11 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
     the Jenkins configuration page appears so a connection can be added.
 
 -   In the **CES secret token** list, select the CES token configured in
-    the CES host for the ISPW. Alternatively, click **Add** to add
+    the CES host for the Code Pipeline. Alternatively, click **Add** to add
     secret text as token using the Plain Credentials plugin. Refer to
     the Jenkins documentation for the Plain Credentials plugin.
     
--   In the **Action** section to define what ISPW operation to perform
+-   In the **Action** section to define what Code Pipeline operation to perform
     -   AddTask
     -   BuildAssignment
     -   BuildRelease
@@ -160,7 +160,7 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
         section. The **Snippet Generator** appears.
 
 2.  From the **Sample Step** list, select **ispwOperation: Perform a
-    BMC Compuware ISPW Rest API request and return a JSON object**.
+    BMC AMI DevX Code Pipeline REST API request and return a JSON object**.
 
 3.  From the **Host connection** list, select the host connection that
     contains a valid CES URL.
@@ -168,12 +168,12 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
 4.  From the **CES secret token**, select the corresponding CES token
     for the CES server.
 
-5.  From the **Action**, select the ISPW operation to be performed.
+5.  From the **Action**, select the Code Pipeline operation to be performed.
 6.  From the **Request** body, enter the corresponding properties for
     the specific action, click question mark help for more detail for
     each action
 7.  Click **Generate Pipeline Script**. The Groovy script to invoke the
-    BMC Compuware ISPW Operations plugin appears. The script can be added to
+    BMC AMI DevX Code Pipeline Operations plugin appears. The script can be added to
     the Pipeline section when configuring a Pipeline job. A sample
     script is shown below:
 
@@ -187,7 +187,7 @@ For webhook callback, a sample script is shown below
 
 ```
 hook = ispwRegisterWebhook()
-echo "...creating ISPW Jenkins webhook - ${hook.getURL()}"
+echo "...creating Code Pipeline Jenkins webhook - ${hook.getURL()}"
 
 ispwOperation connectionId: 'e0fbb6eb-b01d-4d55-b18b-2f321c174474', credentialsId: 'f1d2762b-9a40-46ad-a9df-b982147acc85', ispwAction: 'GenerateTasksInAssignment', ispwRequestBody: '''assignmentId=PLAY000313
 level=DEV2
@@ -197,7 +197,7 @@ events.body=Generated
 events.httpHeaders=Jenkins-Crumb:no-crumb
 events.credentials=admin:library'''
 
-echo "...waiting ISPW Jenkins webhook callback - ${hook.getURL()}"
+echo "...waiting Code Pipeline Jenkins webhook callback - ${hook.getURL()}"
 
 data = ispwWaitForWebhook hook
 echo "...CES called back with message: ${data}"
@@ -217,7 +217,7 @@ node {
     	/* create callback endpoint in jenkins */
     	
 		hook = ispwRegisterWebhook()
-		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+		echo "...creating Code Pipeline Jenkins web hook - ${hook.getURL()}"
 
 		/* generate on assignment with notification callback. when the generate is complete, the webhook callback should has a setid payload */
 		
@@ -230,7 +230,7 @@ node {
 		events.credentials=admin:library
 		'''
 
-		echo "...waiting ISPW Jenkins web hook callback - ${hook.getURL()}"
+		echo "...waiting Code Pipeline Jenkins web hook callback - ${hook.getURL()}"
 
 		/* waiting for webhook callback from ces, if triggered, the data contains setid */
 		
@@ -250,7 +250,7 @@ node {
 
 ### Pipeline Build Requirement
 
-In order to use pipeline build, your ISPW, CMSC and CES have to be
+In order to use pipeline build, your Code Pipeline, CMSC and CES have to be
 configured properly in order to receive webhook notification. See
 explanation in the following figure.
 
@@ -259,9 +259,9 @@ explanation in the following figure.
 &nbsp;
 
 
-## GIT to ISPW Integration Features
+## GIT to Code Pipeline Integration Features
 
-![GIT to ISPW design](https://raw.githubusercontent.com/jenkinsci/compuware-ispw-operations-plugin/CWE-150569-ISPW-Git-Integration---Pipeline-build/ispw%20git%20integration.png)
+![GIT to Code Pipeline design](https://raw.githubusercontent.com/jenkinsci/compuware-ispw-operations-plugin/CWE-150569-ISPW-Git-Integration---Pipeline-build/ispw%20git%20integration.png)
 
 ### Pipeline build example
 
@@ -288,7 +288,7 @@ pipeline {
     }
 
     stages {
-        stage("git to ispw") {
+        stage("git to Code Pipeline") {
             steps {
                 gitToIspwIntegration app: 'PLAY', branchMapping: '''**/dev1 => DEV1, per-commit
                 **/dev2 => DEV2, per-branch
@@ -309,14 +309,14 @@ pipeline {
 ```
 node {
 
-    stage('Git to ISPW Synchronization') {
+    stage('Git to Code Pipeline Synchronization') {
 
 		/* git repository */
 		
 		git branch: 'master', credentialsId: 'bitbucket-somebody', 
 		poll: false, url: 'https://bitbucket.host/scm/~somebody/rjk2.git'
 		
-		/* synchronize change set to ispw */
+		/* synchronize change set to Code Pipeline */
 		
 		gitToIspwIntegration app: 'PLAY', 
 		branchMapping: '''master => DEV1, per-commit
@@ -336,7 +336,7 @@ node {
 		 /* create webhook callback end-point on jenkins */
 			
 		hook = ispwRegisterWebhook()
-		echo "...creating ISPW Jenkins web hook - ${hook.getURL()}"
+		echo "...creating Code Pipeline Jenkins web hook - ${hook.getURL()}"
 		
 		/* start automatic build and feed jenkins webhook callback URL to CES then wait for the build to complete. The expected data returned for the callback is a setid */ 
 		
@@ -366,16 +366,16 @@ node {
 
 # Product Assistance
 
-BMC Compuware provides assistance for customers with its documentation and the
+BMC Software provides assistance for customers with its documentation and the
  support web site.
 
-## BMC Compuware Support Center
+## BMC Software Support Center
 
 You can access online information for BMC products via our Support Center site at [https://support.bmc.com](https://support.bmc.com/). Support Center provides access to critical information about your BMC products. You can review frequently asked questions, read or download documentation, access product fixes, or e-mail your questions or comments. The first time you access Support Center, you must register and obtain a password. Registration is free.
 
 ## Contacting Customer Support
 
-At BMC Compuware, we strive to make our products and documentation the best
+At BMC Software, we strive to make our products and documentation the best
 in the industry. Feedback from our customers helps us maintain our
 quality standards. If you need support services, please obtain the
 following information :

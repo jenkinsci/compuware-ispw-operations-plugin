@@ -7,7 +7,7 @@
 	</f:block>
 
 	<f:block>
-		<h4 style="margin-bottom: 0px">ISPW</h4>
+		<h4 style="margin-bottom: 0px">Code Pipeline</h4>
 	</f:block>
 
 	<f:entry title="Host connection" field="connectionId"
@@ -50,7 +50,7 @@
 	</f:block>
 
 	<f:block>
-		<h4 style="margin-bottom: 0px">Git to ISPW Branch Mapping</h4>
+		<h4 style="margin-bottom: 0px">Git to Code Pipeline Branch Mapping</h4>
 	</f:block>
 
 	<f:entry field="branchMapping" title="Branch Mapping"

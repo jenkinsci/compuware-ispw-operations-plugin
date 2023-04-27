@@ -1,8 +1,8 @@
 Version 1.0.3
-* Add support for retrieving the list of tasks for a given ISPW Set.
+* Add support for retrieving the list of tasks for a given Code Pipeline Set.
 * Changes to the logging to be more consistent with other plugins logging
 * CWE-124457 - Jenkins Operations Plugin - Bad error message when selected host connection doesn't have a CES URL
-* CWE-126841 - ISPW Operations Jenkins Plugin has problems with GetReleaseTaskList
+* CWE-126841 - Code Pipeline Operations Jenkins Plugin has problems with GetReleaseTaskList
 * CWE-124623 - Jenkins Operations Plugin - Pre-populate help text in Request field
 
 Version 1.0.2
@@ -10,5 +10,5 @@ Version 1.0.2
 * Jenkins console logs produced by the plugin have been streamlined to improve readability.
 * Support for the Jenkins Pipeline Syntax.
 * Support Credentials secret text to store CES token
-* Support most ISPW build operations.
+* Support most Code Pipeline build operations.
 * Provide Docker script to build Docker image for CES server and Docker image for Jenkins with Compuware plugins pre-installed.
