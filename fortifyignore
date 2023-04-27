@@ -1,0 +1,52 @@
+#The following files will be ignored while doing fortify scan
+
+#Ignore following folders as they contain build specific files
+
+dev
+work
+test-output
+target
+work-old
+work2
+work3
+work4
+work5
+
+#Ignore various project format files
+**/*.bat
+**/*.md
+**/*.png
+**/*.svg
+**/*.jpg
+**/*.swp
+**/*.vim
+**/*.project
+**/*.classpath
+**/*.prefs
+**/*.properties
+**/*.springBeans
+**/*.metadata
+**/*.externalToolBuilders
+**/*.iml
+**/*.settings
+
+#Jenkins work
+**/work/**/*
+**/work_copy/**/*
+**/work_/**/*
+
+
+#ingnoring folders
+**/.queue*.*
+**/.queue1*.*
+**/.queue2*.*
+
+#ingnoring config files
+**/packages.config
+**/codeStyleSettings.xml
+**/codeStyleConfig.xml
+**/Project.xml
+**/encodings.xml
+
+
+
