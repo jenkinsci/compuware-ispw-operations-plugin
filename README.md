@@ -34,7 +34,7 @@ The following are required to use this plugin:
 ### Configuring Host Connections and CES Tokens
 
 -   If no host connection appears in the **Host Connections** section,
-    click **Add Host Connection **and add a host connection by entering
+    click **Add Host Connection** and add a host connection by entering
     the following information:
 
     -   In the **Description** field, enter a description of the
@@ -203,7 +203,7 @@ data = ispwWaitForWebhook hook
 echo "...CES called back with message: ${data}"
 ```
 
-**Note:** If the **Response body in** **console **option is checked, then debug
+**Note:** If the **Response body in** **console** option is checked, then debug
 message will be printed within the Jenkins log. 
 
 &nbsp;
