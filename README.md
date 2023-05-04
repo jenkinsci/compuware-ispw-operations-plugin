@@ -37,10 +37,10 @@ The following are required to use this plugin:
     click **Add Host Connection **and add a host connection by entering
     the following information:
 
-    -   In the **Description **field, enter a description of the
+    -   In the **Description** field, enter a description of the
         connection.
 
-    -   In the **Host:port **field, enter the z/OS host to connect to.
+    -   In the **Host:port** field, enter the z/OS host to connect to.
 
     -   From the **Code page** list, select the desired code page to be
         used for this connection. The code page is used to translate
@@ -103,43 +103,43 @@ For information about using certificates with Jenkins, see <https://www.jenkins.
     the Jenkins documentation for the Plain Credentials plugin.
     
 -   In the **Action** section to define what Code Pipeline operation to perform
-    -   AddTask
-    -   BuildAssignment
-    -   BuildRelease
-    -   BuildTask
-    -   CancelAssignment
-    -   CancelDeployment
-    -   CancelRelease
-    -   CloseAssignment
-    -   CloseRelease
-    -   CreateAssignment
-    -   CreateRelease
-    -   DeployAssignment
-    -   DeployRelease
-    -	DeployTask
-    -   FallbackAssignment
-    -   FallbackRelease
-    -	GenerateTask
-    -   GenerateTasksInAssignment
-    -   GenerateTasksInRelease
-    -   GetAssignmentInfo
-    -   GetAssignmentTaskList
-    -   GetContainerList
-    -   GetReleaseInfo
-    -   GetReleaseTaskGenerateListing
-    -   GetReleaseTaskInfo
-    -   GetReleaseTaskList
-    -   GetSetInfo
-    -   GetSetTaskList
-    -   GetWorkList
-    -   PromoteAssignment
-    -   PromoteRelease
-    -   RegressAssignment
-    -   RegressRelease
-    -   RemoveFromRelease
-    -   SetOperation
-    -   TaskLoad
-    -   TransferTask
+    -   Add Task
+    -   Build Assignment
+    -   Build Release
+    -   Build Task
+    -   Cancel Assignment
+    -   Cancel Deployment
+    -   Cancel Release
+    -   Close Assignment
+    -   Close Release
+    -   Create Assignment
+    -   Create Release
+    -   Deploy Assignment
+    -   Deploy Release
+    -	Deploy Task
+    -   Fallback Assignment
+    -   Fallback Release
+    -	Generate Task
+    -   Generate Tasks In Assignment
+    -   Generate Tasks In Release
+    -   Get Assignment Info
+    -   Get Assignment Task List
+    -   Get Container List
+    -   Get Release Info
+    -   Get Release Task Generate Listing
+    -   Get Release Task Info
+    -   Get Release Task List
+    -   Get Set Info
+    -   Get Set Task List
+    -   Get WorkList
+    -   Promote Assignment
+    -   Promote Release
+    -   Regress Assignment
+    -   Regress Release
+    -   Remove From Release
+    -   Set Operation
+    -   Task Load
+    -   Transfer Task
     
 -   In the **Request** section, please specify additional request
     parameters, click the question mark for more details. Each of the
