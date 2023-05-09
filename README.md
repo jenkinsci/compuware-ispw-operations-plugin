@@ -261,7 +261,7 @@ explanation in the following figure.
 
 ## GIT to Code Pipeline Integration Features
 
-![GIT to Code Pipeline design](https://raw.githubusercontent.com/jenkinsci/compuware-ispw-operations-plugin/CWE-150569-ISPW-Git-Integration---Pipeline-build/ispw%20git%20integration.png)
+![GIT to Code Pipeline design](ispw%20git%20integration.png)
 
 ### Pipeline build example
 
