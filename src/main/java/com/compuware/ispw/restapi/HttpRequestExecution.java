@@ -10,6 +10,8 @@
 */
 package com.compuware.ispw.restapi;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,8 +25,10 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -37,16 +41,26 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
+import com.cloudbees.plugins.credentials.impl.CertificateCredentialsImpl;
 import com.compuware.ispw.restapi.IspwRestApiRequest.DescriptorImpl;
 import com.compuware.ispw.restapi.IspwRestApiRequestStep.Execution;
 import com.compuware.ispw.restapi.action.IAction;
@@ -98,6 +112,7 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 
 	private final OutputStream remoteLogger;
 	private transient PrintStream localLogger;
+	private StandardCredentials cesCredentials;
 
 	
 	// create poller for rest api request
@@ -320,10 +335,13 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 			}
 		}
 
-		try {
+		try
+		{
 			return authAndRequest();
-		} catch (IOException | InterruptedException |
-				KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+		}
+		catch (IOException | InterruptedException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException
+				| CertificateException | UnrecoverableKeyException e)
+		{
 			throw new IllegalStateException(e);
 		}
 	}
@@ -338,9 +356,19 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 		}
 		return localLogger;
 	}
+	
+	public StandardCredentials getCESCredentials() 
+	{
+		return cesCredentials;
+	}
+	
+	public void setCESCredentials(StandardCredentials cesCredentials) 
+	{
+		 this.cesCredentials=cesCredentials;
+	}
 
 	private ResponseContentSupplier authAndRequest()
-			throws IOException, InterruptedException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+			throws IOException, InterruptedException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, CertificateException, UnrecoverableKeyException {
 		//only leave open if no error happen
 		ResponseHandle responseHandle = ResponseHandle.NONE;
 		CloseableHttpClient httpclient = null;
@@ -368,8 +396,21 @@ public class HttpRequestExecution extends MasterToSlaveCallable<ResponseContentS
 	 
 			HttpRequestBase httpRequestBase = clientUtil.createRequestBase(new RequestAction(new URL(url), httpMode, body, null, headers));
 			HttpContext context = new BasicHttpContext();
-
-			httpclient = auth(clientBuilder, httpRequestBase, context);
+			if(StringUtils.containsIgnoreCase(url, Constants.HTTPS) && getCESCredentials() instanceof StandardCertificateCredentials)
+			{			
+				CertificateCredentialsImpl certificateCredentials = (CertificateCredentialsImpl)getCESCredentials();
+				KeyStore keyStore =certificateCredentials.getKeyStore();
+				SSLContext sslContext = SSLContexts.custom().loadKeyMaterial(keyStore, certificateCredentials.getPassword().getPlainText().toCharArray()).loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+				clientBuilder.setSSLContext(sslContext);
+				SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext,NoopHostnameVerifier.INSTANCE);
+				Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslConnectionFactory).build();
+				BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(registry);
+				httpclient = HttpClients.custom().setConnectionManager(connManager).setSSLSocketFactory(sslConnectionFactory).setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
+			}
+			else 
+			{
+				httpclient = auth(clientBuilder, httpRequestBase, context);
+			}
 			
 			ResponseContentSupplier response = executeRequest(httpclient, clientUtil, httpRequestBase, context);
 			processResponse(response);

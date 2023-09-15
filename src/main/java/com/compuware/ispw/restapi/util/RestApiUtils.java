@@ -18,6 +18,7 @@ import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.ces.model.BasicAuthentication;
@@ -262,28 +263,36 @@ public class RestApiUtils {
 		return token;
 	}
 	
+	public static StandardCredentials getCesCredentials(String credentialsId, Item item)
+	{
+		StandardCredentials cred = null;
+		List<StandardCredentials> creds = filter(
+				lookupCredentials(StandardCredentials.class, item, ACL.SYSTEM, Collections.<DomainRequirement> emptyList()),
+				withId(StringUtils.trimToEmpty(credentialsId)));
+		if (!creds.isEmpty())
+		{
+			cred = creds.get(0);
+		}
+		return cred;
+	}
+	
 	public static ListBoxModel buildCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
 			@AncestorInPath Item project)
 	{
-		List<StringCredentials> creds = CredentialsProvider.lookupCredentials(
-				StringCredentials.class, project, ACL.SYSTEM,
+		List<StandardCredentials> creds = CredentialsProvider.lookupCredentials(StandardCredentials.class, project, ACL.SYSTEM,
 				Collections.<DomainRequirement> emptyList());
-
 		StandardListBoxModel model = new StandardListBoxModel();
-
 		model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
-
-		for (StringCredentials c : creds) {
+		for (StandardCredentials c : creds)
+		{
 			boolean isSelected = false;
-
-			if (credentialsId != null) {
+			if (credentialsId != null)
+			{
 				isSelected = credentialsId.matches(c.getId());
 			}
-
 			String description = StringUtils.trimToEmpty(c.getDescription());
 			model.add(new Option(description, c.getId(), isSelected));
 		}
-
 		return model;
 	}
 	

@@ -1,12 +1,14 @@
 /**
 *  Copyright (c) 2020 Compuware Corporation. All rights reserved.
-* (c) Copyright 2020,2021-2022 BMC Software, Inc.
+* (c) Copyright 2020,2021-2022, 2023 BMC Software, Inc.
 */
 package com.compuware.ispw.restapi;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.KeyStoreException;
+import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,7 +27,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.parboiled.common.FileUtils;
-
+import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.compuware.ispw.git.GitToIspwUtils;
 import com.compuware.ispw.model.changeset.ProgramList;
 import com.compuware.ispw.model.rest.BuildResponse;
@@ -41,6 +44,7 @@ import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -77,6 +81,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 	private String outputFile = DescriptorImpl.outputFile;
 	private ResponseHandle responseHandle = DescriptorImpl.responseHandle;
 	private String token = DescriptorImpl.token; // modified by pmisvz0
+	private StandardCredentials cesCredentials;
 
 	// ISPW
 	private String connectionId = DescriptorImpl.connectionId;
@@ -145,6 +150,11 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 		return token;
 	}
     
+	public StandardCredentials getCESCredentials()
+	{
+		return cesCredentials;
+	}
+	
     public String getHttpProxy() {
         return httpProxy;
     }
@@ -217,7 +227,37 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 		
 		// ISPW
 		headers.add(new HttpRequestNameValuePair("Content-type", MimeType.APPLICATION_JSON.toString()));
-		headers.add(new HttpRequestNameValuePair("Authorization", getToken()));
+		
+		if(StringUtils.containsIgnoreCase(url, Constants.HTTPS) && getCESCredentials() instanceof StandardCertificateCredentials)
+		{
+			StandardCertificateCredentials certificateCredentials = (StandardCertificateCredentials) getCESCredentials();				
+			String base64 = StringUtils.EMPTY;
+			try
+			{
+				base64 = new CpwrGlobalConfiguration().getCertificateString(certificateCredentials);
+			}
+			catch (CertificateEncodingException | KeyStoreException e)
+			{
+				e.printStackTrace();
+			}
+			String cesIspwHost = RestApiUtils.getIspwHostLabel(connectionId);
+			String[] hostPort = {};
+			if(cesIspwHost != null)
+			{
+				hostPort = cesIspwHost.split("-");
+			}
+			if (hostPort.length == 2)
+			{
+				headers.add(new HttpRequestNameValuePair("cpwr_hci_host", hostPort[0]));
+				headers.add(new HttpRequestNameValuePair("cpwr_hci_port", hostPort[1]));
+			}
+			headers.add(new HttpRequestNameValuePair("javax.servlet.request.X509Certificate", base64));
+		}
+		else
+		{
+			headers.add(new HttpRequestNameValuePair("Authorization", getToken()));
+		}
+
 		
 		if (acceptType != null && acceptType != MimeType.NOT_SET) {
 			headers.add(new HttpRequestNameValuePair("Accept", acceptType.getValue()));
@@ -406,8 +446,8 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 
 			String cesUrl = RestApiUtils.getCesUrl(step.connectionId, logger);
 			String cesIspwHost = RestApiUtils.getIspwHostLabel(step.connectionId);
-
 			String cesIspwToken = RestApiUtils.getCesToken(step.credentialsId, run.getParent());
+			this.step.cesCredentials = RestApiUtils.getCesCredentials(step.credentialsId, run.getParent());
 
 			if (RestApiUtils.isIspwDebugMode())
 				logger.println("...ces.url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
@@ -465,7 +505,7 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 
 			HttpRequestExecution exec =
 					HttpRequestExecution.from(step, listener, this);
-
+			exec.setCESCredentials(this.step.cesCredentials);
 			ResponseContentSupplier supplier = runExec(exec);
 			if (supplier == null)
 			{

@@ -1,6 +1,6 @@
 /**
 *  Copyright (c) 2020 Compuware Corporation. All rights reserved.
-* (c) Copyright 2020,2021-2022 BMC Software, Inc.
+* (c) Copyright 2020,2021-2022, 2023 BMC Software, Inc.
 */
 package com.compuware.ispw.restapi;
 
@@ -8,6 +8,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.KeyStoreException;
+import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +23,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
@@ -45,6 +48,7 @@ import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import hudson.AbortException;
@@ -92,6 +96,7 @@ public class IspwRestApiRequest extends Builder {
 	private String requestBody = DescriptorImpl.requestBody;
 	private String authentication = DescriptorImpl.authentication;
 	private String token = DescriptorImpl.token;
+	private StandardCredentials cesCredentials;
 	private List<HttpRequestNameValuePair> customHeaders = DescriptorImpl.customHeaders;
 
 	// ISPW
@@ -158,6 +163,11 @@ public class IspwRestApiRequest extends Builder {
 
 	public String getToken() {
 		return token;
+	}
+	
+	public StandardCredentials getCESCredentials()
+	{
+		return cesCredentials;
 	}
 
 	public String getHttpProxy() {
@@ -283,13 +293,44 @@ public class IspwRestApiRequest extends Builder {
 		return url;
 	}
 
-	List<HttpRequestNameValuePair> resolveHeaders(EnvVars envVars) {
+	List<HttpRequestNameValuePair> resolveHeaders(EnvVars envVars) 
+	{
 		final List<HttpRequestNameValuePair> headers = new ArrayList<>();
-
+		
 		headers.add(new HttpRequestNameValuePair("Content-type", MimeType.APPLICATION_JSON
 				.toString()));
-		headers.add(new HttpRequestNameValuePair("Authorization", getToken()));
+		
+		if(StringUtils.containsIgnoreCase(url, Constants.HTTPS) && getCESCredentials() instanceof StandardCertificateCredentials)
+		{
+			StandardCertificateCredentials certificateCredentials = (StandardCertificateCredentials) getCESCredentials();				
+			String base64 = StringUtils.EMPTY;
+			try
+			{
+				base64 = new CpwrGlobalConfiguration().getCertificateString(certificateCredentials);
+			}
+			catch (CertificateEncodingException | KeyStoreException e)
+			{
+				e.printStackTrace();
+			}
+			String cesIspwHost = RestApiUtils.getIspwHostLabel(connectionId);
+			String[] hostPort = {};
+			if(cesIspwHost != null)
+			{
+				hostPort = cesIspwHost.split("-");
+			}
+			if (hostPort.length == 2)
+			{
+				headers.add(new HttpRequestNameValuePair("cpwr_hci_host", hostPort[0]));
+				headers.add(new HttpRequestNameValuePair("cpwr_hci_port", hostPort[1]));
+			}
+			headers.add(new HttpRequestNameValuePair("javax.servlet.request.X509Certificate", base64));
+		}
+		else
+		{
+			headers.add(new HttpRequestNameValuePair("Authorization", getToken()));
+		}
 
+		
 		if (acceptType != null && acceptType != MimeType.NOT_SET) {
 			headers.add(new HttpRequestNameValuePair("Accept", acceptType.getValue()));
 		}
@@ -360,9 +401,9 @@ public class IspwRestApiRequest extends Builder {
 
 		String cesUrl = RestApiUtils.getCesUrl(connectionId, logger);
 		String cesIspwHost = RestApiUtils.getIspwHostLabel(connectionId);
-
 		String cesIspwToken = RestApiUtils.getCesToken(credentialsId, build.getParent());
-
+		this.cesCredentials = RestApiUtils.getCesCredentials(credentialsId, build.getParent());
+		
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("CES Url=" + cesUrl + ", ces.ispw.host=" + cesIspwHost
 					+ ", ces.ispw.token=" + cesIspwToken);
@@ -423,7 +464,7 @@ public class IspwRestApiRequest extends Builder {
 		action.startLog(logger, ispwRequestBean.getIspwContextPathBean(), ispwRequestBean.getJsonObject());
 		HttpRequestExecution exec =
 				HttpRequestExecution.from(this, envVars, build, listener);
-		
+		exec.setCESCredentials(cesCredentials);
 		VirtualChannel channel = launcher.getChannel();
 		if(channel == null) {
 			logger.println("virtual channel is null, quit");

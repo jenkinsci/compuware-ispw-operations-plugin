@@ -6,7 +6,7 @@
 * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
 * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
 *
-* (c) Copyright 2022 BMC Software, Inc.
+* (c) Copyright 2022, 2023 BMC Software, Inc.
 */
 package com.compuware.ispw.restapi;
 
@@ -54,4 +54,5 @@ public class Constants {
 	public static final String UTF_8 = "UTF-8";
 
 	public static final String BUILD_PARAM_FILE_NAME = "automaticBuildParams.txt"; //$NON-NLS-1$
+	public static final String HTTPS = "https://";
 }
