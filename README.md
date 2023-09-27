@@ -82,7 +82,7 @@ The following are required to use this plugin:
 :new: **Important**
       
 -   Starting with v1.09, the Code Pipeline Jenkins Operations plugin can support certificates to connect with Code Pipeline. 
--   Starting with v2.2.1 the Code Pipeline Jenkins Operations plugin can support certificates to connect with CES running on HTTPS. CES token can only be used on CES server running on HTTP and Certificates can only be used on CES running on HTTPS.
+-   Starting with v2.3.0 the Code Pipeline Jenkins Operations plugin can support certificates to connect with CES running on HTTPS. CES token can only be used on CES server running on HTTP and Certificates can only be used on CES running on HTTPS.
 -   For information about using certificates with Jenkins, see <https://www.jenkins.io/doc/book/using/using-credentials/>
 
 ---  
