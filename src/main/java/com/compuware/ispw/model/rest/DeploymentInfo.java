@@ -18,6 +18,7 @@ public class DeploymentInfo
 	private String description;
 	private String createDate;
 	private String createDateTime;
+	private String url;
 	private List<DeploymentPackageInfo> packages = new ArrayList<DeploymentPackageInfo>();
 	
 	public List<String> getMessage()
@@ -118,5 +119,15 @@ public class DeploymentInfo
 	public void addPackage(DeploymentPackageInfo pkg)
 	{
 		this.packages.add(pkg);
+	}
+	
+	public List<String> getUrl()
+	{
+		return message;
+	}
+
+	public void setMessage(String url)
+	{
+		this.url = url;
 	}
 }

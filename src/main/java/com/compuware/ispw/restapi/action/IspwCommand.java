@@ -123,5 +123,9 @@ public class IspwCommand {
 	
 	@IspwAction(clazz = BuildReleaseAction.class)
 	public static final String BuildRelease = "BuildRelease"; // POST
+	
+	@IspwAction(clazz = ReleaseDeployOperation.class)
+	public static final String ReleaseDeployAction = "ReleaseDeployAction"; // POST
+	
 
 }
