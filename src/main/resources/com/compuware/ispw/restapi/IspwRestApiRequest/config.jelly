@@ -30,85 +30,93 @@
    
        <!-- Hidden field to store the serialized dynamic fields -->
     <input type="hidden" id="serializedDynamicFields" name="serializedDynamicFields" />
-
-   
-  
-    
-   
     
      <script type="text/javascript">
      
-   	var dynamicFields = {"inputs":{}};
-     function updateSerializedFields() {
-        obj={};
-        document.querySelectorAll('[id^="dynamicField_"]').forEach(function(input) {
-        	obj[input.name] = input.value;
-        });
-        dynamicFields.inputs=obj;
-        // Update the hidden field with the serialized dynamic fields
-        document.getElementById('serializedDynamicFields').value = JSON.stringify(dynamicFields);
-        }
-  document.addEventListener("DOMContentLoaded", function() {
-                const req_body = document.getElementById('reqBody');
-                const actionVal= document.getElementById('action');
-                const resultContainer = document.getElementById('resultContainer'); // The container to update
-                const connectionIdElements = document.getElementsByName('_.connectionId');
-                const credentialIdElements= document.getElementsByName('_.credentialsId');
-                if (req_body) {
-                    req_body.addEventListener('change', function() {
-                        const param1 = this.value;
-                        
-                        let index1= connectionIdElements[0].selectedIndex;
-                        let option1= connectionIdElements[0].options[index1];
-                        const param2= option1.value;
-                        
-                        let index2= credentialIdElements[1].selectedIndex;
-                        let option2= credentialIdElements[1].options[index2];
-                        const param3=option2.value;
-                        
-                        const rootUrl= "${rootURL}";
-	                    const url =  rootUrl+'/test/getForm?'
-	                                 +'param1='+encodeURIComponent(param1)
-	                                 +'&amp;param2='+encodeURIComponent(param2)
-	                                 +'&amp;param3='+encodeURIComponent(param3);
-                        // Using Fetch API for AJAX request
-                        fetch(url)
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok: ' + response.statusText);
-                                }
-                                return response.json(); // Change to response.json() if expecting JSON
-                            })
-                            .then(data => {
-								console.log(data); // should output 'string'
-								dynamicFields["taskId"]=data.taskId;
-								dynamicFields["containerType"]=data.containerType;
-								dynamicFields["containerId"]=data.containerId;
-								dynamicFields["setId"]= data.setId;
-						    	 var dynamicFieldsDiv = document.getElementById('dynamicFieldsDiv');
-						    	  // Generate and append fields dynamically
-                    		data["dataArr"].forEach(item => {
-                    		 var label = document.createElement("label");
-            label.setAttribute("for", "dynamicField_" + item.id);
-            label.innerText = item.name;
-            // Create input field
-            var input = document.createElement("input");
-            input.setAttribute("type", "text");
-			input.setAttribute("name", "dynamicField_" + item.target);
-		    input.setAttribute("id", "dynamicField_" + item.id);   // Correct 'id'
-            input.classList.add("setting-input");
-            // Append label and input to the div
-            dynamicFieldsDiv.appendChild(label);
-            dynamicFieldsDiv.appendChild(input);
-            input.addEventListener('input', updateSerializedFields);
-            updateSerializedFields();
-                      });
-                 }).catch(error => {
-                                console.error('Fetch error:', error);
-                            });
-                    });
-                }
+  var dynamicFields = { "inputs": {} };
+function updateSerializedFields() {
+    obj = {};
+    document.querySelectorAll('[id^="dynamicField_"]').forEach(function (input) {
+        obj[input.name] = input.value;
+    });
+    dynamicFields.inputs = obj;
+    // Update the hidden field with the serialized dynamic fields
+    document.getElementById('serializedDynamicFields').value = JSON.stringify(dynamicFields);
+}
+
+
+function loadGenParameters(action) {
+	if('GenerateWithParm'==action){
+    const resultContainer = document.getElementById('resultContainer'); // The container to update
+    const connectionIdElements = document.getElementsByName('_.connectionId');
+    const credentialIdElements = document.getElementsByName('_.credentialsId');
+    const req_body = document.getElementById('reqBody');
+    const actionVal = document.getElementById('action');
+    const param1 = req_body.value;
+    let index1 = connectionIdElements[0].selectedIndex;
+    let option1 = connectionIdElements[0].options[index1];
+    const param2 = option1.value;
+
+    let index2 = credentialIdElements[1].selectedIndex;
+    let option2 = credentialIdElements[1].options[index2];
+    const param3 = option2.value;
+
+    const rootUrl = "${rootURL}";
+    const url = rootUrl + '/test/getForm?'
+        + 'param1=' + encodeURIComponent(param1)
+        + '&amp;param2=' + encodeURIComponent(param2)
+        + '&amp;param3=' + encodeURIComponent(param3);
+    // Using Fetch API for AJAX request
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json(); // Change to response.json() if expecting JSON
+        })
+        .then(data => {
+            console.log(data); // should output 'string'
+            dynamicFields["taskId"] = data.taskId;
+            dynamicFields["containerType"] = data.containerType;
+            dynamicFields["containerId"] = data.containerId;
+            dynamicFields["setId"] = data.setId;
+            var dynamicFieldsDiv = document.getElementById('dynamicFieldsDiv');
+            // Generate and append fields dynamically
+            data["dataArr"].forEach(item => {
+                var label = document.createElement("label");
+                label.setAttribute("for", "dynamicField_" + item.id);
+                label.innerText = item.name;
+                // Create input field
+                var input = document.createElement("input");
+                input.setAttribute("type", "text");
+                input.setAttribute("name", "dynamicField_" + item.target);
+                input.setAttribute("id", "dynamicField_" + item.id);   // Correct 'id'
+                input.classList.add("setting-input");
+                // Append label and input to the div
+                dynamicFieldsDiv.appendChild(label);
+                dynamicFieldsDiv.appendChild(input);
+                input.addEventListener('input', updateSerializedFields);
+                updateSerializedFields();
             });
-            
-        </script>
+        }).catch(error => {
+            console.error('Fetch error:', error);
+        });
+}
+
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const req_body = document.getElementById('reqBody');
+    const actionVal = document.getElementById('action');
+    let selectedAction = actionVal.value;
+    if (req_body) {
+    req_body.addEventListener('change', () => loadGenParameters(selectedAction));
+       // req_body.addEventListener('change', loadGenParameters, false)
+    }
+    if (actionVal) {
+        actionVal.addEventListener('change', () => loadGenParameters(selectedAction));
+    
+        //actionVal.addEventListener('change', loadGenParameters, false)
+    }
+});
+     </script>
  </j:jelly>
