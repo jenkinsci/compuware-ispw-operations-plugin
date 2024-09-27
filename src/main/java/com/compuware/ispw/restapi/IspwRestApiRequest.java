@@ -13,7 +13,6 @@ import java.security.KeyStoreException;
 import java.security.cert.CertificateEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +25,6 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
@@ -47,7 +43,6 @@ import com.compuware.ispw.restapi.action.GenerateTaskAction;
 import com.compuware.ispw.restapi.action.GenerateTasksInAssignmentAction;
 import com.compuware.ispw.restapi.action.GenerateTasksInReleaseAction;
 import com.compuware.ispw.restapi.action.IAction;
-import com.compuware.ispw.restapi.action.MyAction;
 import com.compuware.ispw.restapi.action.SetInfoPostAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
 import com.compuware.ispw.restapi.action.UpdateGenParmAction;
@@ -83,8 +78,6 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
 import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONObject;
 /**
  * ISPW rest API free style builder
  * 
@@ -515,13 +508,6 @@ public class IspwRestApiRequest extends Builder {
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("responseJson=" + responseJson);
 		Object respObject = action.endLog(logger, ispwRequestBean, responseJson);
-		if(action  instanceof MyAction) {
-	        StaplerResponse rsp = Stapler.getCurrentResponse();
-	        rsp.sendRedirect("/myDialog");
-			return true;
-		}
-		
-		
 		if(Boolean.TRUE.equals(skipWaitingForSet))
 		{
 			logger.println("Skip waiting for the completion of the set for this job...");
