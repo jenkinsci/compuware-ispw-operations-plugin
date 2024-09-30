@@ -124,7 +124,7 @@ function loadGenParameters() {
                 // Display the error message to the user
                 const errorMessageDiv = document.getElementById('error-message');
                 const errorTextSpan = document.getElementById('error-text');
-                errorTextSpan.innerText ='Error In loading Generate Parameters:'+error; // Set the error message
+                errorTextSpan.innerText =error; // Set the error message
                 errorMessageDiv.style.display = 'block'; // Make the div visible
         });
 }

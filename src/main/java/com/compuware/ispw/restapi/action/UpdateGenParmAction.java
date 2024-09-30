@@ -3,16 +3,16 @@ package com.compuware.ispw.restapi.action;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.compuware.ispw.model.rest.GenParmProperty;
+import com.compuware.ispw.model.rest.SetInfo;
 import com.compuware.ispw.model.rest.UpdateGenPam;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
+import com.compuware.ispw.restapi.JsonProcessor;
 import com.compuware.ispw.restapi.WebhookToken;
 import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,8 +42,8 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 			updateGenPam.setContainerId(node.get("containerId").asText());
 			updateGenPam.setContainerType(node.get("containerType").asText());
 			updateGenPam.setTaskId(node.get("taskId").asText());
-			String setId= node.get("setId").asText();
-	        setId = setId.replaceAll("^\"|\"$", "");  // Remove extra quotes from start and end
+			String setId = node.get("setId").asText();
+			setId = setId.replaceAll("^\"|\"$", ""); // Remove extra quotes from start and end
 			updateGenPam.setSetId(setId);
 			JsonNode inputNode = node.get("inputs");
 			Iterator<Entry<String, JsonNode>> fieldsIterator = inputNode.fields();
@@ -52,7 +52,7 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 				Entry<String, JsonNode> field = fieldsIterator.next();
 				String fieldName = field.getKey();
 				String fieldValue = field.getValue().toString();
-				fieldValue = fieldValue.replaceAll("^\"|\"$", "");  // Remove extra quotes from start and end
+				fieldValue = fieldValue.replaceAll("^\"|\"$", ""); // Remove extra quotes from start and end
 				if (fieldName.startsWith("dynamicField_") && fieldName.contains(".")) {
 					String modifiedString = fieldName.replaceFirst("dynamicField_", "");
 					String[] parts = modifiedString.split("\\.");
@@ -70,12 +70,13 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 
 	@Override
 	public void startLog(PrintStream logger, IspwContextPathBean ispwContextPathBean, Object jsonObject) {
+		logger.println("updating Task Generate parm Info started for taskId " + ispwContextPathBean.getTaskId());
 
 	}
 
 	@Override
 	public Object endLog(PrintStream logger, IspwRequestBean ispwRequestBean, String responseJson) {
-		return null;
+		return new JsonProcessor().parse(responseJson, SetInfo.class);
 	}
 
 }
