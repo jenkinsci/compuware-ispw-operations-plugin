@@ -118,5 +118,12 @@ document.addEventListener("DOMContentLoaded", function () {
         //actionVal.addEventListener('change', loadGenParameters, false)
     }
 });
+
+setTimeout(() => {
+    const actionVal = document.getElementById('action');
+    let selectedAction = actionVal.value;
+    loadGenParameters(selectedAction);
+}, 1000);
+
      </script>
  </j:jelly>

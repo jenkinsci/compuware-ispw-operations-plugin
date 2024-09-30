@@ -97,6 +97,7 @@ public class MyPluginAction implements UnprotectedRootAction {
 			// Get the response content
 			String responseBody = EntityUtils.toString(response1.getEntity());
 			// Print the response
+			if(response1.getStatusLine().getStatusCode() ==200) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			// Parse JSON response into JsonNode
 			JsonNode rootNode = objectMapper.readTree(responseBody);
@@ -141,6 +142,10 @@ public class MyPluginAction implements UnprotectedRootAction {
 			resultJson.put("dataArr", jsonArray);
 			response.setContentType("application/json");
 			response.getWriter().write(resultJson.toString());
+			}else {
+				response.setContentType("application/json");
+				response.getWriter().write(responseBody);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
