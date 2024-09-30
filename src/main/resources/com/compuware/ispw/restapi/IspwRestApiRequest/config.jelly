@@ -31,6 +31,11 @@
        <!-- Hidden field to store the serialized dynamic fields -->
     <input type="hidden" id="serializedDynamicFields" name="serializedDynamicFields" />
     
+     <!-- Div to show error messages -->
+    <div id="error-message" style="color: red; display: none; font-weight: bold;">
+        <span id="error-text"></span>
+    </div>
+    
      <script type="text/javascript">
      
   var dynamicFields = { "inputs": {} };
@@ -72,7 +77,13 @@ function loadGenParameters(action) {
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
+            if(response.ok){
             return response.json(); // Change to response.json() if expecting JSON
+            }else {
+                    return response.text().then(errorMessage => {
+                        throw new Error(errorMessage); // Throw error with response text
+               });
+             }
         })
         .then(data => {
             console.log(data); // should output 'string'
@@ -85,7 +96,7 @@ function loadGenParameters(action) {
             data["dataArr"].forEach(item => {
                 var label = document.createElement("label");
                 label.setAttribute("for", "dynamicField_" + item.id);
-                label.innerText = item.name;
+                label.innerText =item.name;
                 // Create input field
                 var input = document.createElement("input");
                 input.setAttribute("type", "text");
@@ -97,9 +108,18 @@ function loadGenParameters(action) {
                 dynamicFieldsDiv.appendChild(input);
                 input.addEventListener('input', updateSerializedFields);
                 updateSerializedFields();
+                document.getElementById('error-message').style.display = 'none';
+                
             });
         }).catch(error => {
-            console.error('Fetch error:', error);
+            console.error("Error: ", error.message);
+                // Display the error message to the user
+                const errorMessageDiv = document.getElementById('error-message');
+                const errorTextSpan = document.getElementById('error-text');
+                errorTextSpan.innerText ='Error In loading Generate Parameters:'+ error.message; // Set the error message
+                errorMessageDiv.style.display = 'block'; // Make the div visible
+                // Clear success message if visible
+                document.getElementById('success-message').style.display = 'none';
         });
 }
 
