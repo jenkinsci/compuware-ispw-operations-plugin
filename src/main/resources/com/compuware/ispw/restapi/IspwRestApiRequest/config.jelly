@@ -67,7 +67,7 @@ function loadGenParameters(action) {
     const param3 = option2.value;
 
     const rootUrl = "${rootURL}";
-    const url = rootUrl + '/test/getForm?'
+    const url = rootUrl + '/loadGenParm/getForm?'
         + 'param1=' + encodeURIComponent(param1)
         + '&amp;param2=' + encodeURIComponent(param2)
         + '&amp;param3=' + encodeURIComponent(param3);

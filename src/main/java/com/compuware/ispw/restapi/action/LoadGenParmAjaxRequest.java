@@ -53,7 +53,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Extension
-public class MyPluginAction implements UnprotectedRootAction {
+public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 
 	private StandardCredentials cesCredentials;
 	private String credentialsId;
@@ -64,7 +64,7 @@ public class MyPluginAction implements UnprotectedRootAction {
 	private @Nonnull String token = StringUtils.EMPTY;
 
 	public String getUrlName() {
-		return "test"; // Base URL for your plugin
+		return "loadGenParm"; // Base URL for your plugin
 	}
 
 	// AJAX endpoint to get the form based on the action ID
