@@ -50,21 +50,25 @@ function updateSerializedFields() {
 }
 
 
-function loadGenParameters(action) {
-	if('GenerateWithParm'==action){
+function loadGenParameters() {
+    document.getElementById('error-message').style.display = 'none';
+    const actionVal = document.getElementById('action');
+    let selectedAction = actionVal.value;
+	if('GenerateWithParm'==selectedAction){
     const resultContainer = document.getElementById('resultContainer'); // The container to update
     const connectionIdElements = document.getElementsByName('_.connectionId');
     const credentialIdElements = document.getElementsByName('_.credentialsId');
+   
     const req_body = document.getElementById('reqBody');
     const actionVal = document.getElementById('action');
     const param1 = req_body.value;
     let index1 = connectionIdElements[0].selectedIndex;
     let option1 = connectionIdElements[0].options[index1];
-    const param2 = option1.value;
+    const param2 = option1!=undefined? option1.value:null;
 
     let index2 = credentialIdElements[1].selectedIndex;
     let option2 = credentialIdElements[1].options[index2];
-    const param3 = option2.value;
+    const param3 = option2 !=undefined ? option2.value:null;
 
     const rootUrl = "${rootURL}";
     const url = rootUrl + '/loadGenParm/getForm?'
@@ -124,28 +128,29 @@ function loadGenParameters(action) {
                 document.getElementById('success-message').style.display = 'none';
         });
 }
-
 }
 document.addEventListener("DOMContentLoaded", function () {
     const req_body = document.getElementById('reqBody');
     const actionVal = document.getElementById('action');
     let selectedAction = actionVal.value;
+    
     if (req_body) {
-    req_body.addEventListener('change', () => loadGenParameters(selectedAction));
+    req_body.addEventListener('change', () => loadGenParameters());
        // req_body.addEventListener('change', loadGenParameters, false)
     }
     if (actionVal) {
-        actionVal.addEventListener('change', () => loadGenParameters(selectedAction));
+        actionVal.addEventListener('change', () => loadGenParameters());
     
         //actionVal.addEventListener('change', loadGenParameters, false)
     }
+   setTimeout(() => {
+    loadGenParameters();
+}, 1000);
+    
 });
 
-setTimeout(() => {
-    const actionVal = document.getElementById('action');
-    let selectedAction = actionVal.value;
-    loadGenParameters(selectedAction);
-}, 1000);
+ 
+
 
      </script>
  </j:jelly>
