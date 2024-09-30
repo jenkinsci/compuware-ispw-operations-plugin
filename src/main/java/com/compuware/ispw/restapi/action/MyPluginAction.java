@@ -115,6 +115,14 @@ public class MyPluginAction implements UnprotectedRootAction {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.parse(new ByteArrayInputStream(xmlResponse.getBytes(StandardCharsets.UTF_8)));
 			document.getDocumentElement().normalize();
+			
+            JsonNode entries = rootNode.path("defaults").path("entry");
+            Map<String, String> defaultVMap = new HashMap<>();
+            for (JsonNode entry : entries) {
+                String key = entry.path("key").asText();
+                String value = entry.path("value").asText();
+                defaultVMap.put(key, value);
+            }
 			// Create XPath to search for tns:field elements
 			XPathFactory xPathFactory = XPathFactory.newInstance();
 			XPath xpath = xPathFactory.newXPath();
@@ -137,6 +145,7 @@ public class MyPluginAction implements UnprotectedRootAction {
 				jsonObject.put("name",label);
 				jsonObject.put("type",type);
 				jsonObject.put("target", target);
+				jsonObject.put("value",defaultVMap.get(id));
 			    jsonArray.add(jsonObject);
 			}
 			resultJson.put("dataArr", jsonArray);

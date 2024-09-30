@@ -52,6 +52,7 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 				Entry<String, JsonNode> field = fieldsIterator.next();
 				String fieldName = field.getKey();
 				String fieldValue = field.getValue().toString();
+				fieldValue = fieldValue.replaceAll("^\"|\"$", "");  // Remove extra quotes from start and end
 				if (fieldName.startsWith("dynamicField_") && fieldName.contains(".")) {
 					String modifiedString = fieldName.replaceFirst("dynamicField_", "");
 					String[] parts = modifiedString.split("\\.");

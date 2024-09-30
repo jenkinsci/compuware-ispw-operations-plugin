@@ -96,12 +96,14 @@ function loadGenParameters(action) {
             data["dataArr"].forEach(item => {
                 var label = document.createElement("label");
                 label.setAttribute("for", "dynamicField_" + item.id);
+                label.setAttribute("style","font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; color: rgba(0, 0, 0, 0.7);")
                 label.innerText =item.name;
                 // Create input field
                 var input = document.createElement("input");
                 input.setAttribute("type", "text");
                 input.setAttribute("name", "dynamicField_" + item.target);
                 input.setAttribute("id", "dynamicField_" + item.id);   // Correct 'id'
+                input.setAttribute("value",item.value);
                 input.classList.add("setting-input");
                 // Append label and input to the div
                 dynamicFieldsDiv.appendChild(label);
