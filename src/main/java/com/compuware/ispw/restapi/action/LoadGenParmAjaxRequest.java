@@ -4,14 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.xml.namespace.NamespaceContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -32,23 +30,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.util.ReflectUtils;
 import com.compuware.ispw.restapi.util.RestApiUtils;
-import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
-import jenkins.model.GlobalConfiguration;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -82,7 +74,7 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 		this.url = cesUrl + ispwRequestBean.getContextPath(); // CES URL
 		this.requestBody = ispwRequestBean.getJsonRequest();
 		this.token = cesIspwToken; // CES TOKEN
-		
+		ObjectMapper objectMapper = new ObjectMapper();
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			// Create an HttpPost request
 		  HttpPost postRequest = new HttpPost(url);
@@ -97,8 +89,7 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 			// Get the response content
 			String responseBody = EntityUtils.toString(response1.getEntity());
 			// Print the response
-			if(response1.getStatusLine().getStatusCode() ==200) {
-			ObjectMapper objectMapper = new ObjectMapper();
+			if(response1.getStatusLine().getStatusCode() ==200 && !responseBody.isEmpty()) {
 			// Parse JSON response into JsonNode
 			JsonNode rootNode = objectMapper.readTree(responseBody);
 			resultJson.put(defaultProps[0], ispwRequestBean.getIspwContextPathBean().getTaskId());
@@ -151,13 +142,25 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 			resultJson.put("dataArr", jsonArray);
 			response.setContentType("application/json");
 			response.getWriter().write(resultJson.toString());
-			}else {
-				response.setContentType("application/json");
-				response.getWriter().write(responseBody);
+			}
+			else if (response1.getStatusLine().getStatusCode() != 200) {
+				JSONObject error = new JSONObject();
+				error.put("status", "error");
+				JsonNode rootNode = objectMapper.readTree(responseBody);
+				error.put("message", rootNode.get("message").asText());
+				response.getWriter().write(error.toString());
 			}
 			
+			else if (responseBody.isEmpty()) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.setContentType("application/json");
+				response.getWriter().write("{\"status\": \"error\", \"message\": \"No data found\"}");
+			}
+		
 		} catch (Exception e) {
-			e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}");
 		}
 
 	}

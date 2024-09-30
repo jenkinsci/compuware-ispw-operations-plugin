@@ -52,6 +52,7 @@ function updateSerializedFields() {
 
 function loadGenParameters() {
     document.getElementById('error-message').style.display = 'none';
+    document.getElementById('dynamicFieldsDiv').innerHTML = '';
     const actionVal = document.getElementById('action');
     let selectedAction = actionVal.value;
 	if('GenerateWithParm'==selectedAction){
@@ -78,18 +79,18 @@ function loadGenParameters() {
     // Using Fetch API for AJAX request
     fetch(url)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
-            }
-            if(response.ok){
-            return response.json(); // Change to response.json() if expecting JSON
-            }else {
-                    return response.text().then(errorMessage => {
-                        throw new Error(errorMessage); // Throw error with response text
-               });
-             }
+          if (!response.ok) {
+        // If the response status is not OK, handle the error
+        return response.json().then(errorData => {
+            throw new Error(errorData.message);
+        });
+    }
+    return response.json();
         })
         .then(data => {
+        	if(data.status==="error"){
+               throw new Error(data.message);
+        	}else{	
             console.log(data); // should output 'string'
             dynamicFields["taskId"] = data.taskId;
             dynamicFields["containerType"] = data.containerType;
@@ -115,17 +116,16 @@ function loadGenParameters() {
                 input.addEventListener('input', updateSerializedFields);
                 updateSerializedFields();
                 document.getElementById('error-message').style.display = 'none';
-                
+           	  	     
             });
+           } 
         }).catch(error => {
-            console.error("Error: ", error.message);
+            console.error("Error: ",error);
                 // Display the error message to the user
                 const errorMessageDiv = document.getElementById('error-message');
                 const errorTextSpan = document.getElementById('error-text');
-                errorTextSpan.innerText ='Error In loading Generate Parameters:'+ error.message; // Set the error message
+                errorTextSpan.innerText ='Error In loading Generate Parameters:'+error; // Set the error message
                 errorMessageDiv.style.display = 'block'; // Make the div visible
-                // Clear success message if visible
-                document.getElementById('success-message').style.display = 'none';
         });
 }
 }
