@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UpdateGenParmAction extends SetInfoPostAction {
-	private static final String contextPath = "/ispw/{srid}/updateGenerateWithParam";
+	private static final String contextPath = "/ispw/{srid}/tasks/{taskId}/generateWithParms";
 
 	public UpdateGenParmAction(PrintStream logger) {
 		super(logger);
@@ -32,8 +32,7 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 		ispwContextPathBean.setSrid(srid);
 		bean.setIspwContextPathBean(ispwContextPathBean);
 		String path = contextPath.replace("{srid}", srid);
-		bean.setContextPath(RestApiUtils.cleanContextPath(path));
-
+	
 		ObjectMapper objectMapper = new ObjectMapper();
 		UpdateGenPam updateGenPam = new UpdateGenPam();
 		List<GenParmProperty> updateDetails = new ArrayList<GenParmProperty>();
@@ -41,10 +40,11 @@ public class UpdateGenParmAction extends SetInfoPostAction {
 			JsonNode node = objectMapper.readTree(ispwRequestBody);
 			updateGenPam.setContainerId(node.get("containerId").asText());
 			updateGenPam.setContainerType(node.get("containerType").asText());
-			updateGenPam.setTaskId(node.get("taskId").asText());
+			path = path.replace("{taskId}", node.get("taskId").asText());
 			String setId = node.get("setId").asText();
 			setId = setId.replaceAll("^\"|\"$", ""); // Remove extra quotes from start and end
 			updateGenPam.setSetId(setId);
+			bean.setContextPath(RestApiUtils.cleanContextPath(path));
 			JsonNode inputNode = node.get("inputs");
 			Iterator<Entry<String, JsonNode>> fieldsIterator = inputNode.fields();
 			GenParmProperty genParmProperty = null;

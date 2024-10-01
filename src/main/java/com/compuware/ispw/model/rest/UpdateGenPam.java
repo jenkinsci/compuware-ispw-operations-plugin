@@ -5,7 +5,6 @@ import java.util.List;
 public class UpdateGenPam {
 	private String containerId;
 	private String containerType;
-	private String taskId;
 	private String setId;
 	private List<GenParmProperty> updateDetails;
 
@@ -24,15 +23,6 @@ public class UpdateGenPam {
 	public void setContainerType(String containerType) {
 		this.containerType = containerType;
 	}
-
-	public String getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
-	}
-
 	public String getSetId() {
 		return setId;
 	}
