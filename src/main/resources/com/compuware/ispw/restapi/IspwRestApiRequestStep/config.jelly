@@ -25,6 +25,19 @@
         <f:booleanRadio/>
     </f:entry>
     
+    
+     <f:entry>
+       <div style="display: inline-block;">
+            <div class="yui-button yui-submit-button" style="display: inline-block;">
+            <span class="first-child">
+                <button id="conditionalButton" type="button" style="display: none;" onclick="loadGenParameters()">Load Generate Parm</button>
+            </span>
+        </div>
+      </div>
+   </f:entry>
+   
+    
+    
       <div id="dynamicFieldsDiv" />
 
 
@@ -35,6 +48,7 @@
     <div id="error-message" style="color: red; display: none; font-weight: bold;">
         <span id="error-text"></span>
     </div>
+    
     
        <script type="text/javascript">
   var dynamicFields = { "inputs": {} };
@@ -128,28 +142,17 @@ function loadGenParameters() {
         });
 }
 }
+
     const req_body = document.getElementById('reqBody');
     const actionVal = document.getElementById('action');
-    let selectedAction = actionVal.value;
-    
-    if (req_body) {
-    req_body.addEventListener('change', () => loadGenParameters());
-       // req_body.addEventListener('change', loadGenParameters, false)
-    }
-    if (actionVal) {
-        actionVal.addEventListener('change', () => loadGenParameters());
-    
-        //actionVal.addEventListener('change', loadGenParameters, false)
-    }
-
-    
-
-
-
-
- 
-
-
+    actionVal.addEventListener('change', function() {
+        var selectedValue = this.value;
+        var buttonDiv = document.getElementById("conditionalButton");
+        if (selectedValue === "GenerateWithParm") {
+          buttonDiv.style.display = "block";  // Show the button when 'Option 2' is selected
+        } else {
+          buttonDiv.style.display = "none";   // Hide the button for other options
+        }
+      });
      </script>
-
  </j:jelly>
