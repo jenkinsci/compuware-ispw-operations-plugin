@@ -25,6 +25,16 @@
         <f:booleanRadio/>
     </f:entry>
     
+     <f:entry>
+       <div style="display: inline-block;">
+            <div class="yui-button yui-submit-button" style="display: inline-block;">
+            <span class="first-child">
+                <button id="conditionalButton" type="button" style="display: none;" onclick="loadGenParameters()">Load Generate Parm</button>
+            </span>
+        </div>
+      </div>
+   </f:entry>
+    
    <div id="dynamicFieldsDiv" />
    
    
@@ -52,7 +62,6 @@ function updateSerializedFields() {
 
 function loadGenParameters() {
     document.getElementById('error-message').style.display = 'none';
-    document.getElementById('dynamicFieldsDiv').innerHTML = '';
     const actionVal = document.getElementById('action');
     let selectedAction = actionVal.value;
 	if('GenerateWithParm'==selectedAction){
@@ -70,6 +79,12 @@ function loadGenParameters() {
     let index2 = credentialIdElements[1].selectedIndex;
     let option2 = credentialIdElements[1].options[index2];
     const param3 = option2 !=undefined ? option2.value:null;
+    
+    var actionButton = document.getElementById("conditionalButton");
+    actionButton.disabled=true;
+  //  actionButton.classList.add("disabled-button"); // Add a class for additional visual styling
+    
+    
 
     const rootUrl = "${rootURL}";
     const url = rootUrl + '/loadGenParm/getForm?'
@@ -126,27 +141,33 @@ function loadGenParameters() {
                 const errorTextSpan = document.getElementById('error-text');
                 errorTextSpan.innerText =error; // Set the error message
                 errorMessageDiv.style.display = 'block'; // Make the div visible
+                actionButton.disabled=false;
+                
         });
 }
 }
+
+  // Function to check the selected action and show/hide the button
+        function checkActionSelection() {
+          var dynamicFieldsDiv = document.getElementById("dynamicFieldsDiv");
+  		  dynamicFieldsDiv.innerHTML = ""; // Clears all the content inside the div
+            var selectedAction = document.getElementById("action").value;
+            var actionButton = document.getElementById("conditionalButton");
+
+            if (selectedAction === "GenerateWithParm") {
+            	actionButton.style.display = "inline-block"; // Show the button if action1 is selected
+            	actionButton.disabled=false;
+            } else {
+                actionButton.style.display = "none"; // Hide the button for other actions
+            }
+        }
+
 document.addEventListener("DOMContentLoaded", function () {
-    const req_body = document.getElementById('reqBody');
-    const actionVal = document.getElementById('action');
-    let selectedAction = actionVal.value;
-    
-    if (req_body) {
-    req_body.addEventListener('change', () => loadGenParameters());
-       // req_body.addEventListener('change', loadGenParameters, false)
-    }
-    if (actionVal) {
-        actionVal.addEventListener('change', () => loadGenParameters());
-    
-        //actionVal.addEventListener('change', loadGenParameters, false)
-    }
-   setTimeout(() => {
-    loadGenParameters();
-}, 1000);
-    
+    document.getElementById("action").addEventListener("change", checkActionSelection);
+    document.getElementById("reqBody").addEventListener("change", checkActionSelection);
+    // Call checkActionSelection on page load to handle preselected action
+    checkActionSelection(); // Check the selected action when the page loads
+      
 });
 
  

@@ -80,9 +80,13 @@ function loadGenParameters() {
     let option1 = connectionIdElements[0].options[index1];
     const param2 = option1!=undefined? option1.value:null;
 
-    let index2 = credentialIdElements[1].selectedIndex;
-    let option2 = credentialIdElements[1].options[index2];
+    let index2 = credentialIdElements[0].selectedIndex;
+    let option2 = credentialIdElements[0].options[index2];
     const param3 = option2 !=undefined ? option2.value:null;
+    
+    var actionButton = document.getElementById("conditionalButton");
+    actionButton.disabled=true;
+    
 
     const rootUrl = "${rootURL}";
     const url = rootUrl + '/loadGenParm/getForm?'
@@ -139,20 +143,29 @@ function loadGenParameters() {
                 const errorTextSpan = document.getElementById('error-text');
                 errorTextSpan.innerText =error; // Set the error message
                 errorMessageDiv.style.display = 'block'; // Make the div visible
+                actionButton.disabled=false;
+                
         });
 }
 }
 
-    const req_body = document.getElementById('reqBody');
-    const actionVal = document.getElementById('action');
-    actionVal.addEventListener('change', function() {
-        var selectedValue = this.value;
-        var buttonDiv = document.getElementById("conditionalButton");
-        if (selectedValue === "GenerateWithParm") {
-          buttonDiv.style.display = "block";  // Show the button when 'Option 2' is selected
-        } else {
-          buttonDiv.style.display = "none";   // Hide the button for other options
+ // Function to check the selected action and show/hide the button
+        function checkActionSelection() {
+          var dynamicFieldsDiv = document.getElementById("dynamicFieldsDiv");
+  		  dynamicFieldsDiv.innerHTML = ""; // Clears all the content inside the div
+            var selectedAction = document.getElementById("action").value;
+            var actionButton = document.getElementById("conditionalButton");
+
+            if (selectedAction === "GenerateWithParm") {
+            	actionButton.style.display = "inline-block"; // Show the button if action1 is selected
+            	actionButton.disabled=false;
+            } else {
+                actionButton.style.display = "none"; // Hide the button for other actions
+            }
         }
-      });
+
+       document.getElementById("action").addEventListener("change", checkActionSelection);
+       document.getElementById("reqBody").addEventListener("change", checkActionSelection);
+   
      </script>
  </j:jelly>
