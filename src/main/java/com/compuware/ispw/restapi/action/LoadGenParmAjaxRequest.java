@@ -107,12 +107,12 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 						JsonNode object = entry.path("value");
 						if (object.isTextual()) {
 							Map<String, String> map = parseKeyValuePairs(object.asText());
-							defaultVMap.put("{"+ key + "." + map.get("field")+"}", map.get("defaultVal"));
+							defaultVMap.put(key + "." + map.get("field"), map.get("defaultVal"));
 						}
 						if (object.isArray()) {
 							for (JsonNode node : object) {
 								Map<String, String> map1 = parseKeyValuePairs(node.asText());
-								defaultVMap.put("{"+key +"."+ map1.get("field")+"}", map1.get("defaultVal"));
+								defaultVMap.put(key +"."+ map1.get("field"), map1.get("defaultVal"));
 
 							}
 						}
@@ -135,12 +135,14 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 						String type = fieldNode.getAttributes().getNamedItem("type").getNodeValue();
 						String target = fieldNode.getAttributes().getNamedItem("target").getNodeValue();
 						String value = fieldNode.getAttributes().getNamedItem("value").getNodeValue();
+						String[] arr= splitVar(value);
 						jsonObject.put("id", id);
 						jsonObject.put("name", label);
 						jsonObject.put("type", type);
 						jsonObject.put("target", target);
-						if(defaultVMap.containsKey(value) && defaultVMap.get(value)!=null) {
-							jsonObject.put("value", defaultVMap.get(value));
+						String key = arr[0]+ "."+id;
+						if(defaultVMap.containsKey(key) && defaultVMap.get(key)!=null) {
+							jsonObject.put("value", defaultVMap.get(key));
 						}
 						jsonArray.add(jsonObject);
 					}
@@ -168,6 +170,33 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 			}
 		}
 	}
+	
+	
+	private String[] splitVar(String name)
+	{
+		if (name == null || name.length() == 0)
+		{
+			return null;
+		}
+		// may want to check for braces ... name may be stored in another var
+		// if name starts and ends with braces, call resolveValue
+		String cleanedInput = name.trim().replaceAll("[{}]", "");
+		String[] parts = new String[2];
+		String[] split = cleanedInput.split("\\.");
+		if (split.length < 2)
+		{
+			parts[0] = "DIALOG";
+			parts[1] = split[0];
+		}
+		else
+		{
+			parts[0] = split[0];
+			parts[1] = split[1];
+		}
+
+		return parts;
+	}
+
 
 	public static String cleanXmlString(String xmlResponse) {
 		// Remove the BOM or any non-printable characters at the start
