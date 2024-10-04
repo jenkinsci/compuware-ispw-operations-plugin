@@ -107,12 +107,12 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 						JsonNode object = entry.path("value");
 						if (object.isTextual()) {
 							Map<String, String> map = parseKeyValuePairs(object.asText());
-							defaultVMap.put(key + "." + map.get("field"), map.get("defaultVal"));
+							defaultVMap.put(map.get("field"), map.get("defaultVal"));
 						}
 						if (object.isArray()) {
 							for (JsonNode node : object) {
 								Map<String, String> map1 = parseKeyValuePairs(node.asText());
-								defaultVMap.put(key +"."+ map1.get("field"), map1.get("defaultVal"));
+								defaultVMap.put(map1.get("field"), map1.get("defaultVal"));
 
 							}
 						}
@@ -140,9 +140,8 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 						jsonObject.put("name", label);
 						jsonObject.put("type", type);
 						jsonObject.put("target", target);
-						String key = arr[0]+ "."+id;
-						if(defaultVMap.containsKey(key) && defaultVMap.get(key)!=null) {
-							jsonObject.put("value", defaultVMap.get(key));
+						if(defaultVMap.containsKey(id) && defaultVMap.get(id)!=null) {
+							jsonObject.put("value", defaultVMap.get(id));
 						}
 						jsonArray.add(jsonObject);
 					}
