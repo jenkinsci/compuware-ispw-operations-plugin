@@ -80,8 +80,8 @@ function loadGenParameters() {
     let option1 = connectionIdElements[0].options[index1];
     const param2 = option1!=undefined? option1.value:null;
 
-    let index2 = credentialIdElements[1].selectedIndex;
-    let option2 = credentialIdElements[1].options[index2];
+    let index2 = credentialIdElements[0].selectedIndex;
+    let option2 = credentialIdElements[0].options[index2];
     const param3 = option2 !=undefined ? option2.value:null;
     
     var actionButton = document.getElementById("conditionalButton");
