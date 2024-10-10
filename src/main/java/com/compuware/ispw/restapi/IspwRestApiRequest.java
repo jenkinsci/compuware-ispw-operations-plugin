@@ -5,6 +5,7 @@
 package com.compuware.ispw.restapi;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -16,12 +17,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+
 import com.cloudbees.plugins.credentials.common.AbstractIdCredentialsListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
@@ -41,6 +45,7 @@ import com.compuware.ispw.restapi.action.GenerateTasksInReleaseAction;
 import com.compuware.ispw.restapi.action.IAction;
 import com.compuware.ispw.restapi.action.SetInfoPostAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
+import com.compuware.ispw.restapi.action.UpdateGenParmAction;
 import com.compuware.ispw.restapi.auth.BasicDigestAuthentication;
 import com.compuware.ispw.restapi.auth.FormAuthentication;
 import com.compuware.ispw.restapi.util.HttpClientUtil;
@@ -51,6 +56,7 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
+
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -72,7 +78,6 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
 import jenkins.model.Jenkins;
-
 /**
  * ISPW rest API free style builder
  * 
@@ -96,6 +101,8 @@ public class IspwRestApiRequest extends Builder {
 	private String requestBody = DescriptorImpl.requestBody;
 	private String authentication = DescriptorImpl.authentication;
 	private String token = DescriptorImpl.token;
+    private String serializedDynamicFields = DescriptorImpl.serializedDynamicFields; // Using Map for dynamic fields
+
 	private StandardCredentials cesCredentials;
 	private List<HttpRequestNameValuePair> customHeaders = DescriptorImpl.customHeaders;
 
@@ -106,6 +113,17 @@ public class IspwRestApiRequest extends Builder {
 	private String ispwRequestBody = DescriptorImpl.ispwRequestBody;
 	private Boolean consoleLogResponseBody = DescriptorImpl.consoleLogResponseBody;
 	private Boolean skipWaitingForSet = DescriptorImpl.skipWaitingForSet;
+	
+
+
+	public String getSerializedDynamicFields() {
+		return serializedDynamicFields;
+	}
+
+	@DataBoundSetter
+	public void setSerializedDynamicFields(String serializedDynamicFields) {
+		this.serializedDynamicFields = serializedDynamicFields;
+	}
 
 	@DataBoundConstructor
 	public IspwRestApiRequest() {
@@ -418,14 +436,18 @@ public class IspwRestApiRequest extends Builder {
 		}
 		else
 		{
-			ispwRequestBean = action.getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken);
+			if(action instanceof UpdateGenParmAction) {
+				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, serializedDynamicFields, webhookToken);
+			}
+			else {
+				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, ispwRequestBody, webhookToken);
+			}
 		}
 		
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("...ispwRequestBean=" + ispwRequestBean);
 
 		this.url = cesUrl + ispwRequestBean.getContextPath(); // CES URL
-		
 		this.requestBody = ispwRequestBean.getJsonRequest();
 		this.token = cesIspwToken; // CES TOKEN
 
@@ -485,9 +507,7 @@ public class IspwRestApiRequest extends Builder {
 		String responseJson = supplier.getContent();
 		if (RestApiUtils.isIspwDebugMode())
 			logger.println("responseJson=" + responseJson);
-
 		Object respObject = action.endLog(logger, ispwRequestBean, responseJson);
-		
 		if(Boolean.TRUE.equals(skipWaitingForSet))
 		{
 			logger.println("Skip waiting for the completion of the set for this job...");
@@ -842,6 +862,7 @@ public class IspwRestApiRequest extends Builder {
 				+"#level=STG2\n";
 		public static final Boolean consoleLogResponseBody = false;
 		public static final Boolean skipWaitingForSet = false;
+		public static final String serializedDynamicFields= "";
 
 		public static final List<HttpRequestNameValuePair> customHeaders = Collections
 				.<HttpRequestNameValuePair> emptyList();
@@ -855,7 +876,8 @@ public class IspwRestApiRequest extends Builder {
 		public boolean isApplicable(Class<? extends AbstractProject> aClass) {
 			return true;
 		}
-
+		
+	
 		@Override
 		public String getDisplayName() {
 			return "Execute a Compuware ISPW Operation";
@@ -985,6 +1007,7 @@ public class IspwRestApiRequest extends Builder {
 			return FormValidation.ok();
 
 		}
+
 	}
 
 }

@@ -40,6 +40,7 @@ import com.compuware.ispw.restapi.action.GetSetInfoAction;
 import com.compuware.ispw.restapi.action.IAction;
 import com.compuware.ispw.restapi.action.SetInfoPostAction;
 import com.compuware.ispw.restapi.action.SetOperationAction;
+import com.compuware.ispw.restapi.action.UpdateGenParmAction;
 import com.compuware.ispw.restapi.util.HttpRequestNameValuePair;
 import com.compuware.ispw.restapi.util.Operation;
 import com.compuware.ispw.restapi.util.ReflectUtils;
@@ -90,6 +91,8 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 	private String ispwRequestBody = DescriptorImpl.ispwRequestBody;
 	private Boolean consoleLogResponseBody = DescriptorImpl.consoleLogResponseBody;
 	private Boolean skipWaitingForSet = DescriptorImpl.skipWaitingForSet;
+    public  String serializedDynamicFields = DescriptorImpl.serializedDynamicFields; // Using Map for dynamic fields
+
 	
     @DataBoundConstructor
     public IspwRestApiRequestStep() {
@@ -216,6 +219,15 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 	public ResponseHandle getResponseHandle() {
 		return responseHandle;
 	}
+	
+	public String getSerializedDynamicFields() {
+		return serializedDynamicFields;
+	}
+
+	@DataBoundSetter
+	public void setSerializedDynamicFields(String serializedDynamicFields) {
+		this.serializedDynamicFields = serializedDynamicFields;
+	}
 
 	@Override
     public DescriptorImpl getDescriptor() {
@@ -312,6 +324,8 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 		public static final Boolean consoleLogResponseBody =
 				IspwRestApiRequest.DescriptorImpl.consoleLogResponseBody;
 		public static final Boolean skipWaitingForSet = false;
+		public static final String serializedDynamicFields= "";
+
 		
         public DescriptorImpl() {
             super(Execution.class);
@@ -455,16 +469,21 @@ public final class IspwRestApiRequestStep extends AbstractStepImpl {
 
 			IspwRequestBean ispwRequestBean = null;
 			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
-
-			String realIspwRequestBody = action.preprocess(step.ispwRequestBody, buildParmPath, logger);
+			String realIspwRequestBody = StringUtils.EMPTY;
+			realIspwRequestBody = action.preprocess(step.ispwRequestBody, buildParmPath, logger);
+		
 			if (realIspwRequestBody == null)
 			{
 				logger.println("The " + step.ispwAction + " operation is skipped since the build parameters cannot be captured.");
 				return null;
 			}
 			else
-			{
-				ispwRequestBean = action.getIspwRequestBean(cesIspwHost, realIspwRequestBody, webhookToken);
+			{	
+				if(action instanceof UpdateGenParmAction) {
+					ispwRequestBean = 	action.getIspwRequestBean(cesIspwToken, step.serializedDynamicFields, webhookToken);
+	      		}else {
+	      			ispwRequestBean = action.getIspwRequestBean(cesIspwHost, realIspwRequestBody, webhookToken);
+	      		}
 			}
 
 			if (RestApiUtils.isIspwDebugMode())

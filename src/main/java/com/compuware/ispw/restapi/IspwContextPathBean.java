@@ -27,6 +27,11 @@ public class IspwContextPathBean {
 	private String approver;
 	private String checkout = Constants.FALSE;
 	private String sandbox;
+	//gen parm action
+	private String containerId;
+	private String containerType;
+	
+	
 
 	@Override
 	public String toString() {
@@ -138,4 +143,21 @@ public class IspwContextPathBean {
 	{
 		this.sandbox = sandbox;
 	}
+
+	public String getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(String containerId) {
+		this.containerId = containerId;
+	}
+
+	public String getContainerType() {
+		return containerType;
+	}
+
+	public void setContainerType(String containerType) {
+		this.containerType = containerType;
+	}
+	
 }

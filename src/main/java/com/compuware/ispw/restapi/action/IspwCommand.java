@@ -137,5 +137,7 @@ public class IspwCommand {
 	@IspwAction(clazz = ReleaseDeployOperation.class)
 	public static final String ReleaseDeployAction = "ReleaseDeployAction"; // POST
 	
+	@IspwAction(clazz = UpdateGenParmAction.class)
+	public static final String UpdateGenParmAction = "GenerateWithParm"; // POST
 
 }
