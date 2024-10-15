@@ -2,11 +2,15 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials" xmlns:cc="/lib/compuware">
  	
  	<f:entry title="Host connection" field="connectionId" help="/plugin/compuware-ispw-operations/help-connectionId.html">
+    	<div id="hostSelect">
     	<cc:hostSelect default="${descriptor.connectionId}"/>
+    	</div>
 	</f:entry>
 
 	<f:entry title="Credentials" field="credentialsId" help="/plugin/compuware-ispw-operations/help-credentialsId.html">
+		<div id="credSelect">
 		<c:select/>
+		</div>
 	</f:entry>
 	
 	<f:entry field="ispwAction" title="Action" help="/plugin/compuware-ispw-operations/help-ispwAction.html" >
@@ -66,19 +70,16 @@ function loadGenParameters() {
     let selectedAction = actionVal.value;
 	if('GenerateWithParm'==selectedAction){
     const resultContainer = document.getElementById('resultContainer'); // The container to update
-    const connectionIdElements = document.getElementsByName('_.connectionId');
-    const credentialIdElements = document.getElementsByName('_.credentialsId');
+    const connectionIdElements = document.querySelector("#hostSelect select");
+    const credentialIdElements = document.querySelector('#credSelect select');
    
     const req_body = document.getElementById('reqBody');
     const actionVal = document.getElementById('action');
     const param1 = req_body.value;
-    let index1 = connectionIdElements[0].selectedIndex;
-    let option1 = connectionIdElements[0].options[index1];
-    const param2 = option1!=undefined? option1.value:null;
+   
+    const param2 = connectionIdElements!=undefined? connectionIdElements.value:null;
 
-    let index2 = credentialIdElements[1].selectedIndex;
-    let option2 = credentialIdElements[1].options[index2];
-    const param3 = option2 !=undefined ? option2.value:null;
+    const param3 = credentialIdElements!=undefined ? credentialIdElements.value:null;
     
     var actionButton = document.getElementById("conditionalButton");
     actionButton.disabled=true;
