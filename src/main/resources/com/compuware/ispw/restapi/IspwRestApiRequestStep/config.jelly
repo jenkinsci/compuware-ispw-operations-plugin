@@ -85,11 +85,7 @@ function loadGenParameters() {
     const param2 = connectionIdElements!=undefined? connectionIdElements.value:null;
 
     const param3 = credentialIdElements !=undefined ? credentialIdElements.value:null;
-    
-  	alert("param1"+param1);
-  	alert("param2"+param2);
-  	alert("param3"+param3);
-  	
+ 
     var actionButton = document.getElementById("conditionalButton");
     actionButton.disabled=true;
     
