@@ -30,8 +30,8 @@ public class GetDeploymentListAction extends AbstractGetAction
 {
 
 	private static final String[] defaultProps = new String[]{todaysDate, priorWeek, startDate, endDate, requestId, setId,
-			environment, status};
-	private static final String contextPath = "/ispw/{srid}/deployments?todaysDate={todaysDate}&priorWeek={priorWeek}&startDate={startDate}&endDate={endDate}&requestId={requestId}&setId={setId}&environment={environment}&status={status}"; //$NON-NLS-1$
+			environment, status, rtConfig};
+	private static final String contextPath = "/ispw/{srid}/deployments?todaysDate={todaysDate}&priorWeek={priorWeek}&startDate={startDate}&endDate={endDate}&requestId={requestId}&setId={setId}&environment={environment}&status={status}&rtConfig={rtConfig}"; //$NON-NLS-1$
 
 	public GetDeploymentListAction(PrintStream logger)
 	{

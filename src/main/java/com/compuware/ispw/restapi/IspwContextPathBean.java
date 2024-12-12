@@ -30,6 +30,7 @@ public class IspwContextPathBean {
 	//gen parm action
 	private String containerId;
 	private String containerType;
+	private String rtConfig;
 	
 	
 
@@ -158,6 +159,14 @@ public class IspwContextPathBean {
 
 	public void setContainerType(String containerType) {
 		this.containerType = containerType;
+	}
+
+	public String getRtConfig() {
+		return rtConfig;
+	}
+
+	public void setRtConfig(String rtConfig) {
+		this.rtConfig = rtConfig;
 	}
 	
 }

@@ -20,8 +20,8 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
  */
 public class GetSetTaskListAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { setId };
-	private static final String contextPath = "/ispw/{srid}/sets/{setId}/tasks";
+	private static final String[] defaultProps = new String[] { setId, rtConfig };
+	private static final String contextPath = "/ispw/{srid}/sets/{setId}/tasks?rtConfig={rtConfig}";
 
 	public GetSetTaskListAction(PrintStream logger) {
 		super(logger);

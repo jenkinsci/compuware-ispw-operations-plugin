@@ -18,8 +18,8 @@ import com.compuware.ispw.restapi.WebhookToken;
  */
 public class GetSetInfoAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { setId, level };
-	private static final String contextPath = "/ispw/{srid}/sets/{setId}?level={level}";
+	private static final String[] defaultProps = new String[] { setId, level, rtConfig };
+	private static final String contextPath = "/ispw/{srid}/sets/{setId}?level={level}&rtConfig={rtConfig}";
 	
 	public GetSetInfoAction(PrintStream logger) {
 		super(logger);

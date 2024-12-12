@@ -20,9 +20,9 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
  */
 public class GetAssignmentTaskListAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { assignmentId, level };
+	private static final String[] defaultProps = new String[] { assignmentId, level, rtConfig };
 	private static final String contextPath =
-			"/ispw/{srid}/assignments/{assignmentId}/tasks?level={level}";
+			"/ispw/{srid}/assignments/{assignmentId}/tasks?level={level}&rtConfig={rtConfig}";
 
 	public GetAssignmentTaskListAction(PrintStream logger) {
 		super(logger);

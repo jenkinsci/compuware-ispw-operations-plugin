@@ -91,6 +91,7 @@ public interface IAction {
 	public static final String todaysDate = "todaysDate";
 	public static final String priorWeek = "priorWeek";
 	public static final String status = "status";
+	public static final String rtConfig= "rtConfig";
 	
 
 	public IspwRequestBean getIspwRequestBean(String srid, String ispwRequestBody, WebhookToken webhookToken);
