@@ -18,8 +18,8 @@ import com.compuware.ispw.restapi.WebhookToken;
  */
 public class GetAssignmentInfoAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { assignmentId };
-	private static final String contextPath = "/ispw/{srid}/assignments/{assignmentId}";
+	private static final String[] defaultProps = new String[] { assignmentId, rtConfig };
+	private static final String contextPath = "/ispw/{srid}/assignments/{assignmentId}?rtConfig={rtConfig}";
 
 	public GetAssignmentInfoAction(PrintStream logger) {
 		super(logger);
@@ -30,6 +30,7 @@ public class GetAssignmentInfoAction extends AbstractGetAction {
 			WebhookToken webhookToken) {
 
 		List<String> pathTokens = Arrays.asList(defaultProps);
+		System.out.println("ispwRequestBody : " + ispwRequestBody);
 		return super.getIspwRequestBean(srid, ispwRequestBody, contextPath, pathTokens);
 	}
 

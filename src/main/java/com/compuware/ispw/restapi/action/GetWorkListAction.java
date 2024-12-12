@@ -20,8 +20,8 @@ public class GetWorkListAction extends AbstractGetAction
 {
 
 	private static final String[] defaultProps = new String[]{inProgress, production, historical, startDate, endDate, type,
-			name, operation, level, environment, application, subAppl, stream, lastUpdatedBy, owner, releaseId, refNumber, group};
-	private static final String contextPath = "/ispw/{srid}/worklist?inProgress={inProgress}&production={production}&historical={historical}&startDate={startDate}&endDate={endDate}&type={type}&name={name}&operation={operation}&level={level}&environment={environment}&application={application}&subAppl={subAppl}&stream={stream}&lastUpdatedBy={lastUpdatedBy}&owner={owner}&releaseId={releaseId}&refNumber={refNumber}&group={group}"; //$NON-NLS-1$
+			name, operation, level, environment, application, subAppl, stream, lastUpdatedBy, owner, releaseId, refNumber, group, rtConfig};
+	private static final String contextPath = "/ispw/{srid}/worklist?inProgress={inProgress}&production={production}&historical={historical}&startDate={startDate}&endDate={endDate}&type={type}&name={name}&operation={operation}&level={level}&environment={environment}&application={application}&subAppl={subAppl}&stream={stream}&lastUpdatedBy={lastUpdatedBy}&owner={owner}&releaseId={releaseId}&refNumber={refNumber}&group={group}&rtConfig={rtConfig}"; //$NON-NLS-1$
 
 	public GetWorkListAction(PrintStream logger)
 	{

@@ -18,8 +18,8 @@ import com.compuware.ispw.restapi.WebhookToken;
  */
 public class GetReleaseInfoAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { releaseId };
-	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}";
+	private static final String[] defaultProps = new String[] { releaseId , rtConfig};
+	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}?rtConfig={rtConfig}";
 
 	public GetReleaseInfoAction(PrintStream logger) {
 		super(logger);

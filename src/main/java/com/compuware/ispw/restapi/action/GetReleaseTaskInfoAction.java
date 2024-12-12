@@ -18,8 +18,8 @@ import com.compuware.ispw.restapi.WebhookToken;
  */
 public class GetReleaseTaskInfoAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { releaseId, taskId };
-	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}/tasks/{taskId}";
+	private static final String[] defaultProps = new String[] { releaseId, taskId, rtConfig };
+	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}/tasks/{taskId}?rtConfig={rtConfig}";
 
 	public GetReleaseTaskInfoAction(PrintStream logger) {
 		super(logger);

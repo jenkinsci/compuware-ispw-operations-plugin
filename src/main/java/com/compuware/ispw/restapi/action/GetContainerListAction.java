@@ -18,8 +18,8 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
  */
 public class GetContainerListAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { userId, containerId, containerType, application,subAppl, owner, description, refNumber, releaseId, stream, path, tag, includeClosedContainers };
-	private static final String contextPath = "/ispw/{srid}/containers/list?userId={userId}&containerId={containerId}&containerType={containerType}&application={application}&subAppl={subAppl}&owner={owner}&description={description}&refNumber={refNumber}&releaseId={releaseId}&stream={stream}&path={path}&tag={tag}&includeClosedContainers={includeClosedContainers}"; //$NON-NLS-1$
+	private static final String[] defaultProps = new String[] { userId, containerId, containerType, application,subAppl, owner, description, refNumber, releaseId, stream, path, tag, includeClosedContainers, rtConfig };
+	private static final String contextPath = "/ispw/{srid}/containers/list?userId={userId}&containerId={containerId}&containerType={containerType}&application={application}&subAppl={subAppl}&owner={owner}&description={description}&refNumber={refNumber}&releaseId={releaseId}&stream={stream}&path={path}&tag={tag}&includeClosedContainers={includeClosedContainers}&rtConfig={rtConfig}"; //$NON-NLS-1$
 
 	public GetContainerListAction(PrintStream logger) {
 		super(logger);

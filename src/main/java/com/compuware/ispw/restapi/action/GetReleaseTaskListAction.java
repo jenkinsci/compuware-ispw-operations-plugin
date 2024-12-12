@@ -20,8 +20,8 @@ import com.compuware.ispw.restapi.util.RestApiUtils;
  */
 public class GetReleaseTaskListAction extends AbstractGetAction {
 
-	private static final String[] defaultProps = new String[] { releaseId, level };
-	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}/tasks?level={level}";
+	private static final String[] defaultProps = new String[] { releaseId, level,rtConfig };
+	private static final String contextPath = "/ispw/{srid}/releases/{releaseId}/tasks?level={level}&rtConfig={rtConfig}";
 
 	public GetReleaseTaskListAction(PrintStream logger) {
 		super(logger);
