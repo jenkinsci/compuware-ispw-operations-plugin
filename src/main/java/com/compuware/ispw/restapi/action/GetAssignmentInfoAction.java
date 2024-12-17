@@ -30,7 +30,6 @@ public class GetAssignmentInfoAction extends AbstractGetAction {
 			WebhookToken webhookToken) {
 
 		List<String> pathTokens = Arrays.asList(defaultProps);
-		System.out.println("ispwRequestBody : " + ispwRequestBody);
 		return super.getIspwRequestBean(srid, ispwRequestBody, contextPath, pathTokens);
 	}
 
