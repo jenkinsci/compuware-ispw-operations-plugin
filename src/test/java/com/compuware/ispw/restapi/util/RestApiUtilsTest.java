@@ -64,11 +64,11 @@ public class RestApiUtilsTest {
 	@Test
 	public void testGetVariables()
 	{
-		String contextPath = "/ispw/{srid}/assignments/{assignmentId}/tasks/deploy?level=DEV1&mname={mname}&mtype={mtype}";
+		String contextPath = "/ispw/{srid}/assignments/{assignmentId}/tasks/deploy?level=DEV1&mname={mname}&mtype={mtype}&rtConfig={rtConfig}";
 
 		ArrayList<String> variables = RestApiUtils.getVariables(contextPath);
 		logger.info("variables=" + variables);
 
-		assertEquals(variables.size(), 4);
+		assertEquals(variables.size(), 5);
 	}
 }
