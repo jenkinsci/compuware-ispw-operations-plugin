@@ -49,8 +49,8 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 
 	private StandardCredentials cesCredentials;
 	private String credentialsId;
-	private static final String[] defaultProps = new String[] { "taskId", "containerType", "containerId" };
-	private static final String contextPath = "/ispw/{srid}/tasks/{taskId}/generateWithParms?containerId={containerId}&containerType={containerType}";
+	private static final String[] defaultProps = new String[] { "taskId", "containerType", "containerId", "rtConfig" };
+	private static final String contextPath = "/ispw/{srid}/tasks/{taskId}/generateWithParms?containerId={containerId}&containerType={containerType}&rtConfig={rtConfig}";
 	private @Nonnull String requestBody = StringUtils.EMPTY;
 	private @Nonnull String url = StringUtils.EMPTY;
 	private @Nonnull String token = StringUtils.EMPTY;
