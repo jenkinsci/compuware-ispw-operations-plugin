@@ -967,6 +967,15 @@
           </tr>
         </tbody>
       </table>
+      Optional:
+      <table border="1">
+        <tbody>
+          <tr>
+            <td>rtConfig</td>
+            <td>The runtime configuration</td>
+          </tr>
+        </tbody>
+      </table>
       Example:
       <table border="1">
         <tbody>
@@ -976,10 +985,10 @@
           </tr>
           <tr>
             <td>
-              <pre>assignmentId=PLAY000313</pre>
+              <pre>assignmentId=PLAY000313<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
             <td>
-              <pre>assignmentId=PLAY000313<br>level=DEV2</pre>
+              <pre>assignmentId=PLAY000313<br>level=DEV2<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1082,6 +1091,10 @@
             <td valign="top">The owner or joined user for a container<br>
             </td>
           </tr>
+          <tr>
+            <td valign="top">rtConfig</td>
+            <td valign="top">The runtime configuration.</td>
+          </tr>
         </tbody>
       </table>
       Example:
@@ -1093,7 +1106,7 @@
           </tr>
           <tr>
             <td>
-              <pre>application=PLAY<br>containerId=PLAY001386<br>containerType=A<br>description=myContainer<br>includeClosedContainers=false<br>owner=myUserId<br>path=DEV1<br>refNumber=JIRA1234<br>releaseId=R00001234<br>stream=PLAY<br>subAppl=PLAY<br>tag=ABCD<br>userId=myUserId<br></pre>
+              <pre>application=PLAY<br>containerId=PLAY001386<br>containerType=A<br>description=myContainer<br>includeClosedContainers=false<br>owner=myUserId<br>path=DEV1<br>refNumber=JIRA1234<br>releaseId=R00001234<br>stream=PLAY<br>subAppl=PLAY<br>tag=ABCD<br>userId=myUserId<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1108,7 +1121,7 @@
             <td style="width:10%" valign="top">todaysDate<br>
             </td>
             <td valign="top">True/False value indicating whether or not to include today's date deployments. This field is not case sensitive.<br>
-            </td
+            </td>
           <tr>
           <tr>
             <td>priorWeek<br>
@@ -1150,6 +1163,12 @@
             <td valign="top">The overall current status of the deploy request, which may be Planned, Confirmed, Staged, Implemented, Completed, Failed, or Terminated. This field is not case sensitive. Wildcard * is only supported.<br>
             </td>
           </tr>
+          <tr>
+            <td valign="top">rtConfig<br>
+            </td>
+            <td valign="top">The runtime configuration.<br>
+            </td>
+          </tr>
         </tbody>
       </table>
       Example:
@@ -1161,7 +1180,7 @@
           </tr>
           <tr>
             <td>
-              <pre>startDate=2023-08-09<br>endDate=2023-08-14<br>status=COMPLETED<br></pre>
+              <pre>startDate=2023-08-09<br>endDate=2023-08-14<br>status=COMPLETED<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1187,6 +1206,15 @@
           </tr>
         </tbody>
       </table>
+      Optional:
+      <table border="1">
+        <tbody>
+         <tr>
+            <td valign="top">rtConfig</td>
+            <td valign="top">The runtime configuration.</td>
+          </tr>
+        </tbody>
+      </table>
       Example:
       <table border="1">
         <tbody>
@@ -1197,26 +1225,35 @@
           </tr>
           <tr>
             <td>
-              <pre>releaseId=JKGENRELID<br>taskId=7E1AC3D3DE25</pre>
+              <pre>releaseId=JKGENRELID<br>taskId=7E1AC3D3DE25<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
             <td>
-              <pre>releaseId=JKGENRELID<br>taskId=7E1AC3D3DE25</pre>
+              <pre>releaseId=JKGENRELID<br>taskId=7E1AC3D3DE25<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
             <td>
-              <pre>releaseId=JKGENRELID<br>level=DEV2</pre>
+              <pre>releaseId=JKGENRELID<br>level=DEV2<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
       </table>
       <br>
-      <strong><strong>GetSetInfo action:</strong> <br>
-        Required: </strong>
+      <strong>GetSetInfo action:</strong> <br>
+        Required:
       <table border="1">
         <tbody>
           <tr>
             <td>setId</td>
             <td>The set ID you want info on</td>
           </tr>
+        </tbody>
+      </table>
+      Optional:
+      <table border="1">
+        <tbody>
+		  <tr>
+		    <td>rtConfig</td>
+		    <td>The runtime configuration.</td>
+		  </tr>
         </tbody>
       </table>
       Example:
@@ -1227,7 +1264,7 @@
           </tr>
           <tr>
             <td>
-              <pre>setId=S000015218</pre>
+              <pre>setId=S000015218<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1243,6 +1280,15 @@
           </tr>
         </tbody>
       </table>
+      Optional:
+      <table border="1">
+        <tbody>
+		  <tr>
+		    <td>rtConfig</td>
+		    <td>The runtime configuration.</td>
+		  </tr>
+        </tbody>
+      </table>
       Example:
       <table border="1">
         <tbody>
@@ -1251,7 +1297,7 @@
           </tr>
           <tr>
             <td>
-              <pre>setId=S000015218</pre>
+              <pre>setId=S000015218<br>#Optional<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1651,6 +1697,12 @@
               for a copybook. Trailing wildcards are supported, i.e. C*
             </td>
           </tr>
+          <tr>
+            <td valign="top">rtConfig<br>
+            </td>
+            <td valign="top">The runtime configuration.
+            </td>
+          </tr>
         </tbody>
       </table>
       Example:
@@ -1662,7 +1714,7 @@
           </tr>
           <tr>
             <td>
-              <pre>inProgress=true<br>production=true<br>historical=true<br>startDate=2019-01-01<br>endDate=2019-03-31<br>application=PLAY<br>subAppl=PLAY<br>environment=TEST<br>group=GRP1<br>lastUpdatedBy=FOOUSER<br>level=DEV1<br>name=TPROG01<br>operation=Promote<br>owner=FOOUSER<br>refNumber=JIRA1234<br>releaseId=RLS001<br>stream=PLAY<br>type=COB<br></pre>
+              <pre>inProgress=true<br>production=true<br>historical=true<br>startDate=2019-01-01<br>endDate=2019-03-31<br>application=PLAY<br>subAppl=PLAY<br>environment=TEST<br>group=GRP1<br>lastUpdatedBy=FOOUSER<br>level=DEV1<br>name=TPROG01<br>operation=Promote<br>owner=FOOUSER<br>refNumber=JIRA1234<br>releaseId=RLS001<br>stream=PLAY<br>type=COB<br>rtConfig=TPTP</pre>
             </td>
           </tr>
         </tbody>
@@ -1825,6 +1877,15 @@
           </tr>
         </tbody>
       </table>
+      Optional:
+      <table border="1">
+        <tbody>
+         <tr>
+            <td valign="top">rtConfig</td>
+            <td valign="top">The runtime configuration.</td>
+          </tr>
+        </tbody>
+      </table>
       Example:<br>
       <table border="1">
         <tbody>
@@ -1835,6 +1896,8 @@
             <td valign="top">containerId=HARY008983<br>
               containerType=A<br>
               taskId=7E89F2C22D72<br>
+              #Optional<br>
+              rtConfig=TPTP<br>
             </td>
           </tr>
         </tbody>
