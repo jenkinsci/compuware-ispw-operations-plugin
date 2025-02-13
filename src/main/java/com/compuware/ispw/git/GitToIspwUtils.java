@@ -6,7 +6,7 @@
 * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
 * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
 *
-* (c) Copyright 2022 BMC Software, Inc.
+* (c) Copyright 2022, 2025 BMC Software, Inc.
 */
 package com.compuware.ispw.git;
 
@@ -61,6 +61,7 @@ import hudson.plugins.git.util.BuildData;
 import hudson.remoting.VirtualChannel;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.SCM;
+import hudson.scm.SCMRevisionState;
 import hudson.security.ACL;
 import hudson.util.ListBoxModel;
 import hudson.util.ListBoxModel.Option;
@@ -511,13 +512,61 @@ public class GitToIspwUtils
 			{
 	
 				Collection<? extends SCM> scms = job.getSCMs();
-	
+				GitSCM gitScm = null;
 				if (scms != null && scms.size() >= 1)
 				{
-					SCM thescm = scms.iterator().next();
-					if (thescm instanceof GitSCM)
+					if (scms.size() == 1)
 					{
-						GitSCM gitScm = (GitSCM) thescm;
+						SCM thescm = scms.iterator().next();
+						if (thescm instanceof GitSCM)
+						{
+							gitScm = (GitSCM) thescm;
+						}
+					}
+					if (scms.size() > 1)
+					{
+						for (SCM scm : scms)
+						{
+							if (scm instanceof GitSCM)
+							{
+								GitSCM sourceGitScm = (GitSCM) scm;
+								if (workspace == null)
+								{
+									logger.println("Workspace is not available.");
+									continue;
+								}
+
+								FilePath repoCheckFolder = workspace.child("repo-check");
+								try
+								{
+									if (repoCheckFolder.exists())
+									{
+										repoCheckFolder.deleteRecursive();
+									}
+									repoCheckFolder.mkdirs();
+								    SCMRevisionState revisionState = SCMRevisionState.NONE;
+								    sourceGitScm.checkout(run, new Launcher.LocalLauncher(listener), repoCheckFolder, listener,
+								                          null, revisionState);  
+									FilePath[] configFiles = repoCheckFolder.list("**/ispwconfig.yml");
+									if (configFiles.length > 0)
+									{
+										gitScm = sourceGitScm;
+										logger.println("Found ispwconfig.yml at: " + configFiles[0].getRemote());
+										break;
+									}
+								}
+								catch (IOException | InterruptedException e)
+								{
+									logger.println("Error during checkout: " + e.getMessage());
+								}
+							}
+						}
+
+						if (gitScm == null)
+						{
+							logger.println("No repository found with ispwconfig.yml.");
+						}
+					}						
 	
 						if (RestApiUtils.isIspwDebugMode())
 						{
@@ -528,8 +577,12 @@ public class GitToIspwUtils
 	
 						WorkflowRun theRun = curRun;
 						WorkflowRun preRun = theRun.getPreviousBuild();
-	
 						Revision revision = getRevision(theRun, gitScm);
+						if(revision != null)
+						{
+							logger.println("Revision: " + revision.toString()); //$NON-NLS-1$
+						}
+						
 						Revision preRevision = null;
 	
 						if (preRun != null)
@@ -541,14 +594,27 @@ public class GitToIspwUtils
 								if (null != previousSuccessfulBuild) {
 									logger.println("Since the last build failed, changelog will be calculated from last successful build : "+previousSuccessfulBuild);
 									preRevision = getRevision(previousSuccessfulBuild, gitScm);
+									if(preRevision != null)
+									{
+										logger.println("PreRevision: " + preRevision.toString()); //$NON-NLS-1$
+									}
 								} else {
 									//calculate changelog based on first build in case there is no prior successful build
 									logger.println("There is no prior successful build for this job.");
 									preRevision = getRevision(job.getFirstBuild(), gitScm);
+									if(preRevision != null)
+									{
+										logger.println("PreRevision: " + preRevision.toString()); //$NON-NLS-1$
+									}
 								}
 								revision = getRevision(curRun, gitScm);
 							} else {
 								preRevision = getRevision(preRun, gitScm);
+								if(preRevision != null)
+								{
+									logger.println("PreRevision: " + preRevision.toString()); //$NON-NLS-1$
+								}
+								
 								while (isSameRevision(revision, preRevision) && !preRun.isBuilding())
 								{
 									theRun = preRun;
@@ -570,9 +636,15 @@ public class GitToIspwUtils
 							logger.println("Skipping changelog. There is no proper revision for computing the changelog."); //$NON-NLS-1$
 							return listChangeLogSet;
 						}
-	
-						logger.println("Compute the changelog between [ " + revision.toString() + "] and [" + preRevision.toString() //$NON-NLS-1$ //$NON-NLS-2$
-								+ "]."); //$NON-NLS-1$
+						if(revision!=null && preRevision!=null)
+						{
+							logger.println("Compute the changelog between [ " + revision.toString() + "] and [" + preRevision.toString() //$NON-NLS-1$ //$NON-NLS-2$
+							+ "]."); //$NON-NLS-1$
+						}
+						else
+						{
+							logger.println("Revision or Prerevision is null");
+						}
 						try
 						{
 							GitClient git = gitScm.createClient(listener, envVars, run, workspace);
@@ -580,6 +652,7 @@ public class GitToIspwUtils
 							StringWriter sw = new StringWriter();
 							git.changelog(preRevision.getSha1String(), revision.getSha1String(), sw);
 							String logString = sw.toString();
+							logger.println("Calculated changed log = \n " + logString); //$NON-NLS-1$
 	
 							if (logString.trim().length() > 0)
 							{
@@ -611,7 +684,7 @@ public class GitToIspwUtils
 								x.printStackTrace(logger);
 							}						
 						}
-					}
+					
 				}
 			} 	
         }
