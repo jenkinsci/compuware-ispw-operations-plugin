@@ -150,7 +150,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 						logger.println("GitToIspwPublishStep: Calculate the change log. "); //$NON-NLS-1$
 					}
 
-					itrChangeSets = GitToIspwUtils.calculateGitSCMChanges(run, workspace, listener, envVars).iterator();
+					itrChangeSets = GitToIspwUtils.calculateGitSCMChanges(run, workspace, listener, envVars, step).iterator();
 				}
 				
 				if (!itrChangeSets.hasNext())

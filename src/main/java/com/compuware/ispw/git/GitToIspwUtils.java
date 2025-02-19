@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -497,7 +499,7 @@ public class GitToIspwUtils
 	
 	
 	@SuppressWarnings("deprecation")
-	public static List <CustomGitChangeSetList> calculateGitSCMChanges(Run<?, ?> run, FilePath workspace, TaskListener listener, EnvVars envVars) 
+	public static List <CustomGitChangeSetList> calculateGitSCMChanges(Run<?, ?> run, FilePath workspace, TaskListener listener, EnvVars envVars, IGitToIspwPublish publishStep) 
 	{
 		CustomGitChangeSetList customGitChangeSetList = null;
         List <CustomGitChangeSetList> listChangeLogSet = new ArrayList<CustomGitChangeSetList> ();
@@ -546,12 +548,19 @@ public class GitToIspwUtils
 									repoCheckFolder.mkdirs();
 								    SCMRevisionState revisionState = SCMRevisionState.NONE;
 								    sourceGitScm.checkout(run, new Launcher.LocalLauncher(listener), repoCheckFolder, listener,
-								                          null, revisionState);  
-									FilePath[] configFiles = repoCheckFolder.list("**/ispwconfig.yml");
+								                          null, revisionState); 
+								    String fileName = "ispwconfig.yml";
+								    String configPath= publishStep.getIspwConfigPath();
+								    if(configPath != null && !configPath.isEmpty())
+								    {
+								    	Path path = Paths.get(configPath);
+								        fileName = path.getFileName().toString();
+								    }
+								    FilePath[] configFiles = repoCheckFolder.list("**/"+ fileName);
 									if (configFiles.length > 0)
 									{
 										gitScm = sourceGitScm;
-										logger.println("Found ispwconfig.yml at: " + configFiles[0].getRemote());
+										logger.println("Found mapping file at: " + configFiles[0].getRemote());
 										break;
 									}
 								}
