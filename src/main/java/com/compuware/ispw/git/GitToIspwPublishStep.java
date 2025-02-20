@@ -1,6 +1,6 @@
 /**
 *  Copyright (c) 2020 Compuware Corporation. All rights reserved.
-* (c) Copyright 2020,2021-2022 BMC Software, Inc.
+* (c) Copyright 2020,2021-2022, 2025 BMC Software, Inc.
 */
 package com.compuware.ispw.git;
 
@@ -129,7 +129,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 			
 			FilePath buildParmPath = GitToIspwUtils.getFilePathInVirtualWorkspace(envVars, Constants.BUILD_PARAM_FILE_NAME);
         	
-			if (buildParmPath.exists()) {
+			if (buildParmPath!=null && buildParmPath.exists()) {
         		logger.println("Remove the old build parm files." + buildParmPath.getName()); //$NON-NLS-1$
         		buildParmPath.delete();
         	}
@@ -150,7 +150,7 @@ public class GitToIspwPublishStep extends AbstractStepImpl implements IGitToIspw
 						logger.println("GitToIspwPublishStep: Calculate the change log. "); //$NON-NLS-1$
 					}
 
-					itrChangeSets = GitToIspwUtils.calculateGitSCMChanges(run, workspace, listener, envVars).iterator();
+					itrChangeSets = GitToIspwUtils.calculateGitSCMChanges(run, workspace, listener, envVars, step).iterator();
 				}
 				
 				if (!itrChangeSets.hasNext())
