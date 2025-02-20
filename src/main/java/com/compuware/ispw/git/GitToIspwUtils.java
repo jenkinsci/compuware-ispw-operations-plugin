@@ -554,7 +554,14 @@ public class GitToIspwUtils
 								    if(configPath != null && !configPath.isEmpty())
 								    {
 								    	Path path = Paths.get(configPath);
-								        fileName = path.getFileName().toString();
+								    	if(path != null)
+								    	{
+								    		Path filePath = path.getFileName();	
+								    		if(filePath != null)
+								    		{
+								    			fileName = filePath.toString();
+								    		}
+								    	} 
 								    }
 								    FilePath[] configFiles = repoCheckFolder.list("**/"+ fileName);
 									if (configFiles.length > 0)
@@ -586,7 +593,18 @@ public class GitToIspwUtils
 	
 						WorkflowRun theRun = curRun;
 						WorkflowRun preRun = theRun.getPreviousBuild();
-						Revision revision = getRevision(theRun, gitScm);
+						Revision revision = null ;
+						if (theRun != null && gitScm != null) 
+						{
+						    revision = getRevision(theRun, gitScm);
+						} else 
+						{
+						    throw new IllegalArgumentException("theRun or gitScm is null");
+						}
+						if (revision == null) {
+						    throw new IllegalStateException("getRevision() returned null");
+						}
+						
 						if(revision != null)
 						{
 							logger.println("Revision: " + revision.toString()); //$NON-NLS-1$
@@ -659,7 +677,20 @@ public class GitToIspwUtils
 							GitClient git = gitScm.createClient(listener, envVars, run, workspace);
 	
 							StringWriter sw = new StringWriter();
-							git.changelog(preRevision.getSha1String(), revision.getSha1String(), sw);
+							try 
+							{
+							    if (preRevision == null || revision == null) 
+							    {
+							        throw new IllegalStateException("preRevision or revision is null");
+							    }
+							    git.changelog(preRevision.getSha1String(), revision.getSha1String(), sw);
+							} 
+							catch (InterruptedException e) 
+							{
+							    Thread.currentThread().interrupt(); 
+							    throw new RuntimeException("Changelog retrieval was interrupted", e);
+							}
+							
 							String logString = sw.toString();
 							logger.println("Calculated changed log = \n " + logString); //$NON-NLS-1$
 	
