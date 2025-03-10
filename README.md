@@ -127,6 +127,7 @@ The following are required to use this plugin:
     -   Get Assignment Info
     -   Get Assignment Task List
     -   Get Container List
+    -   Get Deployment List
     -   Get Release Info
     -   Get Release Task Generate Listing
     -   Get Release Task Info
