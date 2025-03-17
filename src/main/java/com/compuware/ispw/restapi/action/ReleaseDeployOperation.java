@@ -77,9 +77,7 @@ public class ReleaseDeployOperation extends SetInfoPostAction {
 				logger.println(" "); //$NON-NLS-1$
 				logger.println("Set id: " + set.getId()); //$NON-NLS-1$
 				logger.println("deployments for set : " + set.getId());
-				List<DeploymentInfo> deployments = new ArrayList<DeploymentInfo>();
-				deployments = set.getDeploymentList();
-				for(DeploymentInfo deployment : deployments)
+				for(DeploymentInfo deployment : set.getDeploymentList())
 				{
 					logger.println(" "); //$NON-NLS-1$
 					logger.println("requestId: " + deployment.getRequestId()); //$NON-NLS-1$
