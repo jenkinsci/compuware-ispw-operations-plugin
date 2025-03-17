@@ -13,9 +13,11 @@ import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +31,8 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.compuware.ispw.restapi.IspwContextPathBean;
 import com.compuware.ispw.restapi.IspwRequestBean;
 import com.compuware.ispw.restapi.util.ReflectUtils;
@@ -47,7 +49,6 @@ import net.sf.json.JSONObject;
 @Extension
 public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 
-	private StandardCredentials cesCredentials;
 	private String credentialsId;
 	private static final String[] defaultProps = new String[] { "taskId", "containerType", "containerId", "rtConfig" };
 	private static final String contextPath = "/ispw/{srid}/tasks/{taskId}/generateWithParms?containerId={containerId}&containerType={containerType}&rtConfig={rtConfig}";
@@ -67,7 +68,6 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 		String connectionId = request.getParameter("param2");
 		String cesUrl = RestApiUtils.getCesUrl(connectionId, null);
 		String cesIspwToken = RestApiUtils.getCesToken(credentialsId, null);
-		this.cesCredentials = RestApiUtils.getCesCredentials(credentialsId, null);
 		List<String> pathTokens = Arrays.asList(defaultProps);
 		String cesIspwHost = RestApiUtils.getIspwHostLabel(connectionId);
 		IspwRequestBean ispwRequestBean = getIspwRequestBean(cesIspwHost, reqBody, contextPath, pathTokens);
@@ -161,8 +161,7 @@ public class LoadGenParmAjaxRequest implements UnprotectedRootAction {
 					response.setContentType("application/json");
 					response.getWriter().write("{\"status\": \"error\", \"message\": \"No data found\"}");
 				}
-
-			} catch (Exception e) {
+			} catch (XPathExpressionException | ParserConfigurationException | SAXException e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.setContentType("application/json");
 				response.getWriter().write("{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}");
