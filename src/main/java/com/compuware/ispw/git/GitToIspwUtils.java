@@ -594,7 +594,7 @@ public class GitToIspwUtils
 						WorkflowRun theRun = curRun;
 						WorkflowRun preRun = theRun.getPreviousBuild();
 						Revision revision = null ;
-						if (theRun != null && gitScm != null) 
+						if (gitScm != null) 
 						{
 						    revision = getRevision(theRun, gitScm);
 						} else 
@@ -605,10 +605,7 @@ public class GitToIspwUtils
 						    throw new IllegalStateException("getRevision() returned null");
 						}
 						
-						if(revision != null)
-						{
-							logger.println("Revision: " + revision.toString()); //$NON-NLS-1$
-						}
+						logger.println("Revision: " + revision.toString()); //$NON-NLS-1$
 						
 						Revision preRevision = null;
 	
