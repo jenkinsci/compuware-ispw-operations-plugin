@@ -6,7 +6,7 @@
 * ALL BMC SOFTWARE PRODUCTS LISTED WITHIN THE MATERIALS ARE TRADEMARKS OF BMC SOFTWARE, INC. ALL OTHER COMPANY PRODUCT NAMES
 * ARE TRADEMARKS OF THEIR RESPECTIVE OWNERS.
 *
-* (c) Copyright 2020-22 BMC Software, Inc.
+* (c) Copyright 2020-26 BMC Software, Inc.
 */
 
 package com.compuware.ispw.git;
@@ -103,8 +103,17 @@ public class CliExecutor
 		String certificateStr = null;
 		if (credentials instanceof StandardUsernamePasswordCredentials)
 		{
-			StandardUsernamePasswordCredentials standardUsernamePasswordCredentials = (StandardUsernamePasswordCredentials) credentials;
-			password = ArgumentUtils.escapeForScript(standardUsernamePasswordCredentials.getPassword().getPlainText());
+			StandardUsernamePasswordCredentials standard = (StandardUsernamePasswordCredentials) credentials;
+			String plain = standard.getPassword().getPlainText();
+			try
+			{
+				String encrypted = PasswordCryptoUtil.encrypt(plain);
+				password = ArgumentUtils.escapeForScript(encrypted);
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException("Password encryption failed", e);
+			}
 		}
 		else if (credentials instanceof StandardCertificateCredentials) {
 			try 
