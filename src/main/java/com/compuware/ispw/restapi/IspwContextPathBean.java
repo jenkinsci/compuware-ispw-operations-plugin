@@ -3,6 +3,7 @@ package com.compuware.ispw.restapi;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * A Java bean that holds any possible context path related parameters
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class IspwContextPathBean {
 	private String application;
+	private String subAppl;
 	private String srid;
 	private String assignmentId;
 	private String releaseId;
@@ -30,6 +32,7 @@ public class IspwContextPathBean {
 	//gen parm action
 	private String containerId;
 	private String containerType;
+	@XmlElement(name = "runtimeConfiguration")
 	private String rtConfig;
 	
 	
@@ -133,6 +136,16 @@ public class IspwContextPathBean {
 	public void setApplication(String application)
 	{
 		this.application = application;
+	}
+
+	public String getSubAppl()
+	{
+		return this.subAppl;
+	}
+	
+	public void setSubAppl(String subAppl)
+	{
+		this.subAppl = subAppl;
 	}
 
 	public String getSandbox()

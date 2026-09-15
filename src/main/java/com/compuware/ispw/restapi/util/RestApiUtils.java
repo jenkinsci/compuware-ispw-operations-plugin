@@ -496,6 +496,8 @@ public class RestApiUtils {
 			
 			for(String queryParam : queryParams) {
 				s2 = s2.replace(queryParam+"={"+queryParam+"}", StringUtils.EMPTY);
+				// e.g. rtConfig={runtimeConfiguration}
+				s2 = s2.replaceAll("[?&][^&?=]+=\\{" + queryParam + "\\}", StringUtils.EMPTY);
 			}
 			
 			s2 = s2.replaceAll("[&]+", "&");
