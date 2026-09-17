@@ -29,7 +29,7 @@
         <f:booleanRadio/>
     </f:entry>
     
-     <f:entry>
+     <!--f:entry>
        <div style="display: inline-block;">
             <div class="yui-button yui-submit-button" style="display: inline-block;">
             <span class="first-child">
@@ -37,7 +37,7 @@
             </span>
         </div>
       </div>
-   </f:entry>
+   </f:entry-->
     
    <div id="dynamicFieldsDiv" />
    
