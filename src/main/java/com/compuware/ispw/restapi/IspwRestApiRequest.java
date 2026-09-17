@@ -880,7 +880,7 @@ public class IspwRestApiRequest extends Builder {
 	
 		@Override
 		public String getDisplayName() {
-			return "Execute a Compuware ISPW Operation";
+			return "Execute a BMC AMI DevX Code Pipeline Operation";
 		}
 
 		public ListBoxModel doFillHttpModeItems() {
