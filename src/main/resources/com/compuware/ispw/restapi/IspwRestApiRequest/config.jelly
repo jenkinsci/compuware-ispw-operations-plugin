@@ -29,15 +29,15 @@
         <f:booleanRadio/>
     </f:entry>
     
-     <f:entry>
-       <div id="loadGenParmButtonDiv" style="display: none;">
+     <!--f:entry>
+       <div style="display: inline-block;">
             <div class="yui-button yui-submit-button" style="display: inline-block;">
             <span class="first-child">
-                <button id="conditionalButton" type="button" disabled="disabled" onclick="loadGenParameters()">Load Generate Parm</button>
+                <button id="conditionalButton" type="button" onclick="loadGenParameters()">Load Generate Parm</button>
             </span>
         </div>
       </div>
-   </f:entry>
+   </f:entry-->
     
    <div id="dynamicFieldsDiv" />
    
