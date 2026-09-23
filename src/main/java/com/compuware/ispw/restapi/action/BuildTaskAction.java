@@ -24,8 +24,8 @@ public class BuildTaskAction extends SetInfoPostAction
 {
 	private static final String[] defaultProps = new String[]{taskId, runtimeConfiguration};
 
-	private static final String contextPath = "/ispw/{srid}/build?taskId={taskId}&application={application}&assignmentId={assignmentId}" //$NON-NLS-1$
-			+ "&level={level}&mname={mname}&mtype={mtype}"; //$NON-NLS-1$
+	private static final String contextPath = "/ispw/{srid}/build?taskId={taskId}&application={application}&subAppl={subAppl}&assignmentId={assignmentId}" //$NON-NLS-1$
+			+ "&level={level}&mname={mname}&mtype={mtype}&rtConfig={runtimeConfiguration}"; //$NON-NLS-1$
 
 	public static String getDefaultProps()
 	{
